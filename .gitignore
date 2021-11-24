@@ -1,3 +1,10 @@
+# File system files
+.DS_Store
+sapai/**/.DS_Store
+.vscode
+sapai/**/.vscode
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
