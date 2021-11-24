@@ -25,3 +25,4 @@ Contribute
 
 Code is presently very clean and I would like to keep it that way. If there's interest to participate in development, we may discuss. This is a hobby project and updates will occur when I have time between finishing my PhD. 
 
+You may see more of my published work in machine learning on `ResearchGate <https://www.researchgate.net/publication/347653898_Machine_Learned_Model_for_Solid_Form_Volume_Estimation_Based_on_Packing-Accessible_Surface_and_Molecular_Topological_Fragments>`_ or `ACS <https://pubs.acs.org/doi/full/10.1021/acs.jpca.0c06791>`_
