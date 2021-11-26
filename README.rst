@@ -2,7 +2,7 @@
 sapai
 =====
 
-Super auto pets engine built with reinforcement learning training in mind
+Super auto pets engine built with reinforcement learning training and other related AI models in mind
 
 ------
 Status
