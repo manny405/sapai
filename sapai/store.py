@@ -41,6 +41,8 @@ for i in np.arange(0,12):
 for key,value in data["pets"].items():
     if "probabilities" not in value:
         continue
+    if data["pets"][key]["probabilities"] == "none":
+        continue
     for temp_dict in data["pets"][key]["probabilities"]:
         temp_turn = int(temp_dict["turn"].split("-")[-1])
         if "StandardPack" in temp_dict["perSlot"]:
@@ -62,7 +64,11 @@ for i in np.arange(0,12):
 for key,value in data["foods"].items():
     if "probabilities" not in value:
         continue
+    if data["foods"][key]["probabilities"] == "none":
+        continue
     for temp_dict in data["foods"][key]["probabilities"]:
+        if temp_dict == "none":
+            continue
         temp_turn = int(temp_dict["turn"].split("-")[-1])
         if "StandardPack" in temp_dict["perSlot"]:
             temp_std = temp_dict["perSlot"]["StandardPack"]
@@ -87,7 +93,7 @@ class Store():
         self.avail_pets = []
         self.avail_foods = []
         self.pp = []                    ### Probability of pet 
-        self.pf = []                    ### Probability of food
+        self.fp = []                    ### Probability of food
         self.fslots = 0
         self.pslots = 0
         self.max_slots = 7
@@ -107,14 +113,22 @@ class Store():
     
     def roll(self, team=None):
         """ Randomizes shop and returns list of available entries """
-        pets = np.random.choice(self.avail_pets, 
-                                size=(self.pslots),
-                                replace=True, 
-                                p=self.pp)
-        foods = np.random.choice(self.avail_foods, 
-                                size=(self.fslots),
-                                replace=True, 
-                                p=self.fp)
+        
+        if len(self.avail_pets) > 0:
+            pets = np.random.choice(self.avail_pets, 
+                                    size=(self.pslots),
+                                    replace=True, 
+                                    p=self.pp)
+        else:
+            pets = []
+        
+        if len(self.avail_foods) > 0:
+            foods = np.random.choice(self.avail_foods, 
+                                    size=(self.fslots),
+                                    replace=True, 
+                                    p=self.fp)
+        else:
+            foods = []
         
         ### What should be done here is that instances of pet and food classes
         ### should be initialized here 
@@ -122,6 +136,14 @@ class Store():
         self.cfoods = [Food(x, self, team) for x in foods]
         
         return self.cpets+self.cfoods
+    
+
+    
+    def freeze(self, idx):
+        """
+        Freeze a shop index 
+        
+        """
     
     
     def levelup(self):
@@ -183,14 +205,10 @@ class Store():
         self.update_shop_rules()
         
         return self.roll()
+    
+    
+    
         
-        
-# %%
-
-s = Store(turn=11)
-s.can = 10
-state = s.next_turn()
-
 # %%
 
 # %%

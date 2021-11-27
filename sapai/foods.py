@@ -7,7 +7,7 @@ from data import data
 #%%
 
 class Food():
-    def __init__(self, name="", shop=None, team=[]):
+    def __init__(self, name="food-none", shop=None, team=[]):
         """
         Food class definition the types of interactions that food undergoes
         
@@ -26,24 +26,21 @@ class Food():
         self.effect = "none"
         self.fd = {}
             
-        if len(name) == 0:
-            self.name = "food-none"
-        else:
-            self.name = name
-            if name not in data["foods"]:
-                raise Exception("Food {} not found".format(name))
-            fd = data["foods"][name]["ability"]
-            self.fd = fd
-            
-            self.attack = 0
-            self.health = 0
-            self.effect = fd["effect"]["kind"]
-            if "attackAmount" in fd["effect"]:
-                self.attack = fd["effect"]["attackAmount"]
-            if "healthAmount" in fd["effect"]:
-                self.health = fd["effect"]["healthAmount"]
-            if "status" in fd["effect"]:
-                self.status = fd["effect"]["status"]
+        self.name = name
+        if name not in data["foods"]:
+            raise Exception("Food {} not found".format(name))
+        fd = data["foods"][name]["ability"]
+        self.fd = fd
+        
+        self.attack = 0
+        self.health = 0
+        self.effect = fd["effect"]["kind"]
+        if "attackAmount" in fd["effect"]:
+            self.attack = fd["effect"]["attackAmount"]
+        if "healthAmount" in fd["effect"]:
+            self.health = fd["effect"]["healthAmount"]
+        if "status" in fd["effect"]:
+            self.status = fd["effect"]["status"]
                 
         for temp_pet in self.owned_pets:
             raise Exception("ADD IN PET MODIFICATIONS TO FOOD")

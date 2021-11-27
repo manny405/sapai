@@ -7,6 +7,8 @@ class Player():
     each of these actions is directly tied to the actions reinforment learning 
     model can take. 
     
+    Can also be programmed in phases similar to Fight
+    
     Arguments
     ---------
     
@@ -16,13 +18,28 @@ class Player():
         raise Exception()
     
     
-    def buy(self, pet, slot_idx):
-        """ Buy one pet from the store to a team slot """
+    def buy(self, pet):
+        """ Buy one pet from the store """
         raise Exception()
     
     
     def sell(self):
         """ Sell one pet on the team """
+        raise Exception()
+    
+    
+    def freeze(self, idx):
+        """ Freeze one pet in shop """
+        raise Exception()
+    
+    
+    def roll(self):
+        """ Roll shop """
+        raise Exception()
+    
+    
+    def buy_combine(self):
+        """ Combine two pets on purchase """
         raise Exception()
     
     
@@ -33,5 +50,11 @@ class Player():
     
     def move(self):
         """ Move pet to a different team slot """
+        raise Exception()
+    
+    
+    def end(self):
+        """ End turn and move to fight phase """
+        raise Exception()
         
         
