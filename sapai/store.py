@@ -14,9 +14,12 @@ from pets import Pet
 ################################################################################
 
 pet_tier_lookup = {1: [], 2: [], 3: [], 4: [], 5: [], 6:[]}
+pet_tier_lookup_std = {1: [], 2: [], 3: [], 4: [], 5: [], 6:[]}
 for key,value in data["pets"].items():
     if type(value["tier"]) == int:
         pet_tier_lookup[value["tier"]].append(key)
+        if "StandardPack" in value["packs"]:
+            pet_tier_lookup_std[value["tier"]].append(key)
 pet_tier_avail_lookup = {1: [], 2: [], 3: [], 4: [], 5: [], 6:[]}
 for key,value in pet_tier_lookup.items():
     for temp_key,temp_value in pet_tier_avail_lookup.items():
@@ -144,6 +147,7 @@ class Store():
         Freeze a shop index 
         
         """
+        raise Exception()
     
     
     def levelup(self):

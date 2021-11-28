@@ -6369,7 +6369,7 @@ data = {
           "target": {
             "kind": "TriggeringEntity"
           },
-          "attackAmount": 1,
+          "healthAmount": 1,
           "untilEndOfBattle": False
         }
       },
@@ -6384,7 +6384,7 @@ data = {
           "target": {
             "kind": "TriggeringEntity"
           },
-          "attackAmount": 2,
+          "healthAmount": 2,
           "untilEndOfBattle": False
         }
       },
@@ -6399,7 +6399,7 @@ data = {
           "target": {
             "kind": "TriggeringEntity"
           },
-          "attackAmount": 3,
+          "healthAmount": 3,
           "untilEndOfBattle": False
         }
       },

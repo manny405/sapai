@@ -24,6 +24,9 @@ class Pet():
             raise Exception("Pet {} not found".format(name))
         fd = data["pets"][name]
         self.fd = fd
+        self.override_ability = False
+        self.override_ability_dict = {}
+        self.tier = data["pets"][name]["tier"]
         
         ### Overall stats that should be brought into a battle
         self.attack = fd["baseAttack"]
@@ -31,6 +34,7 @@ class Pet():
         self.status = "none"
         
         self.level = 1
+        self.experience = 0
         
         if shop != None:
             can = shop.can
@@ -41,11 +45,19 @@ class Pet():
     
     @property
     def ability(self):
+        if self.override_ability:
+            return self.override_ability_dict
         if "level{}Ability".format(self.level) in self.fd:
             return self.fd["level{}Ability".format(self.level)]
         else:
             return empty_ability
     
+    
+    def set_ability(self, ability_dict):
+        self.override_ability = True
+        self.override_ability_dict = ability_dict
+        return 
+
     
     def eat(self, food):
         self.attack += food.attack
@@ -62,6 +74,34 @@ class Pet():
     def combine(self, pet):
         raise Exception("Combine this pet with another pet")
     
+    
+    def gain_experience(self,amount=1):
+        """
+        After experience is gained, always need to check if an effect has been
+        triggered
+        
+        """
+        self.experience += amount
+        level_up = False
+        if self.level == 1:
+            if self.experience >= 2:
+                self.level += 1
+                self.experience -= 2
+                ### Call recursive incase multiple level-ups occuring
+                self.gain_experience(0)
+                level_up = True
+        elif self.level == 2:
+            if self.experience >= 3:
+                self.level += 1
+                self.experience -= 3
+                self.gain_experience(0)
+                level_up = True
+        elif self.level == 3:
+            pass
+        else:
+            raise Exception("Invalid level found")
+        return level_up
+        
         
     def __repr__(self):
         return "< {} {}-{} {} >".format(

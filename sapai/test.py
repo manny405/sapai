@@ -83,24 +83,43 @@ tf.move_forward()
 ################################################################################
 %run /Users/ibier/Software/sapai/sapai/effects.py
 ### Testing all effects
-t1 = Team([Pet("pet-fish")])
-for temp_pet in data["pets"]:
+t1 = Team([Pet("pet-fish"), Pet("pet-fish")])
+target_idx = 10000
+for iter_idx,temp_pet in enumerate(data["pets"]):
+    if iter_idx in [55, 58, 69, 78]:
+        #### Squirrel, Cow, Cat, Tiger
+        continue
+    
     p = Pet(temp_pet)
-    p.level = 2
-    tt0 = Team([p.copy(),p.copy(),p.copy(),p.copy(),p.copy()], fight=False)
+    p.level = 1
+    p.experience = 0
+    tt0 = Team([p.copy(),p.copy(),p.copy(),p.copy()], fight=False)
     tt1 = t1.copy()
     
     effect = p.ability["effect"]
     kind = effect["kind"]
     func = get_effect_function(kind)
     
-    print(kind)
-    pet_idx = (0,0)
-    teams = [tt0, tt1]
-    print(tt0)
-    func(pet_idx, teams)
-    print(tt0)
+    # tt0[2].pet.level = 2
+    # tt0[3].pet.level = 3
+    if iter_idx == target_idx:
+        print(kind)
+        print(tt0)
     
+    pet_idx = (0,1)
+    teams = [tt0, tt1]
+    func(pet_idx, teams, te=tt0[0].pet)
+    
+    if kind == "Swallow":
+        effect = tt0[0].pet.ability["effect"]
+        kind = effect["kind"]
+        func = get_effect_function(kind)
+        func((0,0), teams, te=tt0[0].pet)
+        
+    if iter_idx == target_idx:
+        print(tt0)
+        print(tt1)
+        break
 
 
 # %%
@@ -135,12 +154,14 @@ target = []
 to = []
 amount = []
 pets = {}
+keys = []
 for temp_pet in data["pets"]:
     p = Pet(temp_pet)
     # if "StartOfBattle" == p.ability["trigger"]:
     effect = p.ability["effect"]
     kind.append(effect["kind"])
     if "target" in effect:
+        keys.append(temp_pet)
         target.append(effect["target"]["kind"])
     elif "to" in effect:
         ### "to" is literally the same as "target". Why call it two different
@@ -152,7 +173,9 @@ for temp_pet in data["pets"]:
         amount.append(0)
     
     pets[temp_pet] = p
-        
+ 
+test_idx = np.where(np.array(target) == "TriggeringEntity")[0]
+test_pets = [keys[x] for x in test_idx]       
 
 #%%
 
