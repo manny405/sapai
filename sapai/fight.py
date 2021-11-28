@@ -3,6 +3,7 @@
 import numpy as np
 
 from teams import Team
+from effects import get_effect_function,get_pet,get_teams
 
 
 class Fight():
@@ -30,7 +31,7 @@ class Fight():
         ### pets are not modified in any way after the fight
         self.t0 = t0.copy()
         self.t0._fight = True
-        self.t1 = c1.copy()
+        self.t1 = t1.copy()
         self.t1._fight = True
         
         ### Internal storage
@@ -70,6 +71,7 @@ class Fight():
         ### Go through effect order list and perform effects
         teams = [t0, t1]
         phase_dict = {
+                      "init": [[str(x) for x in t0], [str(x) for x in t1]],
                       "start": {
                       "phase_move_start": [],
                       "phase_start": [],
@@ -105,13 +107,13 @@ class Fight():
         attack_str = "attack_{}".format(fight_iter)
         phase_dict = {
             attack_str: {
-            "phase_move": [[str(t0), str(t1)]],
+            "phase_move_start": [[str(t0), str(t1)]],
             "phase_attack_before": [],
             "phase_attack": [],
             "phase_after_attack": [],
             "phase_faint": [],
             "phase_summon": [],
-            "phase_move": []}}
+            "phase_move_end": []}}
         
         t0.move_forward()
         t1.move_forward()
@@ -189,7 +191,6 @@ class Fight():
         uniquea = np.unique(attack)[::-1]
         start_idx = 0
         for uattack in uniquea:
-            print(uattack)
             ### Get collision idx
             temp_idx = np.where(attack == uattack)[0]
             temp_attack = attack[temp_idx]
@@ -274,6 +275,8 @@ def fight_phase(phase,
     certainly works and other forms of implementing it would just be aesthetic
     improvements. 
     
+    After evey major phase, phase_faint should be checked
+    
     Possible phases of a fight:
         phase_move_start
         phase_start
@@ -330,7 +333,7 @@ def fight_phase(phase,
         phase_dict[phase] = [start_order, end_order]
         
     elif phase == "phase_start":
-        fight_phase_start(phase,teams,pet_effect_order,phase_dict)
+        fight_phase_start(phase,teams,pet_effect_order,phase_dict[phase])
     
     ##### Trigger logic for an attack
     elif phase == "phase_attack_before":
@@ -350,11 +353,10 @@ def fight_phase(phase,
         raise Exception()
     
 
-def fight_phase_start(phase,teams,pet_effect_order,phase_dict):
+def fight_phase_start(phase,teams,pet_effect_order,phase_list):
     pao = pet_effect_order
     for team_idx,pet_idx in pao:
         p = teams[team_idx][pet_idx].pet
-        print(p)
         pt = p.ability["trigger"]
         
         if pt != "StartOfBattle":
@@ -363,4 +365,49 @@ def fight_phase_start(phase,teams,pet_effect_order,phase_dict):
         
         effect = p.ability["effect"]
         kind = effect["kind"]
-        raise Exception()
+        func = get_effect_function(kind)
+        targets = func((team_idx,pet_idx),teams)
+        phase_list.append((
+            func.__name__,
+            (team_idx,pet_idx),
+            (str(p)),
+            [str(x) for x in targets]))
+        tiger_check((team_idx,pet_idx), teams, func, phase_list)
+    ### Done programming start!
+    return phase_list
+        
+        
+def tiger_check(pet_idx,teams,effect_func,phase_list):
+    """
+    Check for tiger behind and double the function
+    """
+    p = teams[pet_idx[0]][pet_idx[1]].pet
+    if pet_idx[1]+1 >= 5:
+        ### Cannot have tiger behind
+        return 
+    fteam,oteam = get_teams(pet_idx,teams)
+    
+    ### Get possible indices for each team
+    fidx = []
+    for iter_idx,temp_slot in enumerate(fteam):
+        if not temp_slot.empty:
+            fidx.append(iter_idx)
+    
+    targets = []
+    relative_idx = fidx.index(pet_idx[1])
+    if len(fidx) > relative_idx+1:
+        next_idx = fidx[relative_idx+1]
+        next_pet = fteam[next_idx].pet
+        if next_pet.name != "pet-tiger":
+            return targets
+        
+        ### Otherwise, there's tiger so call previous function again
+        targets = effect_func(pet_idx,teams)
+        phase_list.append((
+            effect_func.__name__,
+            pet_idx,
+            (str(next_pet),str(p)),
+            [str(x) for x in targets]))
+        
+    return targets
+    

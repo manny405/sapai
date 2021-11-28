@@ -38,10 +38,12 @@ class Team():
         self[sidx] = TeamSlot()
             
     
-    def move_forward(self):
+    def move_forward(self, start_idx=0, end_idx=10):
         """
         Adjust the location of the pets in the team, moving them to the furthest 
-        possible forward location using a recursive function
+        possible forward location using a recursive function. The arg idx may
+        be provided to indicate the first index that is allowed to move 
+        forward. 
         
         """
         empty_idx = []
@@ -57,16 +59,20 @@ class Team():
             
             ### Find first pet that can fill this emtpy position
             found = False
-            for start_idx in filled_idx:
-                if empty_idx < start_idx:
+            for temp_idx in filled_idx:
+                if temp_idx < start_idx:
+                    continue
+                if temp_idx >= end_idx:
+                    continue
+                if empty_idx < temp_idx:
                     found = True
                     ### Move pet
-                    self.move(start_idx,empty_idx)
+                    self.move(temp_idx,empty_idx)
                     break
             
             ### If a pet was moved, call recurisvely
             if found:
-                self.move_forward()
+                self.move_forward(start_idx,end_idx)
         
         return
     
@@ -87,10 +93,10 @@ class Team():
             else:
                 filled_idx.append(iter_idx)
         if len(empty_idx) > 0:
-            ### Only need to consider the last emtpy position 
+            ### Only need to consider the last empty position 
             empty_idx = empty_idx[-1]
             
-            ### Find first pet that can fill this emtpy position
+            ### Find first pet that can fill this empty position
             found = False
             for start_idx in filled_idx[::-1]:
                 if empty_idx > start_idx:
@@ -108,7 +114,7 @@ class Team():
     
     def remove(self, obj):
         if type(obj) == int:
-            self.team[idx] = TeamSlot()
+            self.team[obj] = TeamSlot()
         elif type(obj).__name__ == "TeamSlot":
             found = False
             for iter_idx,temp_slot in enumerate(self.team):
