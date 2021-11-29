@@ -2,7 +2,16 @@
 sapai
 =====
 
-``sapai`` is a Super Auto Pets engine built with reinforcement learning training and other related AI models in mind. You may see more of my published work in machine learning on `ResearchGate <https://www.researchgate.net/publication/347653898_Machine_Learned_Model_for_Solid_Form_Volume_Estimation_Based_on_Packing-Accessible_Surface_and_Molecular_Topological_Fragments>`_ or `ACS <https://pubs.acs.org/doi/full/10.1021/acs.jpca.0c06791>`_
+``sapai`` is a Super Auto Pets engine built with reinforcement learning training and other related AI models in mind. You may see more of my published work in machine learning on `ResearchGate <https://www.researchgate.net/publication/347653898_Machine_Learned_Model_for_Solid_Form_Volume_Estimation_Based_on_Packing-Accessible_Surface_and_Molecular_Topological_Fragments>`_ or `ACS <https://pubs.acs.org/doi/full/10.1021/acs.jpca.0c06791>`_.
+
+.. contents::
+    :local:
+    
+    
+.. figure:: doc/static/workflow.png
+    :height: 380
+    :width: 404
+    :align: center
 
 
 ------------
@@ -140,11 +149,16 @@ The implementation of fights is efficient. Using IPython magic, this can be test
       ###   More than 500 fights per second on a single core
       
       
-All fight history is stored for every phase, effect, and attack that occured during the fight. This fight history can be graphed and visualized. 
+All fight history is stored for every phase, effect, and attack that occured during the fight. This fight history can be graphed and visualized. A snip of a fight graph is shown below. 
 
   >>> from sapai.graph import graph_fight
-  >>> graph_fight(fight)
-    
+  >>> graph_fight(fight, file_name="Example")
+
+
+.. figure:: doc/static/fight_graph.png
+    :height: 404
+    :width: 404
+    :align: center
 
 ------
 Status
