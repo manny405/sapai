@@ -155,8 +155,8 @@ All fight history is stored for every phase, effect, and attack that occured dur
 
 
 .. figure:: doc/static/fight_graph_full.png
-    :height: 1477
-    :width: 404
+    :height: 1750
+    :width: 500
     :align: center
 
 ------
