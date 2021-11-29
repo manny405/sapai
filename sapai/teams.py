@@ -57,7 +57,7 @@ class Team():
             ### Only need to consider the first emtpy position 
             empty_idx = empty_idx[0]
             
-            ### Find first pet that can fill this emtpy position
+            ### Find first pet that can fill this empty position
             found = False
             for temp_idx in filled_idx:
                 if temp_idx < start_idx:
@@ -146,7 +146,7 @@ class Team():
                     found_idx = iter_idx
                     found = True
             if not found:
-                raise Exception("Remove {} not found".format(obj))
+                raise Exception("get_idx {} not found".format(obj))
             return found_idx
         elif type(obj).__name__ == "Pet":
             found = False
@@ -156,7 +156,7 @@ class Team():
                     found_idx = iter_idx
                     found = True
             if not found:
-                raise Exception("Remove {} not found".format(obj))
+                raise Exception("get_idx {} not found".format(obj))
             return found_idx
         else:
             raise Exception("Object of type {} not recognized".format(type(obj)))

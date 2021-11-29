@@ -14,6 +14,9 @@ This module implements all effects in the game. API description is as follows:
     - Function must take in the pet_idx that has triggered the effect to occur 
         where pet_idx=(team_idx,team_pet_idx)
     - Function must take in teams referenced by pet_idx
+    - Functions may take in fainted_pet as optional input when the effect was
+        triggered by a unit that already fained. The pet_idx provided should be 
+        the position that the fainted unit was from. 
     - Function takes in triggering entity optionally as te
     - Functions that require the shop to interact must have required shop input
     - Function may modify the teams freely
@@ -30,7 +33,7 @@ def get_effect_function(effect_kind):
     return func_dict[effect_kind]
 
 
-def get_pet(pet_idx,teams):
+def get_pet(pet_idx,teams,fainted_pet=None):
     """ Helper function with error catching """
     team_idx = pet_idx[0]
     team_pet_idx = pet_idx[1]
@@ -40,16 +43,32 @@ def get_pet(pet_idx,teams):
         raise Exception("Team idx greater than provided number of teams")
     if team_pet_idx >= 5:
         raise Exception("Team pet idx greater than 5")
-    return teams[team_idx][team_pet_idx].pet
+    if fainted_pet == None:
+        pet = teams[team_idx][team_pet_idx].pet
+    else:
+        pet = fainted_pet
+    return pet
+ 
+
+def get_teams(pet_idx,teams):
+    if pet_idx[0] == 0:
+        fteam = teams[0]
+        oteam = teams[1]
+    elif pet_idx[0] == 1:
+        fteam = teams[1]
+        oteam = teams[0]
+    else:
+        raise Exception("That's impossible")
+    return fteam,oteam
 
 
-def get_target(pet_idx,teams,get_from=False,te=None):
+def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
     """
     Returns the targets for a given effect. Targets are returned as a list of 
     pets. 
     
     """
-    p = teams[pet_idx[0]][pet_idx[1]].pet
+    p = get_pet(pet_idx,teams,fainted_pet)
     effect = p.ability["effect"]
     
     ### Logic switch because data-dictionary is not consistent
@@ -57,6 +76,7 @@ def get_target(pet_idx,teams,get_from=False,te=None):
         if "to" in effect:
             target = effect["to"]
         else:
+            print(p,effect)
             raise Exception("Target not found")
     else:
         target = effect["target"]
@@ -201,7 +221,7 @@ def get_target(pet_idx,teams,get_from=False,te=None):
             if temp_idx < pet_idx[1]:
                 chosen_idx.append(temp_idx)
         ret_pets = []
-        for temp_idx in chosen_idx:
+        for temp_idx in chosen_idx[::-1]:
             ret_pets.append(fteam[temp_idx].pet)
             if len(ret_pets) >= n:
                 break
@@ -322,8 +342,8 @@ def get_target(pet_idx,teams,get_from=False,te=None):
         raise Exception("Target {} impelementation not found".format(kind))
     
 
-def AllOf(pet_idx, teams, te=None):
-    p = get_pet(pet_idx, teams)
+def AllOf(pet_idx, teams, fainted_pet=None, te=None):
+    p = get_pet(pet_idx,teams,fainted_pet)
     original_effect = p.ability["effect"]
     effects = p.ability["effect"]["effects"]
     target = []
@@ -336,18 +356,18 @@ def AllOf(pet_idx, teams, te=None):
     return target
 
 
-def ApplyStatus(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
-    target = get_target(pet_idx,teams,te=te)
+def ApplyStatus(pet_idx, teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
+    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
     status = pet.ability["effect"]["status"]
     for target_pet in target:
         target_pet.status = status
     return target
 
 
-def DealDamage(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
-    target = get_target(pet_idx,teams,te=te)
+def DealDamage(pet_idx, teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
+    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
     health_amount = pet.ability["effect"]["amount"]
     if type(health_amount) == dict:
         if "attackDamagePercent" in health_amount:
@@ -359,9 +379,9 @@ def DealDamage(pet_idx, teams, te=None):
     return target
 
 
-def GainExperience(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
-    target = get_target(pet_idx,teams,te=te)
+def GainExperience(pet_idx, teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
+    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
     for target_pet in target:
         amount = target_pet.ability["effect"]["amount"]
         level_up = target_pet.gain_experience(amount=amount)
@@ -378,8 +398,8 @@ def GainExperience(pet_idx, teams, te=None):
     return target
 
 
-def GainGold(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
+def GainGold(pet_idx, teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
     fteam,oteam = get_teams(pet_idx, teams)
     amount = pet.ability["effect"]["amount"]
     player = fteam.player
@@ -388,8 +408,8 @@ def GainGold(pet_idx, teams, te=None):
     return player
 
 
-def Evolve(pet_idx,teams,te=None):
-    pet = get_pet(pet_idx,teams)
+def Evolve(pet_idx,teams,fainted_pet=None,te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
     fteam,oteam = get_teams(pet_idx, teams)
     target = [pet]
     summon = pet.ability["effect"]["into"]
@@ -402,15 +422,15 @@ def Evolve(pet_idx,teams,te=None):
     return target
 
 
-def FoodMultiplier(pet_idx, teams, shop, te=None):
-    pet = get_pet(pet_idx,teams)
+def FoodMultiplier(pet_idx, teams, shop, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
     raise Exception()
     return shop
 
 
-def ModifyStats(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
-    target = get_target(pet_idx,teams,te=te)
+def ModifyStats(pet_idx, teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
+    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
     attack_amount = 0
     health_amount = 0
     if "attackAmount" in pet.ability["effect"]:
@@ -425,8 +445,8 @@ def ModifyStats(pet_idx, teams, te=None):
     return target
 
 
-def OneOf(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
+def OneOf(pet_idx, teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
     original_effect = pet.ability["effect"]
     effects = pet.ability["effect"]["effects"]
     chosen_idx = np.random.choice(np.arange(0,len(effects)), size=(1,))[0]
@@ -439,9 +459,9 @@ def OneOf(pet_idx, teams, te=None):
     return target
 
 
-def ReduceHealth(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
-    target = get_target(pet_idx,teams,te=te)
+def ReduceHealth(pet_idx, teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
+    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
     per = pet.ability["effect"]["percentage"]*0.01
     for temp_pet in target:
         if temp_pet.health > 0:
@@ -452,13 +472,13 @@ def ReduceHealth(pet_idx, teams, te=None):
     return target
 
 
-def RefillShops(pet_idx, teams, shop, te=None):
-    pet = get_pet(pet_idx,teams)
+def RefillShops(pet_idx, teams, shop, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
     raise Exception()
     return shop
 
 
-def RepeatAbility(pet_idx,teams, te=None, shop=None):
+def RepeatAbility(pet_idx,teams, fainted_pet=None, te=None, shop=None):
     """ 
     Tiger implementation
     
@@ -467,29 +487,44 @@ def RepeatAbility(pet_idx,teams, te=None, shop=None):
     infront of the tiger. Maybe should be handled on the effect order stage?
     
     """
-    pet = get_pet(pet_idx,teams)
-    target = get_target(pet_idx,teams,te=te)
+    pet = get_pet(pet_idx,teams,fainted_pet)
+    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
     raise Exception()
     return target
 
 
-def SummonPet(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
+def SummonPet(pet_idx, teams, fainted_pet=None, te=None):
+    """
+    te is tiger if calling from tiger or for next alive 
+    """
+    pet = get_pet(pet_idx,teams,fainted_pet)       
     fteam,oteam = get_teams(pet_idx,teams)
+        
     spet_name = pet.ability["effect"]["pet"]
-    
     if pet.ability["effect"]["team"] == "Friendly":
         target_team = fteam
+        if fainted_pet != None:
+            if te == None:
+                ### Added fainted pet back in
+                fteam[pet_idx[1]] = fainted_pet
         ### First move team as far backward as possible
         target_team.move_backward()
         ### Then move all animals forward that are infront of the target pet
-        end_idx = target_team.get_idx(pet)
+        if te == None:
+            end_idx = target_team.get_idx(pet)
+        else:
+            end_idx = target_team.get_idx(te)
         target_team.move_forward(start_idx=0, end_idx=end_idx)
+        if fainted_pet != None:
+            if te == None:
+                ### Remove fainted pet
+                temp_idx = target_team.get_idx(pet)
+                target_team.remove(temp_idx)
     elif pet.ability["effect"]["team"] == "Enemy":
         target_team = oteam
         target_team.move_forward()
     else:
-        raise Exception()
+        raise Exception(pet.ability["effect"]["team"])
     
     n = 1
     if pet.name == "pet-sheep":
@@ -504,7 +539,6 @@ def SummonPet(pet_idx, teams, te=None):
         for iter_idx,temp_slot in enumerate(target_team):
             if temp_slot.empty:
                 empty_idx.append(iter_idx)
-        
         if len(empty_idx) == 0:
             ### Can safely return, cannot summon
             return target
@@ -530,8 +564,11 @@ def SummonPet(pet_idx, teams, te=None):
     return target
 
 
-def SummonRandomPet(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
+def SummonRandomPet(pet_idx, teams, fainted_pet=None, te=None):
+    """
+    te is tiger if calling from tiger or for next alive 
+    """
+    pet = get_pet(pet_idx,teams,fainted_pet)
     fteam,oteam = get_teams(pet_idx,teams)
     tier = pet.ability["effect"]["tier"]
     if fteam.pack == "StandardPack":
@@ -541,7 +578,27 @@ def SummonRandomPet(pet_idx, teams, te=None):
     else:
         raise Exception()
     chosen = np.random.choice(possible, (1,))[0]
+    
+    #### Perform team movement to ensure that the pet is summoned in the 
+    #### correct position
+    if fainted_pet != None:
+        if te == None:
+            ### Added fainted pet back in
+            fteam[pet_idx[1]] = fainted_pet
+    ### First move team as far backward as possible
     fteam.move_backward()
+    ### Then move all animals forward that are infront of the target pet
+    if te == None:
+        end_idx = fteam.get_idx(pet)
+    else:
+        end_idx = fteam.get_idx(te)
+    fteam.move_forward(start_idx=0, end_idx=end_idx)
+    if fainted_pet != None:
+        if te == None:
+            ### Remove fainted pet
+            temp_idx = fteam.get_idx(pet)
+            fteam.remove(temp_idx)
+    
     ### Check for furthest back open position
     empty_idx = []
     for iter_idx,temp_slot in enumerate(fteam):
@@ -549,7 +606,8 @@ def SummonRandomPet(pet_idx, teams, te=None):
             empty_idx.append(iter_idx)
     if len(empty_idx) == 0:
         ### Can safely return, cannot summon
-        return
+        return []
+            
     target_slot_idx = np.max(empty_idx)
     spet = Pet(chosen)
     if "baseAttack" in pet.ability["effect"]:
@@ -566,10 +624,10 @@ def SummonRandomPet(pet_idx, teams, te=None):
     fteam.move_forward()
     return [spet]
 
-def Swallow(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
+def Swallow(pet_idx, teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
     fteam,oteam = get_teams(pet_idx,teams)
-    target = get_target(pet_idx,teams,te=te)
+    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
     output_level = pet.level
     if output_level == 1:
         level_attack = 0
@@ -588,7 +646,17 @@ def Swallow(pet_idx, teams, te=None):
     
     ### Remove target from team and store this pet as the given level as a 
     ### Summon ability
+    faint_target = []
     for temp_target in target:
+        if data["pets"][temp_target.name]["baseAttack"] != "?":
+            base_attack = data["pets"][temp_target.name]["baseAttack"]
+        else:
+            base_attack = temp_target.attack
+        if data["pets"][temp_target.name]["baseHealth"] != "?":
+            base_health = data["pets"][temp_target.name]["baseHealth"]
+        else:
+            base_health = temp_target.health
+            
         summon_dict = {
         "description": "Swallowed and summon level {} {}".format(temp_target.name, 
                                                                  output_level),
@@ -597,29 +665,42 @@ def Swallow(pet_idx, teams, te=None):
         "effect":{
         'kind': 'SummonPet',
         'pet': temp_target.name,
-        'withAttack': data["pets"][temp_target.name]["baseAttack"]+level_attack,
-        'withHealth': data["pets"][temp_target.name]["baseHealth"]+level_health,
+        'withAttack': base_attack+level_attack,
+        'withHealth': base_attack+level_health,
         'withLevel': output_level,
         'team': 'Friendly'}}
         pet.set_ability(summon_dict)
-        fteam.remove(temp_target)
-        break
+        faint_idx = fteam.get_idx(temp_target)
+        temp_target.health = -1
+        
+        #### NO! Fainting should be handled outside this function during the 
+        #### phase_faint
+        # fteam.remove(temp_target)
+        # ### Check temp_target for Faint Trigger
+        # if temp_target.ability["trigger"] == "Faint":
+        #     faint_kind = temp_target.ability["effect"]["kind"]
+        #     faint_func = get_effect_function(faint_kind)
+        #     faint_target = faint_func((pet_idx[0],faint_idx),teams,fainted_pet=temp_target)
+            
+        # break
+    
     fteam.move_forward()
+    # target += faint_target
     
     return target
 
 
-def TransferAbility(pet_idx,teams, te=None):
-    pet = get_pet(pet_idx,teams)
-    target = get_target(pet_idx,teams,te=te)
+def TransferAbility(pet_idx,teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
+    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
     target_from = get_target(pet_idx,teams,get_from=True,te=te)
     pet.set_ability(target_from[0].ability)
     return target
 
 
-def TransferStats(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
-    target = get_target(pet_idx,teams,te=te)
+def TransferStats(pet_idx, teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
+    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
     target_from = get_target(pet_idx,teams,get_from=True,te=te)
     effect = pet.ability["effect"]
     copy_attack = effect["copyAttack"]
@@ -652,21 +733,9 @@ def TransferStats(pet_idx, teams, te=None):
     return target
 
 
-def none(pet_idx, teams, te=None):
-    pet = get_pet(pet_idx,teams)
+def none(pet_idx, teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
     return []
-
-
-def get_teams(pet_idx,teams):
-    if pet_idx[0] == 0:
-        fteam = teams[0]
-        oteam = teams[1]
-    elif pet_idx[0] == 1:
-        fteam = teams[1]
-        oteam = teams[0]
-    else:
-        raise Exception("That's impossible")
-    return fteam,oteam
 
 
 curr = sys.modules[__name__]

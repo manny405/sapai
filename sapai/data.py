@@ -10997,26 +10997,18 @@ data = {
         "triggeredBy": {
           "kind": "Self"
         },
+        ### MODIFIED THIS: It really isn't necessary to run GainAbility. This 
+        ### will work automatically anyways upon leveling up to level 3 using
+        ### my API.
         "effect": {
-          "kind": "AllOf",
-          "effects": [
-            {
-              "kind": "ModifyStats",
-              "target": {
-                "kind": "Self"
-              },
-              "attackAmount": 8,
-              "healthAmount": 8,
-              "untilEndOfBattle": False
+            "kind": "ModifyStats",
+            "target": {
+              "kind": "Self"
             },
-            {
-              "kind": "GainAbility",
-              "target": {
-                "kind": "Self"
-              }
-            }
-          ]
-        }
+            "attackAmount": 8,
+            "healthAmount": 8,
+            "untilEndOfBattle": False
+          }
       },
       "level3Ability": {
         "description": "Before attack: Deal 5 damage to all enemies",

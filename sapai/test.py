@@ -84,13 +84,12 @@ tf.move_forward()
 %run /Users/ibier/Software/sapai/sapai/effects.py
 ### Testing all effects
 t1 = Team([Pet("pet-fish"), Pet("pet-fish")])
-target_idx = 15
+target_idx = 1000
 for iter_idx,temp_pet in enumerate(data["pets"]):
     if iter_idx in [55, 58, 69, 78]:
         #### Squirrel, Cow, Cat, Tiger
         continue
 
-    
     p = Pet(temp_pet)
     p.level = 2
     p.experience = 0
@@ -101,7 +100,7 @@ for iter_idx,temp_pet in enumerate(data["pets"]):
     kind = effect["kind"]
     func = get_effect_function(kind)
     
-    tt0[1].pet.attack += 40
+    # tt0[1].pet.attack += 40
     # tt0[1].pet.health += 10
     # tt0[2].pet.level = 2
     # tt0[3].pet.level = 3
@@ -124,9 +123,58 @@ for iter_idx,temp_pet in enumerate(data["pets"]):
         print(tt1)
         break
     
-    if temp_pet == "pet-dodo":
-        break
+    # if temp_pet == "pet-dodo":
+    #     break
 
+
+#%%
+
+%run /Users/ibier/Software/sapai/sapai/effects.py
+
+### Testing whale swallow effect behind all animals
+t1 = Team([Pet("pet-fish"), Pet("pet-fish")])
+target_idx = 1000
+for iter_idx,temp_pet in enumerate(data["pets"]):
+    if iter_idx in [55, 58, 69, 78]:
+        #### Squirrel, Cow, Cat, Tiger
+        continue
+    
+    if temp_pet != "pet-turtle":
+        continue
+    
+    w = Pet("pet-whale")
+    p = Pet(temp_pet)
+    p.level = 1
+    p.experience = 0
+    tt0 = Team([p.copy(),w.copy()], fight=False)
+    tt1 = t1.copy()
+    
+    if iter_idx == target_idx:
+        print(kind)
+        print(tt0)
+    
+    pet_idx = (0,1)
+    teams = [tt0, tt1]
+    kind = teams[pet_idx[0]][pet_idx[1]].pet.ability["effect"]["kind"]
+    func = get_effect_function(kind)
+    ret = func(pet_idx, teams, te=tt0[0].pet)
+    
+    # if kind == "Swallow":
+    #     effect = tt0[2].pet.ability["effect"]
+    #     kind = effect["kind"]
+    #     func = get_effect_function(kind)
+    #     func((0,2), teams, te=tt0[2].pet)
+        
+    # if iter_idx == target_idx:
+    #     print(tt0)
+    #     print(tt1)
+    #     break
+    
+    # if temp_pet == "pet-dodo":
+    #     break
+    
+    break
+    
 
 # %%
 
@@ -134,31 +182,95 @@ for iter_idx,temp_pet in enumerate(data["pets"]):
 ### Fights
 ################################################################################
 
+
+import os,shutil
+import numpy as np
+if os.path.exists("__pycache__"):
+    shutil.rmtree("__pycache__")
+
+from data import data
+from pets import Pet
+from foods import Food
+from store import Store
+from teams import Team,TeamSlot
+from fight import Fight
+
 %run /Users/ibier/Software/sapai/sapai/fight.py
-### Testing all effects
-t1 = Team([Pet("pet-fish")])
+### Testing variety of fight effects
+f = Pet("pet-fish")
+tiger = Pet("pet-tiger")
+snake = Pet("pet-snake")
+k = Pet("pet-kangaroo")
+m = Pet("pet-mosquito")
+s = Pet("pet-sheep")
+w = Pet("pet-whale")
+spider = Pet("pet-spider")
+r = Pet("pet-rhino")
+e = Pet("pet-elephant")
+d = Pet("pet-dragon")
+d.health += 20
+m.level = 3
+
+honey = Food("honey")
+melon = Food("melon")
+chili = Food("chili")
+spider.eat(melon)
+
+s0 = s.copy()
+s1 = s.copy()
+s1.health += 1
+t1 = Team([s0, d, s1])
 for temp_pet in data["pets"]:
-    if temp_pet != "pet-dodo":
-        continue
+    # if temp_pet != "pet-dodo":
+    #     continue
     
     p = Pet(temp_pet)
-    tiger = Pet("pet-tiger")
-    temp_t0 = Team([p.copy(), p.copy(), tiger])
-    temp_t0[1].pet.attack += 10
-    temp_t0[1].pet.health += 10
-    temp_t0[1].pet.level = 3
-    temp_t1 = Team([x for x in t1])
+    # temp_t0 = Team([m.copy(), p.copy(), tiger.copy(), snake.copy(), k.copy()])
+    # temp_t0 = Team([TeamSlot(), m.copy(), w, spider, tiger])
+    temp_t0 = Team([spider, tiger.copy(), k, tiger.copy()])
+    # temp_t0[1].pet.attack += 10
+    # temp_t0[1].pet.health += 10
+    # temp_t0[1].pet.level = 3
+    temp_t1 = Team([x.copy() for x in t1])
+    temp_t1[0].pet.eat(honey)
     
+    # temp_t0[2].pet.health = 0
+    # temp_t0[3].pet.health = 0
     f = Fight(temp_t0, temp_t1)
-    f.start()
+    print("WINNER: ",f.fight())
+    
     break
 
+#%%
+
+def test():
+    """
+    601 micro seconds per fight
+    """
+    f = Fight(temp_t0, temp_t1)
+    f.fight
+
 # f = Fight(t, t)
+# f.fight_history["start"]["phase_faint"]
+#%%
+
+%run /Users/ibier/Software/sapai/sapai/graph.py
+g = graph_fight(f, "test")
+
+#%%
+
+
 
     
-# %%
+#%%
 
-### Construct all possible pets
+#%%
+
+
+# %%
+# #############################################
+# ### Construct all effect attributes
+# #############################################
 triggers = []
 kind = []
 target = []
@@ -169,6 +281,9 @@ keys = []
 for temp_pet in data["pets"]:
     p = Pet(temp_pet)
     # if "StartOfBattle" == p.ability["trigger"]:
+    if p.ability["trigger"] == "AfterAttack":
+        print(temp_pet)
+    triggers.append(p.ability["trigger"])
     effect = p.ability["effect"]
     kind.append(effect["kind"])
     if "target" in effect:
