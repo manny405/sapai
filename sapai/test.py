@@ -253,33 +253,15 @@ team1 = Team([sheep,tiger])
 f = Fight(team0,team1)
 f.fight()
 
-#%%
-
-from sapai.pets import Pet
-from sapai.teams import Team
-from sapai.fights import Fight
-ant = Pet("ant")
-ox = Pet("ox")
-tiger = Pet("tiger")
-sheep = Pet("sheep")
-team0 = Team([ant,ox,tiger])
-team1 = Team([sheep,tiger])
-
-def timing_test():
-    f = Fight(team0,team1)
-    winner = f.fight()
-
-%timeit timing_test()
-
 
 #%%
 
-def test():
-    """
-    601 micro seconds per fight
-    """
-    f = Fight(temp_t0, temp_t1)
-    f.fight
+# def test():
+#     """
+#     601 micro seconds per fight
+#     """
+#     f = Fight(temp_t0, temp_t1)
+#     f.fight
 
 # f = Fight(t, t)
 # f.fight_history["start"]["phase_faint"]
@@ -302,37 +284,37 @@ g = graph_fight(f, "test")
 # #############################################
 # ### Construct all effect attributes
 # #############################################
-triggers = []
-kind = []
-target = []
-to = []
-amount = []
-pets = {}
-keys = []
-for temp_pet in data["pets"]:
-    p = Pet(temp_pet)
-    # if "StartOfBattle" == p.ability["trigger"]:
-    if p.ability["trigger"] == "AfterAttack":
-        print(temp_pet)
-    triggers.append(p.ability["trigger"])
-    effect = p.ability["effect"]
-    kind.append(effect["kind"])
-    if "target" in effect:
-        keys.append(temp_pet)
-        target.append(effect["target"]["kind"])
-    elif "to" in effect:
-        ### "to" is literally the same as "target". Why call it two different
-        ### things.
-        to.append(effect["to"])
-    if "amount" in effect:
-        amount.append(effect["amount"])
-    else:
-        amount.append(0)
+# triggers = []
+# kind = []
+# target = []
+# to = []
+# amount = []
+# pets = {}
+# keys = []
+# for temp_pet in data["pets"]:
+#     p = Pet(temp_pet)
+#     # if "StartOfBattle" == p.ability["trigger"]:
+#     if p.ability["trigger"] == "AfterAttack":
+#         print(temp_pet)
+#     triggers.append(p.ability["trigger"])
+#     effect = p.ability["effect"]
+#     kind.append(effect["kind"])
+#     if "target" in effect:
+#         keys.append(temp_pet)
+#         target.append(effect["target"]["kind"])
+#     elif "to" in effect:
+#         ### "to" is literally the same as "target". Why call it two different
+#         ### things.
+#         to.append(effect["to"])
+#     if "amount" in effect:
+#         amount.append(effect["amount"])
+#     else:
+#         amount.append(0)
     
-    pets[temp_pet] = p
+#     pets[temp_pet] = p
  
-test_idx = np.where(np.array(target) == "TriggeringEntity")[0]
-test_pets = [keys[x] for x in test_idx]       
+# test_idx = np.where(np.array(target) == "TriggeringEntity")[0]
+# test_pets = [keys[x] for x in test_idx]       
 
 #%%
 

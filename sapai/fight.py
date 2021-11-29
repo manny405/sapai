@@ -785,19 +785,19 @@ def fight_phase_faint(phase,teams,pet_effect_order,phase_dict):
                             break
                 ### Need to check for fainted effect
                 fainted_trigger = temp_slot.pet.ability["trigger"]
-                trigger_by = temp_slot.pet.ability["triggeredBy"]
-                if fainted_trigger == "Faint" and trigger_by == "Self":
-                    kind = temp_slot.pet.ability["effect"]["kind"]
-                    if kind in ["SummonPet", "SummonRandomPet"]:
+                trigger_by = temp_slot.pet.ability["triggeredBy"]["kind"]
+                kind = temp_slot.pet.ability["effect"]["kind"]
+                if fainted_trigger == "Faint" and \
+                    kind in ["SummonPet", "SummonRandomPet"]:
                         ### Will be handled in the phase_summon
                         func_name = "SummonAfterFaint"
                         targets = []
                         ### Store pet in pet_idx for summon phase
                         pet_str = (temp_slot.pet, next_alive)
-                    else:
-                        func = get_effect_function(kind)
-                        func_name = func.__name__
-                        targets = func((team_idx,iter_idx),teams)
+                elif fainted_trigger == "Faint" and trigger_by == "Self":
+                    func = get_effect_function(kind)
+                    func_name = func.__name__
+                    targets = func((team_idx,iter_idx),teams)
                 else:
                     func_name = "None"
                     targets = []
@@ -807,6 +807,34 @@ def fight_phase_faint(phase,teams,pet_effect_order,phase_dict):
                     (team_idx,iter_idx),
                     (pet_str),
                     [str(x) for x in targets]))
+                
+                ### Check if next alive has trigger
+                if next_alive == None:
+                    continue
+                next_trigger = next_alive.ability["trigger"]
+                next_triggered_by = next_alive.ability["triggeredBy"]["kind"]
+                next_kind = next_alive.ability["effect"]["kind"]
+                next_idx = temp_team.get_idx(next_alive)
+                next_str = str(next_alive)
+                print(next_alive, next_trigger, next_triggered_by)
+                if next_trigger == "Faint" and \
+                    next_triggered_by == "FriendAhead":
+                        next_func = get_effect_function(next_kind)
+                        next_func_name = next_func.__name__
+                        next_targets = next_func((team_idx,next_idx),teams)
+                        fainted["t{}".format(team_idx)].append((
+                            next_func.__name__,
+                            (team_idx,next_idx),
+                            (next_str),
+                            [str(x) for x in next_targets]))
+                        
+                        ### Check animal behind for Tiger
+                        friend_ahead_check(
+                            (team_idx,next_idx), 
+                            teams, 
+                            next_func, 
+                            "CastsAbility", 
+                            fainted["t{}".format(team_idx)])
     
     phase_list.append(fainted)
     return phase_dict
