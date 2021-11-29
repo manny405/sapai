@@ -243,6 +243,37 @@ for temp_pet in data["pets"]:
 
 #%%
 
+%run /Users/ibier/Software/sapai/sapai/fight.py
+ant = Pet("ant")
+ox = Pet("ox")
+tiger = Pet("tiger")
+sheep = Pet("sheep")
+team0 = Team([ant,ox,tiger])
+team1 = Team([sheep,tiger])
+f = Fight(team0,team1)
+f.fight()
+
+#%%
+
+from sapai.pets import Pet
+from sapai.teams import Team
+from sapai.fights import Fight
+ant = Pet("ant")
+ox = Pet("ox")
+tiger = Pet("tiger")
+sheep = Pet("sheep")
+team0 = Team([ant,ox,tiger])
+team1 = Team([sheep,tiger])
+
+def timing_test():
+    f = Fight(team0,team1)
+    winner = f.fight()
+
+%timeit timing_test()
+
+
+#%%
+
 def test():
     """
     601 micro seconds per fight

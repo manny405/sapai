@@ -785,7 +785,8 @@ def fight_phase_faint(phase,teams,pet_effect_order,phase_dict):
                             break
                 ### Need to check for fainted effect
                 fainted_trigger = temp_slot.pet.ability["trigger"]
-                if fainted_trigger == "Faint":
+                trigger_by = temp_slot.pet.ability["triggeredBy"]
+                if fainted_trigger == "Faint" and trigger_by == "Self":
                     kind = temp_slot.pet.ability["effect"]["kind"]
                     if kind in ["SummonPet", "SummonRandomPet"]:
                         ### Will be handled in the phase_summon
