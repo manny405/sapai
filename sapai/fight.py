@@ -533,6 +533,16 @@ def get_attack(p0,p1):
     if p1.status == "status-steak-attack":
         attack_list[1] = attack_list[1]+20
         p0.status = "none"
+        
+    
+    ### Finally checking for poison after all other equipment already applied
+    if p0.status == "status-poison-attack":
+        if attack_list[0] > 0:
+            attack_list[0] = p1.health
+    if p1.status == "status-poison-attack":
+        if attack_list[1] > 0:
+            attack_list[1] = p0.health
+    
     return attack_list
         
 

@@ -33,22 +33,25 @@ spider = Pet("pet-spider")
 r = Pet("pet-rhino")
 e = Pet("pet-elephant")
 d = Pet("pet-dragon")
-d.health += 1
+scorp = Pet("pet-scorpion")
+d.health = 50
 
 honey = Food("honey")
 melon = Food("melon")
 chili = Food("chili")
 spider.eat(melon)
+d.eat(melon)
+scorp.attack = 21
 
 # %%
 
 #%%
 
-t0 = Team([b,t.copy(),s])
+t0 = Team([scorp,t.copy(),s])
 # t0[1].pet.eat(chili)
-t1 = Team([s,w,t.copy()])
+t1 = Team([d,s,w])
 # t1[2].pet.eat(melon)
-f = Fight(t0,t1)
+f = Fight(t1,t0)
 print("WINNER", f.fight())
 
 #%%

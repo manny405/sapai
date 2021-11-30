@@ -32,6 +32,8 @@ class Pet():
         self.attack = fd["baseAttack"]
         self.health = fd["baseHealth"]
         self.status = "none"
+        if "status" in self.fd:
+            self.status = self.fd["status"]
         
         self.level = 1
         self.experience = 0
