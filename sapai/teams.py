@@ -1,7 +1,7 @@
 
 #%%
 
-from pets import Pet
+from sapai.pets import Pet
 
 
 class Team():

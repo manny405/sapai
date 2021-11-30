@@ -2,9 +2,9 @@
 import copy
 import numpy as np
 
-from pets import Pet
-from teams import Team
-from effects import get_effect_function,get_pet,get_teams
+from sapai.pets import Pet
+from sapai.teams import Team
+from sapai.effects import get_effect_function,get_pet,get_teams
 
 
 class Fight():
@@ -794,19 +794,32 @@ def fight_phase_faint(phase,teams,pet_effect_order,phase_dict):
                         targets = []
                         ### Store pet in pet_idx for summon phase
                         pet_str = (temp_slot.pet, next_alive)
+                        fainted["t{}".format(team_idx)].append((
+                            func_name,
+                            (team_idx,iter_idx),
+                            (pet_str),
+                            [str(x) for x in targets]))
                 elif fainted_trigger == "Faint" and trigger_by == "Self":
                     func = get_effect_function(kind)
                     func_name = func.__name__
-                    targets = func((team_idx,iter_idx),teams)
+                    targets = func((team_idx,iter_idx),teams, 
+                                   fainted_pet=temp_slot.pet)
+                    fainted["t{}".format(team_idx)].append((
+                        func_name,
+                        (team_idx,iter_idx),
+                        (pet_str),
+                        [str(x) for x in targets]))
+                    ### Check animal behind for Tiger
+                    friend_ahead_check(
+                            (team_idx,iter_idx), 
+                            teams, 
+                            func, 
+                            "CastsAbility", 
+                            fainted["t{}".format(team_idx)],
+                            fainted_pet=temp_slot.pet)
                 else:
                     func_name = "None"
                     targets = []
-                
-                fainted["t{}".format(team_idx)].append((
-                    func_name,
-                    (team_idx,iter_idx),
-                    (pet_str),
-                    [str(x) for x in targets]))
                 
                 ### Check if next alive has trigger
                 if next_alive == None:
@@ -816,7 +829,6 @@ def fight_phase_faint(phase,teams,pet_effect_order,phase_dict):
                 next_kind = next_alive.ability["effect"]["kind"]
                 next_idx = temp_team.get_idx(next_alive)
                 next_str = str(next_alive)
-                print(next_alive, next_trigger, next_triggered_by)
                 if next_trigger == "Faint" and \
                     next_triggered_by == "FriendAhead":
                         next_func = get_effect_function(next_kind)
@@ -919,16 +931,23 @@ def friend_ahead_check(pet_idx,teams,effect_func,trigger,phase_list,
             ### Hard-code tiger...
             ### Check for ability override which may have occured, for example
             ###   for a whale
+            original_override = False
             if p.override_ability:
+                original_override = True
                 ### Reset override_ability
                 p.override_ability = False
             
-            targets = effect_func(pet_idx,teams)
+            targets = effect_func(pet_idx,teams,fainted_pet=fainted_pet)
             phase_list.append((
                 effect_func.__name__,
                 pet_idx,
                 (str(next_pet)),
                 [str(x) for x in targets]))
+            
+            if original_override:
+                ### Reset override if no targets found
+                if len(targets) == 0:
+                    p.override_ability = True
         else:
             next_func = get_effect_function(next_kind)
             pet_str = str(next_pet)

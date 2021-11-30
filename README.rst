@@ -83,27 +83,27 @@ Creating a Team
     >>> print(team0)
     0: < Slot pet-ant 2-1 none > 
       1: < Slot pet-ox 1-4 none > 
-      2: < Slot EMPTY > 
+      2: < Slot pet-tiger 4-3 none > 
       3: < Slot EMPTY > 
       4: < Slot EMPTY > 
    >>> print(team1)
    0: < Slot pet-sheep 2-2 none > 
-     1: < Slot EMPTY > 
+     1: < Slot pet-tiger 4-3 none > 
      2: < Slot EMPTY > 
      3: < Slot EMPTY > 
      4: < Slot EMPTY >
    >>> team0.move(1,4)
    >>> print(team0)
    0: < Slot pet-ant 2-1 none > 
-     1: < Slot EMPTY > 
+     1: < Slot pet-ox 1-4 none > 
      2: < Slot EMPTY > 
      3: < Slot EMPTY > 
-     4: < Slot pet-ox 1-4 none > 
+     4: < Slot pet-tiger 4-3 none > 
    >>> team0.move_forward()
    >>> print(team0)
    0: < Slot pet-ant 2-1 none > 
      1: < Slot pet-ox 1-4 none > 
-     2: < Slot EMPTY > 
+     2: < Slot pet-tiger 4-3 none > 
      3: < Slot EMPTY > 
      4: < Slot EMPTY >
     
@@ -114,7 +114,7 @@ Fights
 .. code-block:: python
     
     ### Using the teams created in the last section
-    >>> from sapai.fights import Fight
+    >>> from sapai.fight import Fight
     >>> fight = Fight(team0,team1)
     >>> winner = fight.fight()
     >>> print(winner)
@@ -135,8 +135,8 @@ The implementation of fights is efficient. Using IPython magic, this can be test
       ox = Pet("ox")
       tiger = Pet("tiger")
       sheep = Pet("sheep")
-      team0 = Team([ant,ox,tiger])
-      team1 = Team([sheep,tiger])
+      team0 = Team([ant,ox,tiger.copy()])
+      team1 = Team([sheep,tiger.copy()])
       
       def timing_test():
           f = Fight(team0,team1)
@@ -155,7 +155,7 @@ All fight history is stored for every phase, effect, and attack that occured dur
 
 
 .. figure:: doc/static/fight_graph_full.png
-    :height: 1477
+    :height: 1077
     :width: 404
     :align: center
 

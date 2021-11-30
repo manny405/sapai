@@ -3,9 +3,9 @@
 #%%
 
 import numpy as np
-from data import data
-from foods import Food
-from pets import Pet
+from sapai.data import data
+from sapai.foods import Food
+from sapai.pets import Pet
 
 #%%
 

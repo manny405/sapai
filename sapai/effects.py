@@ -2,10 +2,10 @@
 import sys,inspect
 import numpy as np
 
-from data import data
-from pets import Pet
-from teams import Team,TeamSlot
-from store import pet_tier_lookup,pet_tier_lookup_std
+from sapai.data import data
+from sapai.pets import Pet
+from sapai.teams import Team,TeamSlot
+from sapai.store import pet_tier_lookup,pet_tier_lookup_std
 
 """
 This module implements all effects in the game. API description is as follows:
@@ -119,15 +119,28 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
     if kind == "AdjacentAnimals":
         lookup_pet_idx = -1
         lookup = {}
-        for iter_idx,temp_idx in enumerate(fidx):
-            if temp_idx == pet_idx[1]:
+        iter_idx = 0
+        ### First add opponent indices backward 
+        for temp_idx in oidx[::-1]:
+            lookup[iter_idx] = {"oidx": temp_idx}
+            iter_idx += 1
+        ### Then add friendly indices
+        for temp_idx in fidx:
+            if temp_idx > pet_idx[1]:
+                if lookup_pet_idx < 0:
+                    ### Handle case that pet has fainted already
+                    lookup_pet_idx = iter_idx
+                    lookup[iter_idx] = {"fidx": pet_idx[1]}
+                    iter_idx += 1
+                    lookup[iter_idx] = {"fidx": temp_idx}
+                    iter_idx += 1
+                    continue
+            elif temp_idx == pet_idx[1]:
                 lookup_pet_idx = temp_idx
             lookup[iter_idx] = {"fidx": temp_idx}
+            iter_idx += 1
         if lookup_pet_idx < 0:
             raise Exception("Not possible")
-        start_idx = len(lookup)
-        for iter_idx,temp_idx in enumerate(oidx):
-            lookup[start_idx+iter_idx] = {"oidx": temp_idx}
         ret_pets = []
         if lookup_pet_idx+1 in lookup:
             if "fidx" in lookup[lookup_pet_idx+1]:
@@ -628,6 +641,8 @@ def Swallow(pet_idx, teams, fainted_pet=None, te=None):
     pet = get_pet(pet_idx,teams,fainted_pet)
     fteam,oteam = get_teams(pet_idx,teams)
     target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
+    if len(target) == 0:
+        return target
     output_level = pet.level
     if output_level == 1:
         level_attack = 0

@@ -1,7 +1,7 @@
 
 
 #%%
-from data import data
+from sapai.data import data
 
 
 #%%
