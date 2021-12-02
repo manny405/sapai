@@ -147,7 +147,10 @@ The implementation of fights is efficient. Using IPython magic, this can be test
       ###   1.75 ms ± 145 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
       ###   More than 500 fights per second on a single core
       
-      
+^^^^^^^^^^^
+Fight Graph
+^^^^^^^^^^^
+
 All fight history is stored for every phase, effect, and attack that occured during the fight. This fight history can be graphed and visualized. The full graph for the fight is shown below. 
 
   >>> from sapai.graph import graph_fight
