@@ -21,6 +21,9 @@ class Fight():
     
     Any effect which is in the queue for a given turn is executed, even if the 
     animal dies due to preceeding effect, as the game entails.
+
+
+    PLANS TO CHANGE FIGHT TO BATTLE. I guess Battle is a more correction name.
     
     """
     def __init__(self, t0, t1):
