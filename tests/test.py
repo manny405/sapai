@@ -17,13 +17,13 @@ from sapai.graph import graph_fight
 
 #%%
 
-
 ### Testing variety of fight effects
 
 a = Pet("pet-ant")
 b = Pet("pet-badger")
 f = Pet("pet-fish")
 t = Pet("pet-tiger")
+h = Pet("horse")
 snake = Pet("pet-snake")
 k = Pet("pet-kangaroo")
 m = Pet("pet-mosquito")
@@ -47,7 +47,10 @@ scorp.attack = 21
 
 #%%
 
-t0 = Team([scorp,t.copy(),s])
+%run /Users/ibier/Software/sapai/sapai/fight.py
+
+s.level = 2
+t0 = Team([scorp,s,t.copy()])
 # t0[1].pet.eat(chili)
 t1 = Team([d,s,w])
 # t1[2].pet.eat(melon)
