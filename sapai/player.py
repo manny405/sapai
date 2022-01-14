@@ -15,7 +15,11 @@ class Player():
     
     """
     def __init__(self, shop=None, team=None, lives=10, default_gold=10):
-        raise Exception()
+        self.shop = shop
+        self.team = team
+        self.lives = lives
+        self.default_gold = default_gold
+        self.gold = default_gold
     
     
     def buy(self, pet):

@@ -103,6 +103,7 @@ class Store():
         self.cpets = []                 ### Current pets in shop
         self.cfood = []                 ### Current foods in shop
         self.can = 0                    ### Keep track of can stats
+        self.freeze_idx = []
         
         if pack == "StandardPack":
             self.turn_prob_pets = turn_prob_pets_std
@@ -140,7 +141,6 @@ class Store():
         
         return self.cpets+self.cfoods
     
-
     
     def freeze(self, idx):
         """
@@ -149,6 +149,14 @@ class Store():
         """
         raise Exception()
     
+    
+    def unfreezen(self, idx):
+        """
+        Unfreeze shop index
+        
+        """
+        raise Exception()
+        
     
     def levelup(self):
         """ 
@@ -210,7 +218,32 @@ class Store():
         
         return self.roll()
     
+
+def StoreSlot():
+    """
+    Class for a slot in the store
     
+    """
+    def __init__(self, turn=0, pack="StandardPack"):
+        self.turn = turn
+        self.pack = pack
+        self.frozen = False
+        self.pet = Pet()
+    
+    def freeze(self):
+        """
+        Freeze current slot such that store rolls don't update the StoreSlot
+        """
+        self.frozen = True
+    
+    
+    def unfreeze(self):
+        self.frozen = False
+    
+    def roll(self):
+        if self.frozen:
+            return
+        
     
         
 # %%
