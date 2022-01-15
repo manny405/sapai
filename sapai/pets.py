@@ -103,7 +103,18 @@ class Pet():
         else:
             raise Exception("Invalid level found")
         return level_up
+    
+    
+    def shop_trigger(self, shop, trigger):
+        """
+        Apply pet's shop ability to the given shop. 
+        """
+        if trigger not in ["roll"]:
+            raise Exception("Unrecognized shop ability trigger {}"
+                            .format(trigger))
         
+        raise Exception()
+    
         
     def __repr__(self):
         return "< {} {}-{} {} >".format(

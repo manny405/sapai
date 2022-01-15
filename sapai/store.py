@@ -6,6 +6,7 @@ import numpy as np
 from sapai.data import data
 from sapai.foods import Food
 from sapai.pets import Pet
+from sapai.foods import Food
 
 #%%
 
@@ -89,19 +90,16 @@ for key,value in data["foods"].items():
 #%%
 
 class Store():
-    def __init__(self, turn=0, pack="StandardPack"):
+    def __init__(self, turn=1, pack="StandardPack"):
         self.turn = turn
         self.tier_avail = 0
         self.leveup_tier = 0
-        self.avail_pets = []
-        self.avail_foods = []
+        self.store_slots = []
         self.pp = []                    ### Probability of pet 
         self.fp = []                    ### Probability of food
         self.fslots = 0
         self.pslots = 0
         self.max_slots = 7
-        self.cpets = []                 ### Current pets in shop
-        self.cfood = []                 ### Current foods in shop
         self.can = 0                    ### Keep track of can stats
         self.freeze_idx = []
         
@@ -114,48 +112,54 @@ class Store():
         else:
             raise Exception("Pack {} not valid".format(pack))
         
+        self.update_shop_rules()
+        
     
-    def roll(self, team=None):
+    def __repr__(self):
+        repr_str = ""
+        for iter_idx,slot in enumerate(self.store_slots):
+            repr_str += "{}: {} \n    ".format(iter_idx, slot)
+        return repr_str
+        
+    
+    def roll(self, team=[]):
         """ Randomizes shop and returns list of available entries """
+        self.check_rules()
         
-        if len(self.avail_pets) > 0:
-            pets = np.random.choice(self.avail_pets, 
-                                    size=(self.pslots),
-                                    replace=True, 
-                                    p=self.pp)
-        else:
-            pets = []
+        for slot in self.store_slots:
+            slot.roll()    
+            ### Add health and attack from previously purchased cans
+            if slot.frozen == False:
+                if slot.slot_type == "pet":
+                    slot.item.attack += self.can
+                    slot.item.health += self.can
         
-        if len(self.avail_foods) > 0:
-            foods = np.random.choice(self.avail_foods, 
-                                    size=(self.fslots),
-                                    replace=True, 
-                                    p=self.fp)
-        else:
-            foods = []
-        
-        ### What should be done here is that instances of pet and food classes
-        ### should be initialized here 
-        self.cpets = [Pet(x, self) for x in pets]
-        self.cfoods = [Food(x, self, team) for x in foods]
-        
-        return self.cpets+self.cfoods
-    
+        for team_slot in team:
+            team_slot._pet.shop_ability(shop=self,trigger="roll")
+
     
     def freeze(self, idx):
         """
         Freeze a shop index 
         
         """
-        raise Exception()
+        if idx >= len(self.store_slots):
+            ### Just do nothing if attempting to freeze outside the range of 
+            ###   the current shop
+            return
+        self.store_slots[idx].freeze()
     
     
-    def unfreezen(self, idx):
+    def unfreeze(self, idx):
         """
         Unfreeze shop index
         
         """
-        raise Exception()
+        if idx > len(self.store_slots):
+            ### Just do nothing if attempting to unfreeze outside the range of 
+            ###   the current shop
+            return
+        self.store_slots[idx].unfreeze()
         
     
     def levelup(self):
@@ -164,8 +168,9 @@ class Store():
         with a new pet
         
         """
-        raise Exception("Not implemented")
-
+        new_slot = StoreSlot("levelup")
+        self.append(new_slot)
+        
     
     def update_shop_rules(self, turn=-1):
         if turn < 0:
@@ -175,39 +180,40 @@ class Store():
         if turn > 11:
             turn = 11
             
-        td = data["turns"]["turn-{}".format(turn)]
-        self.fslots = td["foodShopSlots"]
-        self.pslots = td["animalShopSlots"]
-        self.tier_avail = td["tiersAvailable"]
-        self.levelup_tier = td["levelUpTier"]
-        temp_avail_pets = pet_tier_avail_lookup[self.tier_avail]
-        temp_avail_foods = food_tier_avail_lookup[self.tier_avail]
+        rules = get_shop_rules(turn)
+        self.pslots = rules[0]
+        self.fslots = rules[1]
+        self.tier_avail = rules[2]
+        self.levelup_tier = rules[3]
+        self.avail_pets = rules[4]
+        self.avail_foods = rules[5]
+        self.pp = rules[6]
+        self.fp = rules[7]
         
-        temp_prob_pets = self.turn_prob_pets[turn]
-        self.pp = []
-        self.avail_pets = []
-        for temp_pet in temp_avail_pets:
-            if temp_pet not in temp_prob_pets:
-                continue
-            self.pp.append(temp_prob_pets[temp_pet])
-            self.avail_pets.append(temp_pet)
-        
-        temp_prob_foods = self.turn_prob_foods[turn]
-        self.fp = []
-        self.avail_foods = []
-        for temp_food in temp_avail_foods:
-            if temp_food not in temp_prob_foods:
-                continue
-            self.fp.append(temp_prob_foods[temp_food])
-            self.avail_foods.append(temp_food)
+        ### Setup the store slots
+        new_store_slots_pet = []
+        new_store_slots_food = []
+        for slot in self.store_slots:
+            if slot.slot_type == "pet":
+                new_store_slots_pet.append(slot)
+            elif slot.slot_type == "food":
+                new_store_slots_food.append(slot)
+            else:
+                raise Exception()
             
-        ### Ensure that the probabilities sum to 1...
-        self.pp = np.array(self.pp) 
-        self.pp = self.pp / np.sum(self.pp)
+        add_pets = self.pslots - len(new_store_slots_pet)
+        for i in range(add_pets):
+            new_store_slots_pet.append(StoreSlot("pet"))
         
-        self.fp = np.array(self.fp) 
-        self.fp = self.fp / np.sum(self.fp)
+        add_foods = self.fslots - len(new_store_slots_food)
+        for i in range(add_foods):
+            new_store_slots_food.append(StoreSlot("food"))
         
+        self.store_slots = new_store_slots_pet+new_store_slots_food
+        
+        ### Roll all slots upon update of rules
+        self.roll()
+    
     
     def next_turn(self):
         ### Update turn counter
@@ -218,17 +224,147 @@ class Store():
         
         return self.roll()
     
+    
+    def check_rules(self):
+        """
+        Used to ensure that rules of the current shop are satisfied before
+        beforming a roll. This is because slots may be added when an animal 
+        on the team levels-up.
+        """
+        keep_idx = []
+        pslots = []
+        fslots = []
+        
+        ### Look for frozen slots first
+        for iter_idx,slot in enumerate(self.store_slots):
+            if slot.frozen == True:
+                keep_idx.append(iter_idx)
+                if slot.slot_type == "pet":
+                    pslots.append(iter_idx)
+                elif slot.slot_type == "levelup":
+                    pslots.append(iter_idx)
+                elif slot.slot_type == "food":
+                    fslots.append(iter_idx)
+        
+        ### Then add other slots only if it has not yet exceeded the rules
+        for iter_idx,slot in enumerate(self.store_slots):
+            if slot.slot_type == "pet":
+                if len(pslots) < self.pslots:
+                    keep_idx.append(iter_idx)
+                    pslots.append(iter_idx)
+            if slot.slot_type == "food":
+                if len(fslots) < self.fslots:
+                    keep_idx.append(iter_idx)
+                    fslots.append(iter_idx)
+        
+        keep_slots = [self.store_slots[x] for x in keep_idx]
+        self.store_slots = keep_slots
 
-def StoreSlot():
+
+    def __len__(self):
+        return len(self.store_slots)
+    
+    
+    def __getitem__(self, idx):
+        return self.store_slots[idx]
+    
+    
+    def __setitem__(self, idx, obj):
+        """
+        __setitem__ should never be used
+        
+        """
+        raise Exception("Cannot set item in store directly")
+
+    
+    def append(self, obj):
+        """
+        Append should be used when adding an animal from a levelup
+        """
+        if len(self.store_slots) >= self.max_slots:
+            ### Max slots already reached so cannot be added
+            return
+        
+        add_slot = StoreSlot(obj)
+        pslots = []
+        fslots = []
+        for iter_idx,slot in enumerate(self.store_slots):
+            if slot.slot_type == "pet":
+                pslots.append(slot)
+            if slot.slot_type == "food":
+                fslots.append(slot)
+        
+        new_slots = []
+        new_slots += [x for x in pslots]
+        new_slots += [add_slot]
+        new_slots += [x for x in fslots]
+        
+        self.store_slots = new_slots
+    
+
+class StoreSlot():
     """
     Class for a slot in the store
     
     """
-    def __init__(self, turn=0, pack="StandardPack"):
+    def __init__(self, obj=None, slot_type="pet", turn=1, pack="StandardPack"):
+        self.slot_type = slot_type
         self.turn = turn
         self.pack = pack
         self.frozen = False
-        self.pet = Pet()
+        self.cost = 3
+        
+        if slot_type not in ["pet", "food", "levelup"]:
+            raise Exception("Unrecognized slot type {}".format(self.slot_type))
+        
+        if type(obj) != None and type(obj) != str:
+            if type(obj).__name__ == "Pet":
+                self.slot_type = "pet"
+                self.item = obj
+            elif type(obj).__name__ == "Food":
+                self.slot_type = "food"
+                self.item = obj
+            elif type(obj).__name__ == "StoreSlot":
+                self.slot_type = obj.slot_type
+                self.turn = obj.turn
+                self.pack = obj.pack
+                self.frozen = obj.frozen
+                self.cost = obj.cost
+                self.item = obj.item.copy()
+        else:
+            if type(obj) == str:
+                self.slot_type = obj
+            if self.slot_type == "pet":
+                self.item = Pet()
+            elif self.slot_type == "food":
+                self.item = Food()
+            elif self.slot_type == "levelup":
+                self.roll_levelup()
+            
+    
+    def __repr__(self):
+        if self.frozen:
+            fstr = "frozen"
+        else:
+            fstr = "not-frozen"
+        if self.slot_type == "pet":
+            if self.item.name == "pet-none":
+                return "< StoreSlot-{} {} EMPTY >".format(
+                    self.slot_type, fstr)
+            else:
+                pet_repr = str(self.item)
+                pet_repr = pet_repr[2:-2]
+                return "< StoreSlot-{} {} {} >".format(
+                    self.slot_type, fstr, pet_repr)
+        else:
+            if self.item.name == "food-none":
+                return "< StoreSlot-{} {} EMPTY >".format(
+                    self.slot_type, fstr)
+            else:
+                food_repr = str(self.item)
+                food_repr = food_repr[2:-2]
+                return "< StoreSlot-{} {} {} >".format(
+                    self.slot_type, fstr, food_repr)
     
     def freeze(self):
         """
@@ -240,12 +376,104 @@ def StoreSlot():
     def unfreeze(self):
         self.frozen = False
     
-    def roll(self):
+    
+    def roll(self, avail=[], prob=[]):
         if self.frozen:
             return
+        if self.slot_type == "levelup":
+            ### If roll is called on a levelup slot, then it should change to 
+            ###   a typical pet slot type. Deletion of levelup slots is handled
+            ###   by the Store.check_rules method when appropriate. 
+            self.slot_type = "pet"
+        
+        if len(avail) == 0:
+            rules = get_shop_rules(self.turn)
+            if self.slot_type == "pet":
+                avail = rules[4]
+                prob = rules[6]
+            elif self.slot_type == "food":
+                avail = rules[5]
+                prob = rules[7]
+            else:
+                raise Exception()
+            
+        choice = np.random.choice(avail, 
+                                    size=(1,),
+                                    replace=True, 
+                                    p=prob)[0]
+        
+        if self.slot_type == "pet":
+            self.item = Pet(choice)
+        elif self.slot_type == "food":
+            self.item = Food(choice)
+        else:
+            raise Exception()
         
     
+    def roll_levelup(self):
+        rules = get_shop_rules(self.turn)
+        levelup_tier = rules[3]
+        if self.pack == "StandardPack":
+            avail_pets = pet_tier_lookup_std[levelup_tier]
+        else:
+            avail_pets = pet_tier_lookup[levelup_tier]
+        pet_choice = np.random.choice(avail_pets, 
+                                        size=(1,),
+                                        replace=True)[0]
+        self.item = Pet(pet_choice)
         
-# %%
+
+def get_shop_rules(turn, pack="StandardPack"):
+    if pack == "StandardPack":
+        turn_prob_pets = turn_prob_pets_std
+        turn_prob_foods = turn_prob_foods_std
+    elif pack == "ExpansionPack1":
+        turn_prob_pets = turn_prob_pets_exp
+        turn_prob_foods = turn_prob_foods_exp
+    else:
+        raise Exception("Pack {} not valid".format(pack))
+    
+    if turn <= 0:
+        raise Exception("Input turn must be greater than 0")
+    
+    ### Turn 11 is max stored info
+    if turn > 11:
+        turn = 11
+        
+    td = data["turns"]["turn-{}".format(turn)]
+    fslots = td["foodShopSlots"]
+    pslots = td["animalShopSlots"]
+    tier_avail = td["tiersAvailable"]
+    levelup_tier = td["levelUpTier"]
+    temp_avail_pets = pet_tier_avail_lookup[tier_avail]
+    temp_avail_foods = food_tier_avail_lookup[tier_avail]
+    
+    temp_prob_pets = turn_prob_pets[turn]
+    pp = []
+    avail_pets = []
+    for temp_pet in temp_avail_pets:
+        if temp_pet not in temp_prob_pets:
+            continue
+        pp.append(temp_prob_pets[temp_pet])
+        avail_pets.append(temp_pet)
+    
+    temp_prob_foods = turn_prob_foods[turn]
+    fp = []
+    avail_foods = []
+    for temp_food in temp_avail_foods:
+        if temp_food not in temp_prob_foods:
+            continue
+        fp.append(temp_prob_foods[temp_food])
+        avail_foods.append(temp_food)
+        
+    ### Ensure that the probabilities sum to 1...
+    pp = np.array(pp) 
+    pp = pp / np.sum(pp)
+    
+    fp = np.array(fp) 
+    fp = fp / np.sum(fp)
+    
+    return pslots,fslots,tier_avail,levelup_tier,avail_pets,avail_foods,pp,fp
+
 
 # %%
