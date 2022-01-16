@@ -105,14 +105,85 @@ class Pet():
         return level_up
     
     
-    def shop_trigger(self, shop, trigger):
+    def sot_trigger(self, team, shop, trigger=None):
         """
-        Apply pet's shop ability to the given shop. 
-        """
-        if trigger not in ["roll"]:
-            raise Exception("Unrecognized shop ability trigger {}"
-                            .format(trigger))
+        Apply pet's start of turn ability
         
+        Pets: 
+            - 
+        """
+    
+    
+    def roll_trigger(self, team, shop, trigger=None):
+        """
+        Apply pet's shop ability to the given shop when shop is rolled
+        
+        Pets: 
+            - Cat
+            - 
+        """
+        raise Exception()
+    
+    
+    
+    def sell_trigger(self, team, shop, trigger=None):
+        """
+        Apply pet's sell ability when a friend (or self) is self
+        
+        Pets: 
+            ["beaver", "duck", "pig", ]
+        """
+        raise Exception()
+    
+    
+    
+    def buy_food_trigger(self, team, shop, trigger=None):
+        """
+        Apply pet's ability when food is bought
+        
+        Pets: 
+            ["beetle", "ladybug", ]
+        
+        """
+        raise Exception()
+    
+    
+    def buy_friend_trigger(self, team, shop, trigger=None):
+        """
+        Apply pet's ability when a friend (or self) is bought
+        
+        Pets: 
+            ["horse", "otter", "crab", ]
+        """
+        raise Exception()
+    
+    
+    def levelup_trigger(self, team, shop, trigger=None):
+        """
+        Apply pet's ability when a friend (or self) level-up
+
+        Pets: 
+            ["fish", ]
+        """
+    
+    
+    def eot_trigger(self, team, shop):
+        """
+        Apply pet's end-of-turn ability
+        
+        Pets: 
+            ["bluebird", ]
+        """
+        raise Exception()
+    
+    
+    def faint_trigger(self, team, shop):
+        """
+        Apply pet's faint trigger
+        
+        Pets:
+            ["ant", "cricket", ]
+        """
         raise Exception()
     
         
