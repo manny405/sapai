@@ -1,13 +1,15 @@
 
 
 #%%
-from sapai.data import data
 
+from sapai.data import data
+from sapai.effects import get_effect_function
+from sapai.tiers import pet_tier_lookup,pet_tier_lookup_std
 
 #%%
 
 class Pet():
-    def __init__(self, name="pet-none", shop=None):
+    def __init__(self, name="pet-none", shop=None, team=None, player=None):
         """
         Food class definition the types of interactions that food undergoes
         
@@ -18,6 +20,11 @@ class Pet():
             
         self.eaten = False
         self.shop = shop
+        self.team = team
+        self.player = player
+        
+        ### Used only for goat
+        self.ability_counter = 0
             
         self.name = name
         if name not in data["pets"]:
@@ -38,11 +45,15 @@ class Pet():
         self.level = 1
         self.experience = 0
         
-        if shop != None:
-            can = shop.can
+        #### Add pet to team if not already present
+        if self.team != None:
             if self.attack != "none":
-                self.attack += can
-                self.health += can
+                if self not in team:
+                    team.append(self)
+
+            if self.team.shop == None:
+                if self.shop != None:
+                    self.team.shop = self.shop
                 
     
     @property
@@ -103,11 +114,309 @@ class Pet():
         else:
             raise Exception("Invalid level found")
         return level_up
+    
+    
+    def sot_trigger(self, trigger=None):
+        """
+        Apply pet's start of turn ability
         
+        Pets: 
+            ["dromedary", "swan", "caterpillar", "squirrel"]
+        """
+        ### Reset ability_counter for goat at sot_trigger
+        self.ability_counter = 0
+        
+        activated = False
+        if self.ability["trigger"] != "StartOfTurn":
+            return activated
+        
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        func([0,pet_idx], [self.team])
+        
+        activated = True 
+        return activated
+    
+    
+    def roll_trigger(self, trigger=None):
+        """
+        Apply pet's shop ability to the given shop when shop is rolled
+        
+        Pets: 
+            ["cat"]
+        """
+        activated = False
+        ### Hard coded because for some reason the cat trigger is hurt but it 
+        ###   should be roll
+        if self.name not in ["pet-cat"]:
+            return activated
+
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        func([0,pet_idx], [self.team])
+        
+        activated = True 
+        return activated
+    
+    
+    def sell_trigger(self, trigger=None):
+        """
+        Apply pet's sell ability when a friend (or self) is self
+        
+        Pets: 
+            ["beaver", "duck", "pig", "shrimp", "owl"]
+        """
+        activated = False
+        if self.ability["trigger"] != "Sell":
+            return activated
+        
+        if type(trigger).__name__ != "Pet":
+            raise Exception("Sell must be triggered by a Pet")
+        
+        ### Check if self has been sold is important
+        if self.ability["triggeredBy"]["kind"] == "Self":
+            if trigger != self:
+                return activated
+        
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        func([0,pet_idx], [self.team])
+        
+        activated = True 
+        return activated
+    
+    
+    
+    def buy_food_trigger(self, trigger=None):
+        """
+        Apply pet's ability when food is bought
+        
+        Pets: 
+            ["beetle", "ladybug", "tabby-cat", "rabbit", "worm", "seal", 
+             "sauropod"]
+        
+        """
+        activated = False
+        if self.ability["trigger"] not in ["EatsShopFood", "BuyFood"]:
+            return activated
+        
+        if type(trigger).__name__ != "Pet":
+            raise Exception("Buy food must input food target as triggered")
+        
+        ### Check if food has been bought for self is important
+        if self.ability["trigger"] == "EatsShopFood":
+            if trigger != self:
+                return activated
+
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        func([0,pet_idx], [self.team], te=trigger)
+        
+        activated = True 
+        return activated
+    
+    
+    def buy_friend_trigger(self, trigger=None):
+        """
+        Apply pet's ability when a friend (or self) is bought
+        
+        Pets: 
+            ["otter", "crab", "snail", "buffalo", "chicken", "cow", 
+             "goat", "dragon", ]
+        """
+        activated = False
+        if self.ability["trigger"] not in ["Buy", "BuyAfterLoss", "BuyTier1Animal"]:
+            return activated
+        
+        if type(trigger).__name__ != "Pet":
+            raise Exception("Buy food must input food target as triggered")
+        
+        ### Behavior for bought self and friend
+        if self.ability["trigger"] == "Buy":
+            if self.ability["triggeredBy"]["kind"] == "Self":
+                if trigger != self:
+                    return activated
+            elif self.ability["triggeredBy"]["kind"] == "Player":
+                ### Behavior for kind=self and kind=player is actually the 
+                ###   same and any distinction is unnecessary
+                if trigger != self:
+                    return activated
+            elif self.ability["triggeredBy"]["kind"] == "EachFriend":
+                ### If trigger is EachFriend, then the trigger cannot actually
+                ###   be self
+                if trigger == self:
+                    return activated
+            else:
+                raise Exception("Ability unrecognized for {}".format(self))
+        
+        ### Behavior for BuyTier1Animal
+        if self.ability["trigger"] == "BuyTier1Animal":
+            if trigger.name not in pet_tier_lookup[1]:
+                return activated
+        
+        ### Behavior for BuyAfterLoss
+        if self.ability["trigger"] == "BuyAfterLoss":
+            if self.player == None:
+                return activated
+            if self.player.lf_winner != False:
+                return activated
+            
+        ### Specific check for goat
+        if "maxTriggers" in self.ability:
+            if self.ability_counter >= self.ability["maxTriggers"]:
+                return activated
+            else:
+                self.ability_counter += 1
+        
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        func([0,pet_idx], [self.team], te=trigger)
+        
+        activated = True 
+        return activated
+    
+    
+    def friend_summoned_trigger(self, trigger=None):
+        """
+        Apply pet's ability when a friend (or self) is summoned
+        
+        Pets: 
+            ["horse", "dog", "lobster", "turkey"]
+        """
+        activated = False
+        if self.ability["trigger"] != "Summoned":
+            return activated
+        
+        if type(trigger).__name__ != "Pet":
+            raise Exception("Trigger must be a Pet")
+        
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        func([0,pet_idx], [self.team], te=trigger)
+        
+        activated = True
+        return activated
+        
+    
+    
+    def levelup_trigger(self, trigger=None):
+        """
+        Apply pet's ability when a friend (or self) level-up
+
+        Pets: 
+            ["fish", "octopus"]
+        """
+        activated = False
+        if self.ability["trigger"] != "LevelUp":
+            return activated
+        
+        if type(trigger).__name__ != "Pet":
+            raise Exception("Trigger must be a Pet")
+        
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        func([0,pet_idx], [self.team], te=trigger)
+        
+        activated = True
+        return activated
+        
+    
+    def eot_trigger(self, trigger=None):
+        """
+        Apply pet's end-of-turn ability
+        
+        Pets: 
+            ["bluebird", "hatching-chick", "giraffe", "puppy", "tropical-fish", 
+             "bison", "llama", "penguin", "parrot", "monkey", "poodle", 
+             "tyrannosaurus"]
+        """
+        activated = False
+        if not self.ability["trigger"].startswith("EndOfTurn"):
+            return activated
+        
+        if type(trigger).__name__ != "Pet":
+            raise Exception("Trigger must be a Pet")
+        
+        ### Check gold for puppy and tyrannosaurus
+        if self.ability["trigger"] == "EndOfTurnWith3PlusGold":
+            if self.player != None:
+                if self.player.gold >= 3:
+                    pass
+                else:
+                    return activated
+            else:
+                return activated
+        ### Check for bison
+        elif self.ability["trigger"] == "EndOfTurnWithLvl3Friend":
+            if self.team != None:
+                if not self.team.check_lvl3():
+                    return activated
+            else:
+                return activated
+        ### Check for llama
+        elif self.ability["trigger"] == "EndOfTurnWith4OrLessAnimals":
+            if self.team != None:
+                if len(self.team) > 4:
+                    return activated
+            else:
+                return activated
+        else:
+            if self.ability["trigger"] != "EndOfTurn":
+                raise Exception("Unrecognized trigger {}"
+                                .format(self.ability["trigger"]))
+        
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        func([0,pet_idx], [self.team], te=trigger)
+        
+        activated = True
+        return activated
+    
+    
+    def faint_trigger(self, trigger=None):
+        """
+        Apply pet's ability associated with a friend (or self) fainting
+        
+        Pets:
+            ["ant", "cricket", "flamingo", "hedgehog", "spider", "badger", 
+             "ox", "sheep", "turtle", "deer", "rooster", "microbe", 
+             "eagle", "shark", "fly", "mammoth"]
+        """
+        activated = False
+        if self.ability["trigger"] != "Faint":
+            return activated
+        
+        if type(trigger).__name__ != "Pet":
+            raise Exception("Trigger must be a Pet")
+
+        if self.ability["triggeredBy"]["kind"] == "Self":
+            if trigger != self:
+                return activated
+        elif self.ability["triggeredBy"]["kind"] == "FriendAhead":
+            pet_ahead = self.team.get_friendahead(self, n=1)[0]
+            if trigger != pet_ahead:
+                return activated
+        elif self.ability["triggeredBy"]["kind"] == "EachFriend":
+            if trigger == self:
+                ### Only time this doesn't activate is if it self triggered
+                return activated
+        else:
+            pass
+        
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        func([0,pet_idx], [self.team], te=trigger)
+        
+        activated = True
+        return activated
+    
         
     def __repr__(self):
-        return "< {} {}-{} {} >".format(
-            self.name, self.attack, self.health, self.status)
+        return "< {} {}-{} {} {}-{} >".format(
+            self.name, 
+            self.attack, self.health, 
+            self.status, 
+            self.level, self.experience)
         
         
     def copy(self):

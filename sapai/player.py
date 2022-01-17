@@ -1,4 +1,6 @@
 
+from sapai.shop import Shop
+from sapai.teams import Team
 
 
 class Player():
@@ -7,15 +9,29 @@ class Player():
     each of these actions is directly tied to the actions reinforment learning 
     model can take. 
     
-    Can also be programmed in phases similar to Fight
     
     Arguments
     ---------
     
     
     """
-    def __init__(self, shop=None, team=None, lives=10, default_gold=10):
-        raise Exception()
+    def __init__(self, shop=None, team=None, lives=10, default_gold=10, 
+                 pack="StandardPack"):
+        self.shop = shop
+        self.team = team
+        self.lives = lives
+        self.default_gold = default_gold
+        self.gold = default_gold
+        self.pack = pack
+        
+        ### Keep track of outcome of last fight for snail
+        self.lf_winner = None
+        
+        ### Initialize shop and team if not provided
+        if self.shop == None:
+            self.shop = Shop(pack=self.pack)
+        if self.team == None:
+            self.team = Team()
     
     
     def buy(self, pet):
@@ -23,12 +39,12 @@ class Player():
         raise Exception()
     
     
-    def sell(self):
+    def sell(self, pet):
         """ Sell one pet on the team """
         raise Exception()
     
     
-    def freeze(self, idx):
+    def freeze(self, pet):
         """ Freeze one pet in shop """
         raise Exception()
     
@@ -57,4 +73,8 @@ class Player():
         """ End turn and move to fight phase """
         raise Exception()
         
-        
+    
+    def __repr__(self):
+        print_str = "CURRENT TEAM: \n--------------\n"+self.team.__repr__()+"\n"
+        print_str += "CURRENT SHOP: \n--------------\n"+self.shop.__repr__()
+        return print_str

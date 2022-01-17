@@ -22,6 +22,8 @@ class Food():
         
         self.attack = 0
         self.health = 0
+        self.base_attack = 0
+        self.base_health = 0
         self.status = "none"
         self.effect = "none"
         self.fd = {}
@@ -37,8 +39,10 @@ class Food():
         self.effect = fd["effect"]["kind"]
         if "attackAmount" in fd["effect"]:
             self.attack = fd["effect"]["attackAmount"]
+            self.base_attack = fd["effect"]["attackAmount"]
         if "healthAmount" in fd["effect"]:
             self.health = fd["effect"]["healthAmount"]
+            self.base_health = fd["effect"]["healthAmount"]
         if "status" in fd["effect"]:
             self.status = fd["effect"]["status"]
                 
@@ -65,6 +69,19 @@ class Food():
             return pet
         elif self.effect == "ApplyStatus":
             pet.status = self.status
+            
+    
+    def copy(self):
+        copy_food = Food(self.name, self.shop)
+        for key,value in self.__dict__.items():
+            ### Although this approach will copy the internal dictionaries by 
+            ###   reference rather than copy by value, these dictionaries will 
+            ###   never be modified anyways. 
+            ### All integers and strings are copied by value automatically with
+            ###   Python, therefore, this achieves the correct behavior
+            copy_food.__dict__[key] = value
+        return copy_food
+    
         
     def __repr__(self):
         return "< {} {}-{} {} >".format(

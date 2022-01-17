@@ -738,6 +738,10 @@ def fight_phase_summon(phase,teams,pet_effect_order,phase_dict):
                 if type(next_pet).__name__ == "Pet":
                     ### Next pet must be Tiger
                     next_pet_idx = teams[faint_info[1][0]].get_idx(next_pet)
+                    ### Set level to be that of tiger
+                    original_level = temp_pet.level
+                    temp_pet.level = next_pet.level
+                    
                     ### Reset ability
                     if len(original_ability) != 0:
                         temp_pet.set_ability(original_ability)
@@ -753,6 +757,9 @@ def fight_phase_summon(phase,teams,pet_effect_order,phase_dict):
                         (str(next_pet)),
                         [str(x) for x in targets]))
                     all_targets += targets
+                    
+                    ### Reset level after tiger
+                    temp_pet.level = original_level
                     
                 ### Honey implementation
                 if temp_pet.status == "status-honey-bee":
@@ -950,12 +957,19 @@ def friend_ahead_check(pet_idx,teams,effect_func,trigger,phase_list,
                 ### Reset override_ability
                 p.override_ability = False
             
+            #### For new tiger behavior which should copy the ability based
+            ####   on the level of the tiger, not the friend ahead
+            original_level = p.level
+            p.level = next_pet.level
+            
             targets = effect_func(pet_idx,teams,fainted_pet=fainted_pet)
             phase_list.append((
                 effect_func.__name__,
                 pet_idx,
                 (str(next_pet)),
                 [str(x) for x in targets]))
+
+            p.level = original_level
             
             if original_override:
                 ### Reset override if no targets found
