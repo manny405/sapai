@@ -476,8 +476,11 @@ def FoodMultiplier(pet_idx, teams, fainted_pet=None, te=None):
     if pet.shop == None:
         return []
     
+    if te == None:
+        raise Exception("Must input purchased food to FoodMultiplier")
+    
     mult = int(pet.ability["effect"]["amount"])
-    food_list = pet.shop.foods
+    food_list = [te]
     for food in food_list:
         ### Multiplier is not strict multiplier of current value, but additive
         ###   multiplier of base attack and health

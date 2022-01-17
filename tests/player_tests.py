@@ -1,7 +1,7 @@
 
 #%%
 
-import os,shutil
+import os,shutil,zlib
 import numpy as np
 if os.path.exists("__pycache__"):
     shutil.rmtree("__pycache__")
@@ -23,5 +23,7 @@ player = Player(pack="ExpansionPack1")
 print(player)
 
 #%%
+
+
 
 # %%

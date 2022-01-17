@@ -15,7 +15,11 @@ class Team():
     any other interactions?
     
     """
-    def __init__(self, obj_list=[], fight=False, shop=None, player=None, 
+    def __init__(self, 
+                 obj_list=[], 
+                 fight=False, 
+                 shop=None, 
+                 player=None, 
                  pack="StandardPack"):
         self._fight = fight
         self.max_slots = 5
@@ -251,6 +255,27 @@ class Team():
     def copy(self):
         return Team([x.copy() for x in self], self.fight, self.player)
     
+    
+    @property
+    def state(self):
+        state_dict = {
+            "type": "Team",
+            "fight": self.fight,
+            "team": [x.state for x in self.team],
+            "pack": self.pack,
+        }
+        return state_dict
+    
+    
+    @classmethod
+    def from_state(cls, state):
+        team = [TeamSlot.from_state(x) for x in state["team"]]
+        return cls(obj_list=team, 
+                   fight=state["fight"],
+                   shop=None,
+                   player=None,
+                   pack=state["pack"])
+    
         
 class TeamSlot():
     def __init__(self, obj=None):
@@ -294,6 +319,21 @@ class TeamSlot():
     
     def copy(self):
         return TeamSlot(self._pet.copy())
+    
+    
+    @property
+    def state(self):
+        state_dict = {
+            "type": "TeamSlot",
+            "pet": self._pet.state
+        }
+        return state_dict
+    
+    
+    @classmethod
+    def from_state(cls, state):
+        pet = Pet.from_state(state["pet"])
+        return cls(pet)
             
             
 # %%

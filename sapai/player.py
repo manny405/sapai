@@ -15,7 +15,11 @@ class Player():
     
     
     """
-    def __init__(self, shop=None, team=None, lives=10, default_gold=10, 
+    def __init__(self, 
+                 shop=None, 
+                 team=None, 
+                 lives=10, 
+                 default_gold=10, 
                  pack="StandardPack"):
         self.shop = shop
         self.team = team
@@ -54,7 +58,7 @@ class Player():
         raise Exception()
     
     
-    def buy_combine(self):
+    def buy_combine(self, shop_pet, ):
         """ Combine two pets on purchase """
         raise Exception()
     

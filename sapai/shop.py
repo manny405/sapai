@@ -6,7 +6,8 @@ import numpy as np
 from sapai.data import data
 from sapai.foods import Food
 from sapai.pets import Pet
-from sapai.foods import Food
+import sapai.foods
+import sapai.pets
 
 #%%
 
@@ -90,7 +91,11 @@ for key,value in data["foods"].items():
 #%%
 
 class Shop():
-    def __init__(self, turn=1, pack="StandardPack"):
+    def __init__(self, 
+                 shop_slots=[], 
+                 turn=1, 
+                 can=0,
+                 pack="StandardPack"):
         self.turn = turn
         self.pack = pack
         self.tier_avail = 0
@@ -101,8 +106,7 @@ class Shop():
         self.fslots = 0
         self.pslots = 0
         self.max_slots = 7
-        self.can = 0                    ### Keep track of can stats
-        self.freeze_idx = []
+        self.can = can                  ### Keep track of can stats
         
         if pack == "StandardPack":
             self.turn_prob_pets = turn_prob_pets_std
@@ -114,6 +118,9 @@ class Shop():
             raise Exception("Pack {} not valid".format(pack))
         
         self.update_shop_rules()
+        
+        if len(shop_slots) > 0:
+            self.shop_slots = shop_slots
         
     
     def __repr__(self):
@@ -322,6 +329,27 @@ class Shop():
         new_slots += [x for x in fslots]
         
         self.shop_slots = new_slots
+        
+        
+    @property
+    def state(self):
+        state_dict = {
+            "type": "Shop",
+            "shop_slots": [x.state for x in self.shop_slots],
+            "turn": self.turn,
+            "can": self.can,
+            "pack": self.pack,
+        }
+        return state_dict
+    
+    
+    @classmethod
+    def from_state(cls, state):
+        return cls(
+            shop_slots=[ShopSlot.from_state(x) for x in state["shop_slots"]],
+            turn=state["turn"],
+            can=state["can"],
+            pack=state["pack"])
     
 
 class ShopSlot():
@@ -329,17 +357,23 @@ class ShopSlot():
     Class for a slot in the shop
     
     """
-    def __init__(self, obj=None, slot_type="pet", turn=1, pack="StandardPack"):
+    def __init__(self, 
+                 obj=None, 
+                 slot_type="pet", 
+                 frozen=False,
+                 turn=1, 
+                 cost=3,
+                 pack="StandardPack"):
         self.slot_type = slot_type
         self.turn = turn
         self.pack = pack
-        self.frozen = False
-        self.cost = 3
+        self.frozen = frozen
+        self.cost = cost
         
         if slot_type not in ["pet", "food", "levelup"]:
             raise Exception("Unrecognized slot type {}".format(self.slot_type))
         
-        if type(obj) != None and type(obj) != str:
+        if obj != None and type(obj) != str:
             if type(obj).__name__ == "Pet":
                 self.slot_type = "pet"
                 self.item = obj
@@ -356,6 +390,7 @@ class ShopSlot():
         else:
             if type(obj) == str:
                 self.slot_type = obj
+                
             if self.slot_type == "pet":
                 self.item = Pet()
             elif self.slot_type == "food":
@@ -443,6 +478,43 @@ class ShopSlot():
                                         size=(1,),
                                         replace=True)[0]
         self.item = Pet(pet_choice)
+        
+        
+    @property
+    def state(self):
+        state_dict = {
+            "type": "ShopSlot",
+            "slot_type": self.slot_type,
+            "item": self.item.state,
+            "turn": self.turn,
+            "pack": self.pack,
+            "cost": self.cost, 
+            "frozen": self.frozen
+        }
+        return state_dict
+    
+    
+    @classmethod
+    def from_state(cls, state):
+        slot_type = state["slot_type"]
+        obj_state = state["item"]
+        if state["item"]["type"] == "Pet":
+            item_cls = getattr(sapai.pets, "Pet")
+        elif state["item"]["type"] == "Food":
+            item_cls = getattr(sapai.foods, "Food")
+        else:
+            raise Exception("Unrecognized item state")
+        obj = item_cls.from_state(state["item"])
+        turn = state["turn"]
+        pack = state["pack"]
+        cost = state["cost"]
+        frozen = state["frozen"]
+        return cls(obj=obj, 
+                   slot_type=slot_type,
+                   frozen=frozen,
+                   turn=turn,
+                   cost=cost,
+                   pack=pack)
         
 
 def get_shop_rules(turn, pack="StandardPack"):

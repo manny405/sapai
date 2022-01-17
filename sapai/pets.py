@@ -138,7 +138,7 @@ class Pet():
         return activated
     
     
-    def roll_trigger(self, trigger=None):
+    def cat_trigger(self, trigger=None):
         """
         Apply pet's shop ability to the given shop when shop is rolled
         
@@ -150,10 +150,13 @@ class Pet():
         ###   should be roll
         if self.name not in ["pet-cat"]:
             return activated
+        
+        if type(trigger).__name__ != "Food":
+            raise Exception("Must input purchased food as trigger for cat")
 
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
-        func([0,pet_idx], [self.team])
+        func([0,pet_idx], [self.team], te=trigger)
         
         activated = True 
         return activated
@@ -429,9 +432,53 @@ class Pet():
             ###   Python, therefore, this achieves the correct behavior
             copy_pet.__dict__[key] = value
         return copy_pet
+    
+    @property
+    def state(self):
+        #### Cannot get state for attached objects such as shop, team, or player
+        ####   as this will lead to circular logic. Therefore, state should be
+        ####   saved at the Player level if all info is desired. 
+        state_dict = {
+            "type": "Pet",
+            "name": self.name,
+            "eaten": False,
+            "shop": {},
+            "team": {},
+            "player": {},
+            "ability_counter": self.ability_counter,
+            "override_ability": self.override_ability,
+            "override_ability_dict": self.override_ability_dict,
+            "attack": self.attack,
+            "health": self.health,
+            "status": self.status,
+            "level": self.level,
+            "experience": self.experience
+        }
         
+        return state_dict
         
+    
+    @classmethod
+    def from_state(cls, state):
+        name = state["name"]
         
+        ### Initialize and reset defaults by hand
+        pet = cls(name)
+        pet.store = None
+        pet.team = None
+        pet.player = None
+
+        ### Set internal from state 
+        pet.ability_counter = state["ability_counter"]
+        pet.override_ability = state["override_ability"]
+        pet.override_ability_dict = state["override_ability_dict"]
+        pet.attack = state["attack"]
+        pet.health = state["health"]
+        pet.status = state["status"]
+        pet.level = state["level"]
+        pet.experience = state["experience"]
+        
+        return pet
         
 # %%
 
