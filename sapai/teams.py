@@ -15,7 +15,7 @@ class Team():
     any other interactions?
     
     """
-    def __init__(self, obj_list=[], fight=False, store=None, player=None, 
+    def __init__(self, obj_list=[], fight=False, shop=None, player=None, 
                  pack="StandardPack"):
         self._fight = fight
         self.max_slots = 5
@@ -23,7 +23,7 @@ class Team():
         for iter_idx,obj in enumerate(obj_list):
             self[iter_idx] = obj
         self.player = player
-        self.store = store
+        self.shop = shop
         self.pack = "StandardPack"
     
     
@@ -54,7 +54,7 @@ class Team():
             else:
                 filled_idx.append(iter_idx)
         if len(empty_idx) > 0:
-            ### Only need to consider the first emtpy position 
+            ### Only need to consider the first empty position 
             empty_idx = empty_idx[0]
             
             ### Find first pet that can fill this empty position
@@ -160,6 +160,52 @@ class Team():
             return found_idx
         else:
             raise Exception("Object of type {} not recognized".format(type(obj)))
+        
+    
+    def index(self, obj):
+        return self.get_idx(obj)
+    
+    
+    def get_fidx(self):
+        ### Get possible indices for each team
+        fidx = []
+        for iter_idx,temp_slot in enumerate(self):
+            if not temp_slot.empty:
+                ### Skiped if health is less than 0
+                if temp_slot.pet.health > 0:
+                    fidx.append(iter_idx)
+        return fidx
+    
+    def get_friendahead(self, obj, n=1):
+        pet_idx = self.get_idx(obj)
+        fidx = self.get_fidx()
+        chosen_idx = []
+        for temp_idx in fidx:
+            if temp_idx < pet_idx:
+                chosen_idx.append(temp_idx)
+        ret_pets = []
+        for temp_idx in chosen_idx[::-1]:
+            ret_pets.append(self[temp_idx].pet)
+            if len(ret_pets) >= n:
+                break
+        return ret_pets
+            
+    def append(self, obj):
+        obj = TeamSlot(obj)
+        n = len(self)
+        if n == len(self.team):
+            raise Exception("Attempted to append to a full team")
+        self.team[n] = obj
+        
+    
+    def check_lvl3(self):
+        for slot in self.team:
+            if slot.empty:
+                continue
+            if slot.pet.level == 3:
+                return True
+        return False
+    
     
     def remove_fainted(self):
         if not self.fight:
@@ -169,12 +215,12 @@ class Team():
     @property
     def fight(self):
         return self._fight
-    
+        
     
     def __len__(self):
         count = 0
         for temp_slot in self.team:
-            if not temp_slot.emtpy:
+            if not temp_slot.empty:
                 count += 1
         return count
     
@@ -188,6 +234,8 @@ class Team():
             self.team[idx] = TeamSlot(obj)
         elif type(obj).__name__ == "TeamSlot":
             self.team[idx] = obj
+        elif type(obj) == str:
+            self.team[idx] = TeamSlot(obj)
         else:
             raise Exception("Tried setting a team slot with type {}"
                 .format(type(obj).__name__))
@@ -212,6 +260,8 @@ class TeamSlot():
             self._pet = obj.pet
         elif type(obj).__name__ == "NoneType":
             self._pet = Pet()
+        elif type(obj) == str:
+            self._pet = Pet(obj)
         else:
             raise Exception("Tried initalizing TeamSlot with type {}"
                     .format(type(obj).__name__))

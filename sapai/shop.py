@@ -89,12 +89,13 @@ for key,value in data["foods"].items():
 
 #%%
 
-class Store():
+class Shop():
     def __init__(self, turn=1, pack="StandardPack"):
         self.turn = turn
+        self.pack = pack
         self.tier_avail = 0
         self.leveup_tier = 0
-        self.store_slots = []
+        self.shop_slots = []
         self.pp = []                    ### Probability of pet 
         self.fp = []                    ### Probability of food
         self.fslots = 0
@@ -117,16 +118,37 @@ class Store():
     
     def __repr__(self):
         repr_str = ""
-        for iter_idx,slot in enumerate(self.store_slots):
+        for iter_idx,slot in enumerate(self.shop_slots):
             repr_str += "{}: {} \n    ".format(iter_idx, slot)
         return repr_str
-        
+    
+    @property
+    def pets(self):
+        pet_slots = []
+        for slot in self.shop_slots:
+            if slot.slot_type == "pet":
+                pet_slots.append(slot.item)
+            elif slot.slot_type == "levelup":
+                pet_slots.append(slot.item)
+            else:
+                pass
+        return pet_slots
+    
+    
+    @property
+    def foods(self):
+        food_slots = []
+        for slot in self.shop_slots:
+            if slot.slot_type == "food":
+                food_slots.append(slot.item)
+        return food_slots
+    
     
     def roll(self, team=[]):
         """ Randomizes shop and returns list of available entries """
         self.check_rules()
         
-        for slot in self.store_slots:
+        for slot in self.shop_slots:
             slot.roll()    
             ### Add health and attack from previously purchased cans
             if slot.frozen == False:
@@ -143,11 +165,11 @@ class Store():
         Freeze a shop index 
         
         """
-        if idx >= len(self.store_slots):
+        if idx >= len(self.shop_slots):
             ### Just do nothing if attempting to freeze outside the range of 
             ###   the current shop
             return
-        self.store_slots[idx].freeze()
+        self.shop_slots[idx].freeze()
     
     
     def unfreeze(self, idx):
@@ -155,11 +177,11 @@ class Store():
         Unfreeze shop index
         
         """
-        if idx > len(self.store_slots):
+        if idx > len(self.shop_slots):
             ### Just do nothing if attempting to unfreeze outside the range of 
             ###   the current shop
             return
-        self.store_slots[idx].unfreeze()
+        self.shop_slots[idx].unfreeze()
         
     
     def levelup(self):
@@ -168,7 +190,7 @@ class Store():
         with a new pet
         
         """
-        new_slot = StoreSlot("levelup")
+        new_slot = ShopSlot("levelup", pack=self.pack)
         self.append(new_slot)
         
     
@@ -176,7 +198,7 @@ class Store():
         if turn < 0:
             turn = self.turn
         
-        ### Turn 11 is max stored info
+        ### Turn 11 is max shopd info
         if turn > 11:
             turn = 11
             
@@ -190,26 +212,26 @@ class Store():
         self.pp = rules[6]
         self.fp = rules[7]
         
-        ### Setup the store slots
-        new_store_slots_pet = []
-        new_store_slots_food = []
-        for slot in self.store_slots:
+        ### Setup the shop slots
+        new_shop_slots_pet = []
+        new_shop_slots_food = []
+        for slot in self.shop_slots:
             if slot.slot_type == "pet":
-                new_store_slots_pet.append(slot)
+                new_shop_slots_pet.append(slot)
             elif slot.slot_type == "food":
-                new_store_slots_food.append(slot)
+                new_shop_slots_food.append(slot)
             else:
                 raise Exception()
             
-        add_pets = self.pslots - len(new_store_slots_pet)
+        add_pets = self.pslots - len(new_shop_slots_pet)
         for i in range(add_pets):
-            new_store_slots_pet.append(StoreSlot("pet"))
+            new_shop_slots_pet.append(ShopSlot("pet", pack=self.pack))
         
-        add_foods = self.fslots - len(new_store_slots_food)
+        add_foods = self.fslots - len(new_shop_slots_food)
         for i in range(add_foods):
-            new_store_slots_food.append(StoreSlot("food"))
+            new_shop_slots_food.append(ShopSlot("food", pack=self.pack))
         
-        self.store_slots = new_store_slots_pet+new_store_slots_food
+        self.shop_slots = new_shop_slots_pet+new_shop_slots_food
         
         ### Roll all slots upon update of rules
         self.roll()
@@ -236,7 +258,7 @@ class Store():
         fslots = []
         
         ### Look for frozen slots first
-        for iter_idx,slot in enumerate(self.store_slots):
+        for iter_idx,slot in enumerate(self.shop_slots):
             if slot.frozen == True:
                 keep_idx.append(iter_idx)
                 if slot.slot_type == "pet":
@@ -247,7 +269,7 @@ class Store():
                     fslots.append(iter_idx)
         
         ### Then add other slots only if it has not yet exceeded the rules
-        for iter_idx,slot in enumerate(self.store_slots):
+        for iter_idx,slot in enumerate(self.shop_slots):
             if slot.slot_type == "pet":
                 if len(pslots) < self.pslots:
                     keep_idx.append(iter_idx)
@@ -257,16 +279,16 @@ class Store():
                     keep_idx.append(iter_idx)
                     fslots.append(iter_idx)
         
-        keep_slots = [self.store_slots[x] for x in keep_idx]
-        self.store_slots = keep_slots
+        keep_slots = [self.shop_slots[x] for x in keep_idx]
+        self.shop_slots = keep_slots
 
 
     def __len__(self):
-        return len(self.store_slots)
+        return len(self.shop_slots)
     
     
     def __getitem__(self, idx):
-        return self.store_slots[idx]
+        return self.shop_slots[idx]
     
     
     def __setitem__(self, idx, obj):
@@ -274,21 +296,21 @@ class Store():
         __setitem__ should never be used
         
         """
-        raise Exception("Cannot set item in store directly")
+        raise Exception("Cannot set item in shop directly")
 
     
     def append(self, obj):
         """
         Append should be used when adding an animal from a levelup
         """
-        if len(self.store_slots) >= self.max_slots:
+        if len(self.shop_slots) >= self.max_slots:
             ### Max slots already reached so cannot be added
             return
         
-        add_slot = StoreSlot(obj)
+        add_slot = ShopSlot(obj, pack=self.pack)
         pslots = []
         fslots = []
-        for iter_idx,slot in enumerate(self.store_slots):
+        for iter_idx,slot in enumerate(self.shop_slots):
             if slot.slot_type == "pet":
                 pslots.append(slot)
             if slot.slot_type == "food":
@@ -299,12 +321,12 @@ class Store():
         new_slots += [add_slot]
         new_slots += [x for x in fslots]
         
-        self.store_slots = new_slots
+        self.shop_slots = new_slots
     
 
-class StoreSlot():
+class ShopSlot():
     """
-    Class for a slot in the store
+    Class for a slot in the shop
     
     """
     def __init__(self, obj=None, slot_type="pet", turn=1, pack="StandardPack"):
@@ -324,7 +346,7 @@ class StoreSlot():
             elif type(obj).__name__ == "Food":
                 self.slot_type = "food"
                 self.item = obj
-            elif type(obj).__name__ == "StoreSlot":
+            elif type(obj).__name__ == "ShopSlot":
                 self.slot_type = obj.slot_type
                 self.turn = obj.turn
                 self.pack = obj.pack
@@ -349,26 +371,26 @@ class StoreSlot():
             fstr = "not-frozen"
         if self.slot_type == "pet":
             if self.item.name == "pet-none":
-                return "< StoreSlot-{} {} EMPTY >".format(
+                return "< ShopSlot-{} {} EMPTY >".format(
                     self.slot_type, fstr)
             else:
                 pet_repr = str(self.item)
                 pet_repr = pet_repr[2:-2]
-                return "< StoreSlot-{} {} {} >".format(
+                return "< ShopSlot-{} {} {} >".format(
                     self.slot_type, fstr, pet_repr)
         else:
             if self.item.name == "food-none":
-                return "< StoreSlot-{} {} EMPTY >".format(
+                return "< ShopSlot-{} {} EMPTY >".format(
                     self.slot_type, fstr)
             else:
                 food_repr = str(self.item)
                 food_repr = food_repr[2:-2]
-                return "< StoreSlot-{} {} {} >".format(
+                return "< ShopSlot-{} {} {} >".format(
                     self.slot_type, fstr, food_repr)
     
     def freeze(self):
         """
-        Freeze current slot such that store rolls don't update the StoreSlot
+        Freeze current slot such that shop rolls don't update the ShopSlot
         """
         self.frozen = True
     
@@ -383,11 +405,11 @@ class StoreSlot():
         if self.slot_type == "levelup":
             ### If roll is called on a levelup slot, then it should change to 
             ###   a typical pet slot type. Deletion of levelup slots is handled
-            ###   by the Store.check_rules method when appropriate. 
+            ###   by the Shop.check_rules method when appropriate. 
             self.slot_type = "pet"
         
         if len(avail) == 0:
-            rules = get_shop_rules(self.turn)
+            rules = get_shop_rules(self.turn, pack=self.pack)
             if self.slot_type == "pet":
                 avail = rules[4]
                 prob = rules[6]
@@ -411,7 +433,7 @@ class StoreSlot():
         
     
     def roll_levelup(self):
-        rules = get_shop_rules(self.turn)
+        rules = get_shop_rules(self.turn, pack=self.pack)
         levelup_tier = rules[3]
         if self.pack == "StandardPack":
             avail_pets = pet_tier_lookup_std[levelup_tier]
@@ -436,7 +458,7 @@ def get_shop_rules(turn, pack="StandardPack"):
     if turn <= 0:
         raise Exception("Input turn must be greater than 0")
     
-    ### Turn 11 is max stored info
+    ### Turn 11 is max shop info
     if turn > 11:
         turn = 11
         

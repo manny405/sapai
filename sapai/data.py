@@ -34,6 +34,13 @@ Please note that these effects are from THIS VERSION XXX
 In addition, there will be a new patch coming soon that will require singificant
 modifications to these overall pet behaviors. 
 
+
+After new patch updates:
+
+  1. ammount -> amount
+  2. Changed rabbit trigger from EatsShopFood to BuyFood
+  3. Changed milk from "?" to 1-2 to multiply by cow level
+
 """
 
 #%%
@@ -6336,7 +6343,7 @@ data = {
       ],
       "level1Ability": {
         "description": "Pet eats shop food: Give it +1 Health",
-        "trigger": "EatsShopFood",
+        "trigger": "BuyFood",
         "triggeredBy": {
           "kind": "EachFriend"
         },
@@ -6351,7 +6358,7 @@ data = {
       },
       "level2Ability": {
         "description": "Pet eats shop food: Give it +2 Health",
-        "trigger": "EatsShopFood",
+        "trigger": "BuyFood",
         "triggeredBy": {
           "kind": "EachFriend"
         },
@@ -6366,7 +6373,7 @@ data = {
       },
       "level3Ability": {
         "description": "Pet eats shop food: Give it +3 Health",
-        "trigger": "EatsShopFood",
+        "trigger": "BuyFood",
         "triggeredBy": {
           "kind": "EachFriend"
         },
@@ -8806,7 +8813,7 @@ data = {
         },
         "effect": {
           "kind": "DiscountFood",
-          "ammount": 1
+          "amount": 1
         }
       },
       "level2Ability": {
@@ -8817,7 +8824,7 @@ data = {
         },
         "effect": {
           "kind": "DiscountFood",
-          "ammount": 2
+          "amount": 2
         }
       },
       "level3Ability": {
@@ -8828,7 +8835,7 @@ data = {
         },
         "effect": {
           "kind": "DiscountFood",
-          "ammount": 3
+          "amount": 3
         }
       },
       "probabilities": [
@@ -13266,8 +13273,8 @@ data = {
           "target": {
             "kind": "PurchaseTarget"
           },
-          "attackAmount": "?",
-          "healthAmount": "?",
+          "attackAmount": "1",
+          "healthAmount": "2",
           "untilEndOfBattle": False
         }
       }

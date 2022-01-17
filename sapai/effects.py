@@ -3,9 +3,12 @@ import sys,inspect
 import numpy as np
 
 from sapai.data import data
-from sapai.pets import Pet
-from sapai.teams import Team,TeamSlot
-from sapai.store import pet_tier_lookup,pet_tier_lookup_std
+from sapai.tiers import pet_tier_lookup,pet_tier_lookup_std
+from sapai.foods import Food
+
+#### Removing these to avoid circular imports
+# from sapai.pets import Pet
+# from sapai.teams import Team,TeamSlot
 
 """
 This module implements all effects in the game. API description is as follows:
@@ -27,6 +30,14 @@ This module implements all effects in the game. API description is as follows:
 """
 
 def get_effect_function(effect_kind):
+    if type(effect_kind).__name__ == "Pet":
+        effect_kind = effect_kind.ability["effect"]["kind"]
+    elif type(effect_kind).__name__ == "TeamSlot":
+        effect_kind = effect_kind.pet.ability["effect"]["kind"]
+    elif type(effect_kind) == str:
+        pass
+    else:
+        raise Exception("Unrecognized input {}".format(effect_kind))
     if effect_kind not in func_dict:
         raise Exception("Input effect_kind {} not found in {}"
             .format(effect_kind, list(func_dict.keys())))
@@ -51,6 +62,8 @@ def get_pet(pet_idx,teams,fainted_pet=None):
  
 
 def get_teams(pet_idx,teams):
+    if len(teams) == 1:
+        teams = [teams[0], []]
     if pet_idx[0] == 0:
         fteam = teams[0]
         oteam = teams[1]
@@ -67,9 +80,26 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
     Returns the targets for a given effect. Targets are returned as a list of 
     pets. 
     
+    Arguments
+    ---------
+    pet_idx: list
+        List of two indices that provide the team index and the pet index 
+        that has requested to obtain target pets
+    teams: list
+        List of two teams
+    fainted_pet: Pet
+        If the target has been requested due to fainting, the fainted pet should
+        be input.
+    get_from: bool
+        For correting some database inconsistencies
+    te: Pet
+        Triggering entity
     """
     p = get_pet(pet_idx,teams,fainted_pet)
     effect = p.ability["effect"]
+    
+    if len(teams) == 1:
+        teams = [teams[0], []]
     
     ### Logic switch because data-dictionary is not consistent
     if "target" not in effect:
@@ -216,11 +246,11 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
         return ret_pets
     
     elif kind == "EachShopAnimal":
-        store = fteam.store
-        if store == None:
+        shop = fteam.shop
+        if shop == None:
             return []
         else:
-            return store.cpets
+            return shop.pets
         
     elif kind == "FirstEnemy":
         if len(oidx) > 0:
@@ -340,6 +370,13 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
         max_idx = np.argmax(stat_list)
         max_idx = fidx[max_idx]
         return [fteam[max_idx].pet]
+
+    elif kind == "HighestHealthFriend":
+        health_list = []
+        for temp_idx in fidx:
+            health_list.append(fteam[temp_idx].pet.health)
+        max_idx = np.argmax(health_list)
+        return [fteam[max_idx].pet]
     
     elif kind == "TriggeringEntity":
         if te != None:
@@ -425,8 +462,7 @@ def Evolve(pet_idx,teams,fainted_pet=None,te=None):
     pet = get_pet(pet_idx,teams,fainted_pet)
     fteam,oteam = get_teams(pet_idx, teams)
     target = [pet]
-    summon = pet.ability["effect"]["into"]
-    spet = Pet(summon)
+    spet = pet.ability["effect"]["into"]
     fteam.remove(pet)
     fteam[pet_idx[1]] = spet
     kind = spet.ability["effect"]["kind"]
@@ -435,10 +471,24 @@ def Evolve(pet_idx,teams,fainted_pet=None,te=None):
     return target
 
 
-def FoodMultiplier(pet_idx, teams, shop, fainted_pet=None, te=None):
+def FoodMultiplier(pet_idx, teams, fainted_pet=None, te=None):
     pet = get_pet(pet_idx,teams,fainted_pet)
-    raise Exception()
-    return shop
+    if pet.shop == None:
+        return []
+    
+    mult = int(pet.ability["effect"]["amount"])
+    food_list = pet.shop.foods
+    for food in food_list:
+        ### Multiplier is not strict multiplier of current value, but additive
+        ###   multiplier of base attack and health
+        if food.attack == food.base_attack:
+            ### If first time that additive multiplier applied, then account
+            ###   for an extra x that already exists 
+            mult = mult - 1
+        food.attack += food.base_attack*mult
+        food.health += food.base_health*mult
+        
+    return food
 
 
 def ModifyStats(pet_idx, teams, fainted_pet=None, te=None):
@@ -485,10 +535,25 @@ def ReduceHealth(pet_idx, teams, fainted_pet=None, te=None):
     return target
 
 
-def RefillShops(pet_idx, teams, shop, fainted_pet=None, te=None):
+def RefillShops(pet_idx, teams, fainted_pet=None, te=None):
+    """
+    Only Cow has refill shop in newest patch anyways...
+    
+    """
     pet = get_pet(pet_idx,teams,fainted_pet)
-    raise Exception()
-    return shop
+    if pet.name != "pet-cow":
+        raise Exception("Only cow implemented for RefillShops")
+    shop = pet.shop
+    level = pet.level
+    targets = []
+    for slot in shop:
+        if slot.slot_type == "food":
+            temp_food = Food("milk")
+            temp_food.attack *= level
+            temp_food.health *= level
+            slot.item = temp_food
+            targets.append(slot)
+    return targets
 
 
 def RepeatAbility(pet_idx,teams, fainted_pet=None, te=None, shop=None):
@@ -557,7 +622,8 @@ def SummonPet(pet_idx, teams, fainted_pet=None, te=None):
             return target
                 
         target_slot_idx = np.max(empty_idx)
-        spet = Pet(spet_name)
+        target_team[target_slot_idx] = spet_name
+        spet = target_team[target_slot_idx].pet
         
         if "withAttack" in pet.ability["effect"]:
             spet.attack = pet.ability["effect"]["withAttack"]
@@ -567,8 +633,7 @@ def SummonPet(pet_idx, teams, fainted_pet=None, te=None):
             spet.level = pet.ability["effect"]["withLevel"]
         if pet.name == "pet-rooster":
             spet.attack = pet.attack
-            
-        target_team[target_slot_idx] = TeamSlot(spet)
+        
         target.append(spet)
         
     ### Move back forward
@@ -622,7 +687,8 @@ def SummonRandomPet(pet_idx, teams, fainted_pet=None, te=None):
         return []
             
     target_slot_idx = np.max(empty_idx)
-    spet = Pet(chosen)
+    fteam[target_slot_idx] = str(chosen)
+    spet = fteam[target_slot_idx].pet
     if "baseAttack" in pet.ability["effect"]:
         sattack = pet.ability["effect"]["baseAttack"]
     else:
@@ -633,7 +699,6 @@ def SummonRandomPet(pet_idx, teams, fainted_pet=None, te=None):
         shealth = data["pets"][spet.name]["baseHealth"]
     spet.attack = sattack
     spet.health = shealth
-    fteam[target_slot_idx] = TeamSlot(spet)
     fteam.move_forward()
     return [spet]
 
@@ -659,7 +724,7 @@ def Swallow(pet_idx, teams, fainted_pet=None, te=None):
     if pet.name != "pet-whale":
         raise Exception("Swallow only done by whale")
     
-    ### Remove target from team and store this pet as the given level as a 
+    ### Remove target from team and shop this pet as the given level as a 
     ### Summon ability
     faint_target = []
     for temp_target in target:
@@ -746,6 +811,20 @@ def TransferStats(pet_idx, teams, fainted_pet=None, te=None):
     else:
         raise Exception()
     return target
+
+
+def DiscountFood(pet_idx, teams, fainted_pet=None, te=None):
+    pet = get_pet(pet_idx,teams,fainted_pet)
+    shop = pet.shop
+    if shop == None:
+        raise Exception("No shop found to discount food")
+    amount = pet.ability["effect"]["amount"]
+    targets = []
+    for slot in shop:
+        if slot.slot_type == "food":
+            slot.cost = max((slot.cost - amount), 0)
+            targets.append(slot)
+    return targets
 
 
 def none(pet_idx, teams, fainted_pet=None, te=None):

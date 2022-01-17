@@ -22,6 +22,8 @@ class Food():
         
         self.attack = 0
         self.health = 0
+        self.base_attack = 0
+        self.base_health = 0
         self.status = "none"
         self.effect = "none"
         self.fd = {}
@@ -37,8 +39,10 @@ class Food():
         self.effect = fd["effect"]["kind"]
         if "attackAmount" in fd["effect"]:
             self.attack = fd["effect"]["attackAmount"]
+            self.base_attack = fd["effect"]["attackAmount"]
         if "healthAmount" in fd["effect"]:
             self.health = fd["effect"]["healthAmount"]
+            self.base_health = fd["effect"]["healthAmount"]
         if "status" in fd["effect"]:
             self.status = fd["effect"]["status"]
                 
