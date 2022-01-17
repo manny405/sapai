@@ -246,7 +246,7 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
         return ret_pets
     
     elif kind == "EachShopAnimal":
-        shop = fteam.shop
+        shop = p.shop
         if shop == None:
             return []
         else:
@@ -393,7 +393,7 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
     
 
 def AllOf(pet_idx, teams, fainted_pet=None, te=None):
-    p = get_pet(pet_idx,teams,fainted_pet)
+    p = get_pet(pet_idx,teams)
     original_effect = p.ability["effect"]
     effects = p.ability["effect"]["effects"]
     target = []
@@ -450,11 +450,10 @@ def GainExperience(pet_idx, teams, fainted_pet=None, te=None):
 
 def GainGold(pet_idx, teams, fainted_pet=None, te=None):
     pet = get_pet(pet_idx,teams,fainted_pet)
-    fteam,oteam = get_teams(pet_idx, teams)
     amount = pet.ability["effect"]["amount"]
-    player = fteam.player
+    player = pet.player
     if player != None:
-        fteam.player.gold += amount
+        pet.player.gold += amount
     return player
 
 
@@ -473,8 +472,6 @@ def Evolve(pet_idx,teams,fainted_pet=None,te=None):
 
 def FoodMultiplier(pet_idx, teams, fainted_pet=None, te=None):
     pet = get_pet(pet_idx,teams,fainted_pet)
-    if pet.shop == None:
-        return []
     
     if te == None:
         raise Exception("Must input purchased food to FoodMultiplier")
@@ -495,8 +492,8 @@ def FoodMultiplier(pet_idx, teams, fainted_pet=None, te=None):
 
 
 def ModifyStats(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
+    pet = get_pet(pet_idx,teams)
+    target = get_target(pet_idx,teams,fainted_pet=None,te=te)
     attack_amount = 0
     health_amount = 0
     if "attackAmount" in pet.ability["effect"]:
@@ -578,11 +575,23 @@ def SummonPet(pet_idx, teams, fainted_pet=None, te=None):
     """
     te is tiger if calling from tiger or for next alive 
     """
+    #### PET HERE IS ACTUALLY FAINTED PET
     pet = get_pet(pet_idx,teams,fainted_pet)       
     fteam,oteam = get_teams(pet_idx,teams)
-        
-    spet_name = pet.ability["effect"]["pet"]
-    if pet.ability["effect"]["team"] == "Friendly":
+    
+    #### te IS THE PET WHOSE ABILITY SHOULD BE USED AT THE LOCATION
+    ####  OF THE FAINTED PET, for example, the Fly
+    if te != None:
+        if te.name == "pet-tiger":
+            spet_name = pet.ability["effect"]["pet"]
+            team = pet.ability["effect"]["team"]
+        else:
+            spet_name = te.ability["effect"]["pet"]
+            team = te.ability["effect"]["team"]
+    else:
+        team = pet.ability["effect"]["team"]
+    
+    if team == "Friendly":
         target_team = fteam
         if fainted_pet != None:
             if te == None:
@@ -592,16 +601,22 @@ def SummonPet(pet_idx, teams, fainted_pet=None, te=None):
         target_team.move_backward()
         ### Then move all animals forward that are infront of the target pet
         if te == None:
-            end_idx = target_team.get_idx(pet)
-        else:
+            end_idx = pet_idx[1]
+        elif te.name == "pet-tiger":
             end_idx = target_team.get_idx(te)
+        else:
+            end_idx = pet_idx[1]
         target_team.move_forward(start_idx=0, end_idx=end_idx)
         if fainted_pet != None:
-            if te == None:
+            if te.name == "pet-tiger":
+                pass
+            else:
                 ### Remove fainted pet
-                temp_idx = target_team.get_idx(pet)
-                target_team.remove(temp_idx)
-    elif pet.ability["effect"]["team"] == "Enemy":
+                if target_team.check_friend(pet):
+                    temp_idx = target_team.get_idx(pet)
+                    target_team.remove(temp_idx)
+            
+    elif team == "Enemy":
         target_team = oteam
         target_team.move_forward()
     else:
@@ -628,6 +643,12 @@ def SummonPet(pet_idx, teams, fainted_pet=None, te=None):
         target_team[target_slot_idx] = spet_name
         spet = target_team[target_slot_idx].pet
         
+        if te != None:
+            if te.name == "pet-tiger":
+                pass
+            else:
+                pet = te
+        
         if "withAttack" in pet.ability["effect"]:
             spet.attack = pet.ability["effect"]["withAttack"]
         if "withHealth" in pet.ability["effect"]:
@@ -635,7 +656,7 @@ def SummonPet(pet_idx, teams, fainted_pet=None, te=None):
         if "withLevel" in pet.ability["effect"]:
             spet.level = pet.ability["effect"]["withLevel"]
         if pet.name == "pet-rooster":
-            spet.attack = pet.attack
+            spet.attack = int(pet.attack*0.5)
         
         target.append(spet)
         
@@ -777,7 +798,8 @@ def TransferAbility(pet_idx,teams, fainted_pet=None, te=None):
     pet = get_pet(pet_idx,teams,fainted_pet)
     target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
     target_from = get_target(pet_idx,teams,get_from=True,te=te)
-    pet.set_ability(target_from[0].ability)
+    if len(target_from) > 0:
+        pet.set_ability(target_from[0].ability)
     return target
 
 
@@ -828,6 +850,16 @@ def DiscountFood(pet_idx, teams, fainted_pet=None, te=None):
             slot.cost = max((slot.cost - amount), 0)
             targets.append(slot)
     return targets
+
+
+def GainAbility(pet_idx, teams, fainted_pet=None, te=None):
+    """ 
+    Only Octopus has GainAbility. Also, within programming framework, 
+    GainAbility is not necessary because the ability is automatically 
+    updated with levelup. 
+    """
+    pet = get_pet(pet_idx,teams,fainted_pet)
+    return [pet]
 
 
 def none(pet_idx, teams, fainted_pet=None, te=None):

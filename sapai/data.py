@@ -40,6 +40,7 @@ After new patch updates:
   1. ammount -> amount
   2. Changed rabbit trigger from EatsShopFood to BuyFood
   3. Changed milk from "?" to 1-2 to multiply by cow level
+  4. There isn't a cost in every food and pet item. Only for pill. 
 
 """
 

@@ -26,6 +26,7 @@ class Team():
         self.team = [TeamSlot() for x in range(self.max_slots)]
         for iter_idx,obj in enumerate(obj_list):
             self[iter_idx] = obj
+            self[iter_idx]._pet.team = self
         self.player = player
         self.shop = shop
         self.pack = "StandardPack"
@@ -142,6 +143,26 @@ class Team():
             raise Exception("Object of type {} not recognized".format(type(obj)))
         
     
+    def check_friend(self, obj):
+        if type(obj).__name__ == "TeamSlot":
+            found = False
+            for iter_idx,temp_slot in enumerate(self.team):
+                if temp_slot == obj:
+                    found_idx = iter_idx
+                    found = True
+            return found
+        elif type(obj).__name__ == "Pet":
+            found = False
+            for iter_idx,temp_slot in enumerate(self.team):
+                temp_pet = temp_slot.pet
+                if temp_pet == obj:
+                    found_idx = iter_idx
+                    found = True
+            return found
+        else:
+            raise Exception("Object of type {} not recognized".format(type(obj)))
+    
+    
     def get_idx(self, obj):
         if type(obj).__name__ == "TeamSlot":
             found = False
@@ -182,7 +203,10 @@ class Team():
     
     def get_friendahead(self, obj, n=1):
         pet_idx = self.get_idx(obj)
-        fidx = self.get_fidx()
+        fidx = []
+        for iter_idx,temp_slot in enumerate(self):
+            if not temp_slot.empty:
+                fidx.append(iter_idx)
         chosen_idx = []
         for temp_idx in fidx:
             if temp_idx < pet_idx:
@@ -306,6 +330,16 @@ class TeamSlot():
     @property
     def health(self):
         return self._pet.health
+    
+    
+    @property
+    def ability(self):
+        return self._pet.ability
+    
+    
+    @property
+    def level(self):
+        return self._pet.level
     
     
     def __repr__(self):

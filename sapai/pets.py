@@ -3,7 +3,7 @@
 #%%
 
 from sapai.data import data
-from sapai.effects import get_effect_function
+from sapai.effects import get_effect_function,SummonPet
 from sapai.tiers import pet_tier_lookup,pet_tier_lookup_std
 
 #%%
@@ -73,10 +73,16 @@ class Pet():
 
     
     def eat(self, food):
+        """ Returns bool of whether pet levelups"""
         self.attack += food.attack
         self.health += food.health
         if food.status != "none":
             self.status = food.status
+        if food.name == "food-chocolate":
+            return self.gain_experience()
+        elif food.name == "food-sleeping-pill":
+            self.health = -1000
+        return False
                 
                 
     def init_fight(self):
@@ -281,7 +287,7 @@ class Pet():
     
     def friend_summoned_trigger(self, trigger=None):
         """
-        Apply pet's ability when a friend (or self) is summoned
+        Apply pet's ability when a friend is summoned
         
         Pets: 
             ["horse", "dog", "lobster", "turkey"]
@@ -292,6 +298,10 @@ class Pet():
         
         if type(trigger).__name__ != "Pet":
             raise Exception("Trigger must be a Pet")
+        
+        if trigger == self:
+            ### Do not activate for summoning self
+            return activated
         
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
@@ -337,9 +347,6 @@ class Pet():
         if not self.ability["trigger"].startswith("EndOfTurn"):
             return activated
         
-        if type(trigger).__name__ != "Pet":
-            raise Exception("Trigger must be a Pet")
-        
         ### Check gold for puppy and tyrannosaurus
         if self.ability["trigger"] == "EndOfTurnWith3PlusGold":
             if self.player != None:
@@ -376,7 +383,7 @@ class Pet():
         return activated
     
     
-    def faint_trigger(self, trigger=None):
+    def faint_trigger(self, trigger=None, fainted_pet_idx=None):
         """
         Apply pet's ability associated with a friend (or self) fainting
         
@@ -396,7 +403,10 @@ class Pet():
             if trigger != self:
                 return activated
         elif self.ability["triggeredBy"]["kind"] == "FriendAhead":
-            pet_ahead = self.team.get_friendahead(self, n=1)[0]
+            pet_ahead = self.team.get_friendahead(self, n=1)
+            if len(pet_ahead) == 0:
+                return activated
+            pet_ahead = pet_ahead[0]
             if trigger != pet_ahead:
                 return activated
         elif self.ability["triggeredBy"]["kind"] == "EachFriend":
@@ -407,8 +417,19 @@ class Pet():
             pass
         
         func = get_effect_function(self)
-        pet_idx = self.team.get_idx(self)
-        func([0,pet_idx], [self.team], te=trigger)
+        if func == SummonPet:
+            ### API for SummonPet is slightly different
+            ### Input pet_idx should be the pet that fainted
+            ### te should be the pet that called the function
+            if fainted_pet_idx != None:
+                pet_idx = fainted_pet_idx
+            else:
+                pet_idx = self.team.get_idx(trigger)
+            func([0,pet_idx], [self.team], fainted_pet=trigger, te=self)
+        else:
+            pet_idx = self.team.get_idx(self)
+            func([0,pet_idx], [self.team], fainted_pet=trigger)
+        
         
         activated = True
         return activated
@@ -432,6 +453,7 @@ class Pet():
             ###   Python, therefore, this achieves the correct behavior
             copy_pet.__dict__[key] = value
         return copy_pet
+    
     
     @property
     def state(self):

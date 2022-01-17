@@ -75,6 +75,20 @@ state_shop = Shop.from_state(state)
 print(s)
 print(state_shop)
 
+#%%
+
+################################################################################
+##### Testing Player state implementation
+################################################################################
+
+%run /Users/ibier/Software/sapai/sapai/player.py
+
+p = Player(team=Team(["ant", "fish", "dragon"]))
+state = p.state
+state_p = Player.from_state(state)
+print(p)
+print(state_p)
+
 # %%
 
 ################################################################################
@@ -85,5 +99,9 @@ print(state_shop)
 
 test = compress(s)
 test_shop = decompress(test)
+
+test = compress(p)
+test_player = decompress(test)
+print(test_player)
 
 # %%

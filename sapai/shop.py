@@ -120,14 +120,38 @@ class Shop():
         self.update_shop_rules()
         
         if len(shop_slots) > 0:
-            self.shop_slots = shop_slots
+            self.shop_slots = [ShopSlot(x) for x in shop_slots]
+            
+    
+    def buy(self, obj):
+        """ Only thing that buy does is to remove the item from the shop list """
+        if type(obj) == int:
+            idx = obj
+        else:
+            idx = -1
+            for iter_idx,slot in enumerate(self.shop_slots):
+                if slot.item == obj:
+                    idx = iter_idx
+                    break
+        
+        if idx < 0:
+            raise Exception("Unrecognized Shop Object {}".format(obj))
+        
+        del(self.shop_slots[idx])
         
     
-    def __repr__(self):
-        repr_str = ""
+    def index(self, obj):
+        if type(obj).__name__ == "ShopSlot":
+            obj = obj.item
+        idx = -1
         for iter_idx,slot in enumerate(self.shop_slots):
-            repr_str += "{}: {} \n    ".format(iter_idx, slot)
-        return repr_str
+            if slot.item == obj:
+                idx = iter_idx
+                break
+        if idx < 0:
+            raise Exception("Unrecognized Shop Object {}".format(obj))
+        return idx
+        
     
     @property
     def pets(self):
@@ -277,6 +301,9 @@ class Shop():
         
         ### Then add other slots only if it has not yet exceeded the rules
         for iter_idx,slot in enumerate(self.shop_slots):
+            if slot.frozen == True:
+                ### Skip frozen slots because they have already been added
+                continue
             if slot.slot_type == "pet":
                 if len(pslots) < self.pslots:
                     keep_idx.append(iter_idx)
@@ -351,6 +378,13 @@ class Shop():
             can=state["can"],
             pack=state["pack"])
     
+    
+    def __repr__(self):
+        repr_str = ""
+        for iter_idx,slot in enumerate(self.shop_slots):
+            repr_str += "{}: {} \n    ".format(iter_idx, slot)
+        return repr_str
+    
 
 class ShopSlot():
     """
@@ -389,12 +423,30 @@ class ShopSlot():
                 self.item = obj.item.copy()
         else:
             if type(obj) == str:
-                self.slot_type = obj
+                if obj not in ["pet", "food", "levelup"]:
+                    if obj in data["pets"]:
+                        name = obj
+                        self.slot_type = "pet"  
+                    elif obj in data["foods"]       :
+                        name = obj
+                        self.slot_type = "food"
+                    elif "pet-{}".format(obj) in data["pets"]:
+                        name = obj
+                        self.slot_type = "pet"
+                    elif "food-{}".format(obj) in data["foods"]:
+                        name = obj
+                        self.slot_type = "food"
+                    else:
+                        raise Exception("Unrecognized ShopSlot Object {}"
+                                        .format(obj))
+                else:
+                    self.slot_type = obj
+                    name = "none"
                 
             if self.slot_type == "pet":
-                self.item = Pet()
+                self.item = Pet(name)
             elif self.slot_type == "food":
-                self.item = Food()
+                self.item = Food(name)
             elif self.slot_type == "levelup":
                 self.roll_levelup()
             
@@ -463,8 +515,13 @@ class ShopSlot():
             self.item = Pet(choice)
         elif self.slot_type == "food":
             self.item = Food(choice)
+            if self.item.name == "food-sleeping-pill":
+                ### Hard-coded for pill because of limitations of data json
+                self.cost = 1
         else:
             raise Exception()
+        
+        
         
     
     def roll_levelup(self):
