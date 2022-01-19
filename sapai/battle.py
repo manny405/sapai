@@ -7,9 +7,9 @@ from sapai.teams import Team
 from sapai.effects import get_effect_function,get_pet,get_teams
 
 
-class Fight():
+class Battle():
     """
-    Performs a fight. 
+    Performs a battle. 
     
     Most important thing here to implement is the action queue including the 
     logic for when actions should be removed from the action queue upon death. 
@@ -17,90 +17,97 @@ class Fight():
     Note that effects are performed in the order of highest attack to lowest
     attack. If there is a tie, then health values are compared. If there is a 
     tie then a random animal is chosen first. This is tracked by the 
-    pet_effect_order which is updated before every turn of the fight. 
+    pet_priority which is updated before every turn of the battle. 
     
     Any effect which is in the queue for a given turn is executed, even if the 
     animal dies due to preceeding effect, as the game entails.
 
-
-    PLANS TO CHANGE FIGHT TO BATTLE. I guess Battle is a more correction name.
+    A Battle goes as follows:
+        1. execute start-of-turn abilities according to pet priority
+        2. remove fainted pets and perform faint abilities according to pet priority
+                2.1 Execute 2 until there are no new fainted animals
+        3. before-attack abilities according to pet priority
+        4. remove fainted pets execute fainted pet abilities via pet priority
+                4.1 Execute 4 until there are no new fainted animals
+        5. attack 
+        6. remove fainted pets from teams, execute hurt and fainted abilities
+            according to pet priority
+                6.1 Execute 6 until there are no new fainted animals
+        7. check and execute knock-out abilities
+                7.1 if knock-out ability activated jump to 6
+        8. if battle has not ended, jump to 5
     
     """
     def __init__(self, t0, t1):
         """
-        Performs the fight between the input teams t1 and t2. 
+        Performs the battle between the input teams t1 and t2. 
         
         """
-        ### Make copy each team to cary out the fight so that the original
-        ### pets are not modified in any way after the fight
+        ### Make copy each team to cary out the battle so that the original
+        ### pets are not modified in any way after the battle
         self.t0 = t0.copy()
-        self.t0._fight = True
+        self.t0._battle = True
         self.t1 = t1.copy()
-        self.t1._fight = True
+        self.t1._battle = True
         
         ### Internal storage
-        self.pet_effect_order = []
-        self.fight_history = {}
+        self.pet_priority = []
+        self.battle_history = {}
         
         ### Build initial effect queue order
-        self.update_pet_effect_order()
+        self.update_pet_priority()
     
     
-    def fight(self):
-        """
-        
-        
-        """
-        ### Perform all effects that occur at the start of the fight
+    def battle(self):
+        ### Perform all effects that occur at the start of the battle
         self.start()
         
-        fight_iter = 0
+        battle_iter = 0
         while True:
             ### First update effect order
-            self.update_pet_effect_order()
+            self.update_pet_priority()
             ### Then attack
-            result = self.attack(fight_iter)
-            fight_iter += 1
+            result = self.attack(battle_iter)
+            battle_iter += 1
             if result == False:
                 break
         
         ### Check winner and return 0 for t0 win, 1 for t1 win, 2 for draw
-        return self.check_fight_result()
+        return self.check_battle_result()
         
     def start(self):
         """ 
-        Perform all start of fight effects 
+        Perform all start of battle effects 
         
         """
         ### First move the teams forward
         t0 = self.t0            
         t1 = self.t1
-        
-        ### Go through effect order list and perform effects
         teams = [t0, t1]
+        
+        ### Phase of start
         phase_dict = {
                       "init": [[str(x) for x in t0], [str(x) for x in t1]],
                       "start": {
                       "phase_move_start": [],
                       "phase_start": [],
                       "phase_faint": [],
-                      "phase_summon": [],
                       "phase_move_end": []}}
         
         for temp_phase in phase_dict["start"]:
-            fight_phase(temp_phase, 
+            battle_phase(temp_phase, 
                         teams, 
-                        self.pet_effect_order,
+                        self.pet_priority,
                         phase_dict["start"])
             
-            self.fight_history.update(phase_dict)
+            self.battle_history.update(phase_dict)
             
             ### If animals have moved or fainted then effect order must be updated
             if temp_phase.startswith("phase_move"):
-                self.update_pet_effect_order()
+                self.update_pet_priority()
         
     
-    def attack(self, fight_iter):
+    def attack(self, battle_iter):
         """ 
         Perform and attack and then check for new pet triggers 
         
@@ -112,13 +119,13 @@ class Fight():
             - Apply effects related to this attack
             - Apply effects related to pet deaths 
             - Summon phase
-            - Check if fight is over
+            - Check if battle is over
             
         """
         t0 = self.t0
         t1 = self.t1
         
-        attack_str = "attack {}".format(fight_iter)
+        attack_str = "attack {}".format(battle_iter)
         phase_dict = {
             attack_str: {
             "phase_move_start": [],
@@ -149,23 +156,23 @@ class Fight():
         
         teams = [t0, t1]
         for temp_phase in phase_dict[attack_str]:
-            fight_phase(temp_phase, 
+            battle_phase(temp_phase, 
                         teams, 
-                        self.pet_effect_order,
+                        self.pet_priority,
                         phase_dict[attack_str])
 
-            self.fight_history.update(phase_dict)
+            self.battle_history.update(phase_dict)
 
-        ### Check if fight is over
-        status = self.check_fight_result()
+        ### Check if battle is over
+        status = self.check_battle_result()
         if status < 0:
             return True
         else:
-            ### End fight
+            ### End battle
             return False
 
     
-    def check_fight_result(self):
+    def check_battle_result(self):
         t0 = self.t0
         t1 = self.t1
         found0 = False
@@ -193,7 +200,7 @@ class Fight():
         return 2
     
     
-    def update_pet_effect_order(self):
+    def update_pet_priority(self):
         """ 
         
         Prepares the order that the animals effects should be considered in
@@ -286,24 +293,24 @@ class Fight():
                 raise Exception("That's impossible. Sorting issue.") 
         
         ### Build final queue
-        self.pet_effect_order = []
+        self.pet_priority = []
         for t,i in zip(teams,idx):
-            self.pet_effect_order.append((t,i))
+            self.pet_priority.append((t,i))
             
     
     
-def fight_phase(phase,  
+def battle_phase(phase,  
                 teams,
-                pet_effect_order,
+                pet_priority,
                 phase_dict):
     """
-    Definition for performing all effects and actions throughout the fight. 
+    Definition for performing all effects and actions throughout the battle. 
     Implemented as function instead of class method to save an extra 
     indentation.
     s
     """
     ### Parse inputs and collect info
-    pao = pet_effect_order
+    pp = pet_priority
     
     ##### Trigger logic for starting battle
     if phase.startswith("phase_move"):
@@ -314,31 +321,31 @@ def fight_phase(phase,
         phase_dict[phase] = [start_order, end_order]
         
     elif phase == "phase_start":
-        fight_phase_start(phase,teams,pet_effect_order,phase_dict)
+        battle_phase_start(phase,teams,pet_priority,phase_dict)
     
     ##### Trigger logic for an attack
     elif phase == "phase_attack_before":
-        fight_phase_attack_before(phase,teams,pet_effect_order,phase_dict)
+        battle_phase_attack_before(phase,teams,pet_priority,phase_dict)
     
     elif phase == "phase_attack":
         ### Check if fainted and performed fainted triggers
-        fight_phase_attack(phase,teams,pet_effect_order,phase_dict)
+        battle_phase_attack(phase,teams,pet_priority,phase_dict)
 
     elif phase == "phase_attack_after":
-        fight_phase_attack_after(phase,teams,pet_effect_order,phase_dict)
+        battle_phase_attack_after(phase,teams,pet_priority,phase_dict)
 
     elif "phase_faint" in phase:
-        fight_phase_faint(phase,teams,pet_effect_order,phase_dict)
+        battle_phase_faint(phase,teams,pet_priority,phase_dict)
 
-    elif phase == "phase_summon":
-        fight_phase_summon(phase,teams,pet_effect_order,phase_dict)
+    # elif phase == "phase_summon":
+    #     battle_phase_summon(phase,teams,pet_priority,phase_dict)
         
     else:
         raise Exception("Phase {} not found".format(phase))
 
 
 
-def get_attack_idx(phase,teams,pet_effect_order,phase_dict):
+def get_attack_idx(phase,teams,pet_priority,phase_dict):
     """
     Helper function to get the current animals participating in the attack. 
     These are defined as the first animals in each team that have a health above
@@ -392,7 +399,7 @@ def get_attack_idx(phase,teams,pet_effect_order,phase_dict):
     return ret_idx,ret_next_idx
 
 
-def fight_phase_attack_after(phase,teams,pet_effect_order,phase_dict):
+def battle_phase_attack_after(phase,teams,pet_priority,phase_dict):
     ### SPECIFIC IMPLEMENTATION JUST TO HANDLE RHINO 
     phase_list = phase_dict["phase_attack_after"]
     attacks = phase_dict["phase_attack"]
@@ -505,11 +512,11 @@ def get_attack(p0,p1):
     return attack_list
         
 
-def fight_phase_attack(phase,teams,pet_effect_order,phase_dict):
+def battle_phase_attack(phase,teams,pet_priority,phase_dict):
     phase_list = phase_dict["phase_attack"]
-    aidx,nidx = get_attack_idx(phase,teams,pet_effect_order,phase_dict)
+    aidx,nidx = get_attack_idx(phase,teams,pet_priority,phase_dict)
     if len(aidx) != 2:
-        ### Must be two animals available for attacking to continue with fight
+        ### Must be two animals available for attacking to continue with battle
         return phase_list
     
     p0 = teams[0][aidx[0][1]].pet
@@ -578,14 +585,14 @@ def fight_phase_attack(phase,teams,pet_effect_order,phase_dict):
     return phase_dict
 
 
-def fight_phase_attack_before(phase,teams,pet_effect_order,phase_dict):
+def battle_phase_attack_before(phase,teams,pet_priority,phase_dict):
     phase_list = phase_dict["phase_attack_before"]
-    aidx,nidx = get_attack_idx(phase,teams,pet_effect_order,phase_dict)
-    pao = pet_effect_order
+    aidx,nidx = get_attack_idx(phase,teams,pet_priority,phase_dict)
+    pp = pet_priority
     if len(aidx) != 2:
-        ### Must be two animals available for attacking to continue with fight
+        ### Must be two animals available for attacking to continue with battle
         return phase_list
-    for team_idx,pet_idx in pao:
+    for team_idx,pet_idx in pp:
         if aidx[team_idx][1] != pet_idx:
             ### Effects are only activated for the attacking pet
             continue
@@ -616,7 +623,7 @@ def fight_phase_attack_before(phase,teams,pet_effect_order,phase_dict):
 
 
 
-def fight_phase_summon(phase,teams,pet_effect_order,phase_dict):
+def battle_phase_summon(phase,teams,pet_priority,phase_dict):
     phase_list = phase_dict["phase_summon"]
     faint_dict = phase_dict["phase_faint"][0]
     ### Check fainted for animals to summon. Note that the order here will be 
@@ -757,7 +764,7 @@ def fight_phase_summon(phase,teams,pet_effect_order,phase_dict):
                     
                     
 
-def fight_phase_faint(phase,teams,pet_effect_order,phase_dict):
+def battle_phase_faint(phase,teams,pet_priority,phase_dict):
     phase_list = phase_dict["phase_faint"]
     fainted = {"t0": [], "t1": []}
     for team_idx,temp_team in enumerate(teams):
@@ -843,34 +850,25 @@ def fight_phase_faint(phase,teams,pet_effect_order,phase_dict):
     return phase_dict
     
 
-def fight_phase_start(phase,teams,pet_effect_order,phase_dict):
+def battle_phase_start(phase,teams,pet_priority,phase_dict):
     phase_list = phase_dict["phase_start"]
-    pao = pet_effect_order
-    for team_idx,pet_idx in pao:
+    pp = pet_priority
+    for team_idx,pet_idx in pp:
         p = teams[team_idx][pet_idx].pet
-        pt = p.ability["trigger"]
+        fteam,oteam = get_teams([team_idx,pet_idx],teams)
+        p.sob_trigger(oteam)
         
-        if pt != "StartOfBattle":
-            ### Nothing to do
-            continue   
+        # phase_list.append((
+        #     func.__name__,
+        #     (team_idx,pet_idx),
+        #     (pet_str),
+        #     [str(x) for x in targets]))
         
-        effect = p.ability["effect"]
-        kind = effect["kind"]
-        pet_str = str(p)
-        func = get_effect_function(kind)
-        targets = func((team_idx,pet_idx),teams)
-        phase_list.append((
-            func.__name__,
-            (team_idx,pet_idx),
-            (pet_str),
-            [str(x) for x in targets]))
-        
-        ### Before friend_ahead_check, need to re-obtin the correct pet_idx
-        pet_idx = teams[team_idx].get_idx(p)
-        friend_ahead_check(
-            (team_idx,pet_idx), teams, func, "CastsAbility", phase_list)
-        
-    ### Done programming start!
+        # ### Before friend_ahead_check, need to re-obtin the correct pet_idx
+        # pet_idx = teams[team_idx].get_idx(p)
+        # friend_ahead_check(
+        #     (team_idx,pet_idx), teams, func, "CastsAbility", phase_list)
+    
     return phase_list
         
         

@@ -54,6 +54,13 @@ class Pet():
             if self.team.shop == None:
                 if self.shop != None:
                     self.team.shop = self.shop
+        
+        ### Make sure everything has been initialized together
+        if player != None:
+            if self.team != None:
+                player.team = self.team
+            if self.shop != None:
+                player.shop = self.shop
                 
     
     @property
@@ -85,7 +92,7 @@ class Pet():
         return False
                 
                 
-    def init_fight(self):
+    def init_battle(self):
         self.fhealth = int(self.health)
         self.fattack = int(self.attack)
         
@@ -133,15 +140,17 @@ class Pet():
         self.ability_counter = 0
         
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] != "StartOfTurn":
-            return activated
+            return activated,targets,possible
         
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
         targets,possible = func(self, [0,pet_idx], [self.team], trigger)
         
         activated = True 
-        return activated
+        return activated,targets,possible
     
     
     def cat_trigger(self, trigger=None):
@@ -152,10 +161,12 @@ class Pet():
             ["cat"]
         """
         activated = False
+        targets = []
+        possible = []
         ### Hard coded because for some reason the cat trigger is hurt but it 
         ###   should be roll
         if self.name not in ["pet-cat"]:
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Food":
             raise Exception("Must input purchased food as trigger for cat")
@@ -165,7 +176,7 @@ class Pet():
         targets,possible = func(self, [0,pet_idx], [self.team], trigger)
         
         activated = True 
-        return activated
+        return activated,targets,possible
     
     
     def sell_trigger(self, trigger=None):
@@ -176,23 +187,35 @@ class Pet():
             ["beaver", "duck", "pig", "shrimp", "owl"]
         """
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] != "Sell":
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Pet":
             raise Exception("Sell must be triggered by a Pet")
         
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        ### Remove the triggering pet before activating function because sell
+        ###   has been called on this pet 
+        if self.team.check_friend(trigger):
+            self.team.remove(trigger)
+        
         ### Check if self has been sold is important
         if self.ability["triggeredBy"]["kind"] == "Self":
             if trigger != self:
-                return activated
+                return activated,targets,possible
+            
+        ### Check if not selling self is important, only for shrimp
+        if self.ability["triggeredBy"]["kind"] == "EachFriend":
+            if trigger == self:
+                return activated,targets,possible
         
-        func = get_effect_function(self)
-        pet_idx = self.team.get_idx(self)
         targets,possible = func(self, [0,pet_idx], [self.team], trigger)
         
         activated = True 
-        return activated
+        return activated,targets,possible
     
     
     
@@ -206,8 +229,10 @@ class Pet():
         
         """
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] not in ["EatsShopFood", "BuyFood"]:
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Pet":
             raise Exception("Buy food must input food target as triggered")
@@ -215,14 +240,14 @@ class Pet():
         ### Check if food has been bought for self is important
         if self.ability["trigger"] == "EatsShopFood":
             if trigger != self:
-                return activated
+                return activated,targets,possible
 
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
         targets,possible = func(self, [0,pet_idx], [self.team], trigger)
         
         activated = True 
-        return activated
+        return activated,targets,possible
     
     
     def buy_friend_trigger(self, trigger=None):
@@ -234,8 +259,10 @@ class Pet():
              "goat", "dragon", ]
         """
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] not in ["Buy", "BuyAfterLoss", "BuyTier1Animal"]:
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Pet":
             raise Exception("Buy food must input food target as triggered")
@@ -244,36 +271,36 @@ class Pet():
         if self.ability["trigger"] == "Buy":
             if self.ability["triggeredBy"]["kind"] == "Self":
                 if trigger != self:
-                    return activated
+                    return activated,targets,possible
             elif self.ability["triggeredBy"]["kind"] == "Player":
                 ### Behavior for kind=self and kind=player is actually the 
                 ###   same and any distinction is unnecessary
                 if trigger != self:
-                    return activated
+                    return activated,targets,possible
             elif self.ability["triggeredBy"]["kind"] == "EachFriend":
                 ### If trigger is EachFriend, then the trigger cannot actually
                 ###   be self
                 if trigger == self:
-                    return activated
+                    return activated,targets,possible
             else:
                 raise Exception("Ability unrecognized for {}".format(self))
         
         ### Behavior for BuyTier1Animal
         if self.ability["trigger"] == "BuyTier1Animal":
             if trigger.name not in pet_tier_lookup[1]:
-                return activated
+                return activated,targets,possible
         
         ### Behavior for BuyAfterLoss
         if self.ability["trigger"] == "BuyAfterLoss":
             if self.player == None:
-                return activated
+                return activated,targets,possible
             if self.player.lf_winner != False:
-                return activated
+                return activated,targets,possible
             
         ### Specific check for goat
         if "maxTriggers" in self.ability:
             if self.ability_counter >= self.ability["maxTriggers"]:
-                return activated
+                return activated,targets,possible
             else:
                 self.ability_counter += 1
         
@@ -282,7 +309,7 @@ class Pet():
         targets,possible = func(self, [0,pet_idx], [self.team], trigger)
         
         activated = True 
-        return activated
+        return activated,targets,possible
     
     
     def friend_summoned_trigger(self, trigger=None):
@@ -293,22 +320,25 @@ class Pet():
             ["horse", "dog", "lobster", "turkey"]
         """
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] != "Summoned":
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Pet":
             raise Exception("Trigger must be a Pet")
         
         if trigger == self:
             ### Do not activate for summoning self
-            return activated
+            return activated,targets,possible
         
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
-        targets,possible = tiger_func(func, self, [0,pet_idx], [self.team], trigger)
+        targets,possible = tiger_func(
+            func, False, self, [0,pet_idx], [self.team], trigger)
         
         activated = True
-        return activated
+        return activated,targets,possible
         
     
     
@@ -320,8 +350,10 @@ class Pet():
             ["fish", "octopus"]
         """
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] != "LevelUp":
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Pet":
             raise Exception("Trigger must be a Pet")
@@ -331,7 +363,7 @@ class Pet():
         targets,possible = func(self, [0,pet_idx], [self.team], te=trigger)
         
         activated = True
-        return activated
+        return activated,targets,possible
         
     
     def eot_trigger(self, trigger=None):
@@ -344,8 +376,10 @@ class Pet():
              "tyrannosaurus"]
         """
         activated = False
+        targets = []
+        possible = []
         if not self.ability["trigger"].startswith("EndOfTurn"):
-            return activated
+            return activated,targets,possible
         
         ### Check gold for puppy and tyrannosaurus
         if self.ability["trigger"] == "EndOfTurnWith3PlusGold":
@@ -353,23 +387,23 @@ class Pet():
                 if self.player.gold >= 3:
                     pass
                 else:
-                    return activated
+                    return activated,targets,possible
             else:
-                return activated
+                return activated,targets,possible
         ### Check for bison
         elif self.ability["trigger"] == "EndOfTurnWithLvl3Friend":
             if self.team != None:
                 if not self.team.check_lvl3():
-                    return activated
+                    return activated,targets,possible
             else:
-                return activated
+                return activated,targets,possible
         ### Check for llama
         elif self.ability["trigger"] == "EndOfTurnWith4OrLessAnimals":
             if self.team != None:
                 if len(self.team) > 4:
-                    return activated
+                    return activated,targets,possible
             else:
-                return activated
+                return activated,targets,possible
         else:
             if self.ability["trigger"] != "EndOfTurn":
                 raise Exception("Unrecognized trigger {}"
@@ -380,10 +414,10 @@ class Pet():
         targets,possible = func(self, [0,pet_idx], [self.team], te=trigger)
         
         activated = True
-        return activated
+        return activated,targets,possible
     
     
-    def faint_trigger(self, trigger=None, fainted_pet_idx=None):
+    def faint_trigger(self, trigger=None, te_idx=[]):
         """
         Apply pet's ability associated with a friend (or self) fainting
         
@@ -393,43 +427,47 @@ class Pet():
              "eagle", "shark", "fly", "mammoth"]
         """
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] != "Faint":
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Pet":
             raise Exception("Trigger must be a Pet")
+        
+        if len(te_idx) == 0:
+            raise Exception("Index of triggering entity must be input")
 
         if self.ability["triggeredBy"]["kind"] == "Self":
             if trigger != self:
-                return activated
+                return activated,targets,possible
         elif self.ability["triggeredBy"]["kind"] == "FriendAhead":
-            pet_ahead = self.team.get_friendahead(self, n=1)
+            pet_ahead = self.team.get_ahead(self, n=1)
             if len(pet_ahead) == 0:
-                return activated
+                return activated,targets,possible
             pet_ahead = pet_ahead[0]
             if trigger != pet_ahead:
-                return activated
+                return activated,targets,possible
         elif self.ability["triggeredBy"]["kind"] == "EachFriend":
             if trigger == self:
                 ### Only time this doesn't activate is if it self triggered
-                return activated
+                return activated,targets,possible
         else:
             pass
         
         func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        
         if func in [SummonPet,SummonRandomPet]:
             ### API for SummonPet is slightly different
-            pet_idx = self.team.get_idx(trigger)
-            te_idx = self.team.get_idx(trigger)
             targets,possible = tiger_func(
-                func,self,[0,pet_idx],[self.team],trigger,[0,te_idx])
+                func,True,self,[0,pet_idx],[self.team],trigger,te_idx)
         else:
-            pet_idx = self.team.get_idx(self)
             targets,possible = tiger_func(
-                func, self, [0,pet_idx], [self.team], trigger)
+                func,True,self,[0,pet_idx],[self.team],trigger)
         
         activated = True
-        return activated
+        return activated,targets,possible
     
     
     def sob_trigger(self, trigger):
@@ -442,8 +480,10 @@ class Pet():
         
         """
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] != "StartOfBattle":
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Team":
             raise Exception("Trigger must be a Team")
@@ -451,10 +491,10 @@ class Pet():
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
         targets,possible = tiger_func(
-            func, self, [0,pet_idx], [self.team,trigger], trigger)
+            func, False, self, [0,pet_idx], [self.team,trigger], trigger)
         
         activated = True
-        return activated
+        return activated,targets,possible
     
     
     def before_attack_trigger(self, trigger):
@@ -466,8 +506,10 @@ class Pet():
             ["elephant", "boar", "octopus"]
         """
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] != "BeforeAttack":
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Team":
             raise Exception("Trigger must be a Team")
@@ -475,10 +517,10 @@ class Pet():
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
         targets,possible = tiger_func(
-            func, self, [0,pet_idx], [self.team,trigger], trigger)
+            func, False, self, [0,pet_idx], [self.team,trigger], trigger)
         
         activated = True
-        return activated
+        return activated,targets,possible
     
     
     def after_attack_trigger(self, trigger):
@@ -491,8 +533,10 @@ class Pet():
         
         """
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] != "AfterAttack":
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Team":
             raise Exception("Trigger must be a Team")
@@ -505,19 +549,19 @@ class Pet():
         ###   attacked
         slot_ahead = self.team.get_ahead(self, n=1)
         if len(slot_ahead) == 0:
-            return activated
+            return activated,targets,possible
         if self.team.index(slot_ahead[0]) != 0:
-            return activated
+            return activated,targets,possible
         
         ### Otherwise, the pet ahead is the pet the just attacked and the 
         ###   ability after attack should be activated
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
         targets,possible = tiger_func(
-            func, self, [0,pet_idx], [self.team,trigger], trigger)
+            func, False, self, [0,pet_idx], [self.team,trigger], trigger)
         
         activated = True
-        return activated
+        return activated,targets,possible
     
     
     def hurt_trigger(self, trigger):
@@ -528,30 +572,32 @@ class Pet():
         
         There is no way to test if hurt_trigger should be activated within this
         function. Therefore, only call hurt trigger where appropriate during
-        fight and shop phase. 
+        battle and shop phase. 
         
         Pets:
             ["peacock", "blowfish", "camel", "gorilla"]
         
         """
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] != "Hurt":
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Team":
             raise Exception("Trigger must be a Team")
         
         ### Cannot call if health is less than zero because fainted
         if self.health <= 0:
-            return activated
+            return activated,targets,possible
         
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
         targets,possible = tiger_func(
-            func, self, [0,pet_idx], [self.team,trigger], trigger)
+            func, False, self, [0,pet_idx], [self.team,trigger], trigger)
         
         activated = True
-        return activated
+        return activated,targets,possible
         
     
     def knockout_trigger(self, trigger):
@@ -561,29 +607,31 @@ class Pet():
         
         There is no way to test if knockout_trigger should be activated within 
         this function. Therefore, only call knockout_trigger where appropriate 
-        during the fight phase. 
+        during the battle phase. 
         
         Pets:
             ["hippo", "rhino"]
         """
         activated = False
+        targets = []
+        possible = []
         if self.ability["trigger"] != "KnockOut":
-            return activated
+            return activated,targets,possible
         
         if type(trigger).__name__ != "Team":
             raise Exception("Trigger must be a Team")
         
         ### Cannot call if health is less than zero because fainted
         if self.health <= 0:
-            return activated
+            return activated,targets,possible
         
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
         targets,possible = tiger_func(
-            func, self, [0,pet_idx], [self.team,trigger], trigger)
+            func, False, self, [0,pet_idx], [self.team,trigger], trigger)
         
         activated = True
-        return activated
+        return activated,targets,possible
     
         
     def __repr__(self):
@@ -655,21 +703,26 @@ class Pet():
 
 
 
-def tiger_func(func, *args):
+def tiger_func(func, te_fainted, *args):
     ### Check behind for tiger
     apet = args[0]
     if apet.team == None:
         ### Just run function
         return func(*args)
     
-    ### Get pet behind before running function
+    ### Get pet behind apet before running function
     pet_behind = apet.team.get_behind(apet,n=1)
     
+    ### If the triggering entity is supposed to have fainted, remove it now
+    if te_fainted:
+        if apet.team.check_friend(args[3]):
+            apet.team.remove(args[3])
+            
     ### Run function
     targets,possible = func(*args)
     
     ### If not in a battle, then tiger doesnt trigger
-    if apet.team.fight == False:
+    if apet.team.battle == False:
         return targets,possible
     
     ### If there's no pet behind, then return
@@ -681,14 +734,19 @@ def tiger_func(func, *args):
     if pet_behind.name != "pet-tiger":
         return targets,possible
     
+    ### Reset activiting pet's original ability because that's what should
+    ###  be duplicated. This is important for Whale.
+    apet.override_ability = False
+    
     pet_behind_idx = apet.team.index(pet_behind)
     if len(args) == 5:
         ### Edit te_idx if summoning occured for all but fly
-        if apet.name != "pet-fly":
-            te_idx = [0,pet_behind_idx]
-        else:
-            te_idx = args[4]
-    
+        # if apet.name != "pet-fly":
+        #     te_idx = [0,args[4][1]]
+        # else:
+        #     te_idx = args[4]
+        
+        te_idx = [0,args[4][1]+len(targets)]
         ### Run function again
         temp_targets,temp_possible = func(
             args[0], args[1], args[2], args[3], te_idx)

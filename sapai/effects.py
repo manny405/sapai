@@ -376,7 +376,7 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
             all_idx = [x for x in itertools.combinations(oidx,n)]
             all_possible = []
             for temp_idx in all_idx:
-                temp_chosen = [oteam[oidx[x]].pet for x in temp_idx]
+                temp_chosen = [oteam[x].pet for x in temp_idx]
                 all_possible.append(temp_chosen)
             crange = np.arange(0,len(all_possible))
             cidx = np.random.choice(crange,(1,),replace=False)[0]
@@ -389,10 +389,16 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
         if len(fidx) > 0:
             if len(fidx) < n:
                 n = len(fidx)
+            keep_fidx = []
+            for temp_entry in fidx:
+                if temp_entry == apet_idx[1]:
+                    continue
+                keep_fidx.append(temp_entry)
+            fidx = keep_fidx
             all_idx = [x for x in itertools.combinations(fidx,n)]
             all_possible = []
             for temp_idx in all_idx:
-                temp_chosen = [fteam[fidx[x]].pet for x in temp_idx]
+                temp_chosen = [fteam[x].pet for x in temp_idx]
                 all_possible.append(temp_chosen)
             crange = np.arange(0,len(all_possible))
             cidx = np.random.choice(crange,(1,),replace=False)[0]
@@ -436,9 +442,23 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
     
     elif kind == "TriggeringEntity":
         if te != None:
-            return [te],[te]
+            return [te],[[te]]
         else:
             return [],[]
+        
+    elif kind == "NonWeakEnemy":
+        possible = []
+        for temp_idx in oidx:
+            temp_pet = oteam[temp_idx].pet
+            if temp_pet.status == "status-weak":
+                continue
+            else:
+                possible.append([temp_pet])
+        if len(possible) == 0:
+            return [],[]
+        idx_range = np.arange(0,len(possible))
+        chosen_idx = np.random.choice(idx_range,(1,),replace=False)[0]
+        return possible[chosen_idx],possible
           
     elif kind == "none":
         ### No targets
@@ -677,6 +697,9 @@ def SummonPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     # print(teams)
     # print(fainted_pet)
     # print(te)
+    if len(te_idx) == 0:
+        raise Exception(
+            "Indices of triggering entity must be provided as te_idx")
     
     fteam,oteam = get_teams(apet_idx,teams)
     spet_name = apet.ability["effect"]["pet"]
@@ -688,11 +711,14 @@ def SummonPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     
     if team == "Friendly":
         target_team = fteam
-        ### First move team as far backward as possible
-        target_team.move_backward()
-        ### Then move all animals forward that are infront of the target pet
-        end_idx = summon_idx[1]+2
-        target_team.move_forward(start_idx=0, end_idx=end_idx)
+        #### First, determine how many pets should be infront
+        nahead = len(fteam.get_ahead(te_idx[1],n=5))
+        npets = len(fteam)
+        ### Then move team as far backward as possible
+        fteam.move_backward()
+        ### Move nahead pets forward which should be infront of the triggering pet
+        end_idx = (5-npets)+nahead
+        fteam.move_forward(start_idx=0, end_idx=end_idx)
     elif team == "Enemy":
         target_team = oteam
         target_team.move_forward()
@@ -762,11 +788,14 @@ def SummonRandomPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     
     
     #### Perform team movement to ensure that the pet is summoned in the 
-    #### correct position
-    ### First move team as far backward as possible
+    ####   correct position
+    #### First, determine how many pets should be infront
+    nahead = len(fteam.get_ahead(te_idx[1],n=5))
+    npets = len(fteam)
+    ### Then move team as far backward as possible
     fteam.move_backward()
-    ### Then move all animals forward that are infront of the target pet
-    end_idx = summon_idx[1]+2
+    ### Move nahead pets forward which should be infront of the triggering pet
+    end_idx = (5-npets)+nahead
     fteam.move_forward(start_idx=0, end_idx=end_idx)
     
     ### Check for furthest back open position

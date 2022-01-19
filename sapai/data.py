@@ -43,6 +43,8 @@ After new patch updates:
   4. There isn't a cost in every food and pet item. Only for pill. 
   5. Dodo is copyattack without any indication that it should be additive and 
       is not a copy operation
+  6. Bat target RandomEnergy -> NonWeakEnemy. Bat does not apply weak randomly. 
+      It only applies weak to an enemy that is not already weak. 
 
 """
 
@@ -2290,7 +2292,7 @@ data = {
           "kind": "ApplyStatus",
           "status": "status-weak",
           "to": {
-            "kind": "RandomEnemy",
+            "kind": "NonWeakEnemy",
             "n": 1
           }
         }
@@ -2305,7 +2307,7 @@ data = {
           "kind": "ApplyStatus",
           "status": "status-weak",
           "to": {
-            "kind": "RandomEnemy",
+            "kind": "NonWeakEnemy",
             "n": 2
           }
         }
@@ -2320,7 +2322,7 @@ data = {
           "kind": "ApplyStatus",
           "status": "status-weak",
           "to": {
-            "kind": "RandomEnemy",
+            "kind": "NonWeakEnemy",
             "n": 3
           }
         }

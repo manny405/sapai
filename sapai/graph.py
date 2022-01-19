@@ -134,7 +134,7 @@ def graph_battle(f,file_name="",verbose=False):
     g = Digraph(graph_attr={"rankdir": "TB", "clusterrank": "local"})
     prev_node = None
     node_idx = 0
-    for turn_name,phase_dict in f.fight_history.items():
+    for turn_name,phase_dict in f.battle_history.items():
         if turn_name == "init":
             pstr = prep_pet_str_obj(phase_dict)
             pstr[0] = ["Team 0: "] + pstr[0]

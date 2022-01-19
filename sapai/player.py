@@ -42,7 +42,7 @@ class Player():
         ### Default Parameters
         self._max_team = 5
         
-        ### Keep track of outcome of last fight for snail
+        ### Keep track of outcome of last battle for snail
         self.lf_winner = lf_winner
         
         ### Initialize shop and team if not provided
@@ -330,7 +330,7 @@ class Player():
     
     
     def end_turn(self):
-        """ End turn and move to fight phase """
+        """ End turn and move to battle phase """
         ### Activate eot trigger
         for slot in self.team:
             slot._pet.eot_trigger()
@@ -371,7 +371,8 @@ class Player():
         info_str += "TURN:  {}\n".format(self.turn)
         info_str += "LIVES: {}\n".format(self.lives)
         info_str += "GOLD:  {}\n".format(self.gold)
-        print_str = "CURRENT INFO: \n--------------\n"+info_str+"\n"
+        print_str = "--------------\n"
+        print_str += "CURRENT INFO: \n--------------\n"+info_str+"\n"
         print_str += "CURRENT TEAM: \n--------------\n"+self.team.__repr__()+"\n"
         print_str += "CURRENT SHOP: \n--------------\n"+self.shop.__repr__()
         return print_str

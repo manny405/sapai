@@ -17,11 +17,11 @@ class Team():
     """
     def __init__(self, 
                  obj_list=[], 
-                 fight=False, 
+                 battle=False, 
                  shop=None, 
                  player=None, 
                  pack="StandardPack"):
-        self._fight = fight
+        self._battle = battle
         self.max_slots = 5
         self.team = [TeamSlot() for x in range(self.max_slots)]
         for iter_idx,obj in enumerate(obj_list):
@@ -249,16 +249,11 @@ class Team():
             if slot.pet.level == 3:
                 return True
         return False
-    
-    
-    def remove_fainted(self):
-        if not self.fight:
-            raise Exception("Cannot use method remove_fainted outside of a fight")
         
     
     @property
-    def fight(self):
-        return self._fight
+    def battle(self):
+        return self._battle
         
     
     def __len__(self):
@@ -293,14 +288,14 @@ class Team():
     
     
     def copy(self):
-        return Team([x.copy() for x in self], self.fight, self.player)
+        return Team([x.copy() for x in self], self.battle, self.player)
     
     
     @property
     def state(self):
         state_dict = {
             "type": "Team",
-            "fight": self.fight,
+            "battle": self.battle,
             "team": [x.state for x in self.team],
             "pack": self.pack,
         }
@@ -311,7 +306,7 @@ class Team():
     def from_state(cls, state):
         team = [TeamSlot.from_state(x) for x in state["team"]]
         return cls(obj_list=team, 
-                   fight=state["fight"],
+                   battle=state["battle"],
                    shop=None,
                    player=None,
                    pack=state["pack"])

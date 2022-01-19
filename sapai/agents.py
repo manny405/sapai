@@ -2,7 +2,7 @@
 
 import os,json
 from sapai import Player
-from sapai.fight import Fight
+from sapai.battle import Battle
 from sapai.compress import compress,decompress
 
 ### Pets with a random component
@@ -12,7 +12,7 @@ from sapai.compress import compress,decompress
 random_buy_pets = {"pet-otter"}
 random_sell_pets = {"pet-beaver"}
 random_pill_pets = {"pet-ant"}
-random_fight_pets = {"pet-mosquito"}
+random_battle_pets = {"pet-mosquito"}
 
 class CombinatorialAgent():
     """
@@ -117,8 +117,8 @@ class DatabaseLookupRanker():
             self.t0 = team
             self.t1 = value["team"]
             
-            f = Fight(team,value["team"])
-            winner = f.fight()
+            f = Battle(team,value["team"])
+            winner = f.battle()
         
             winner_key = [[team_key],[key],[]][winner]
             for temp_key in winner_key:
@@ -141,8 +141,8 @@ class DatabaseLookupRanker():
         total = 0
         for key,value in self.team_database.items():
             # print(team, value["team"])
-            f = Fight(team,value["team"])
-            winner = f.fight()
+            f = Battle(team,value["team"])
+            winner = f.battle()
             if winner == 0:
                 wins += 1
             total += 1
