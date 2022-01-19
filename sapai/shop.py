@@ -282,8 +282,6 @@ class Shop():
                 if len(fslots) < self.fslots:
                     keep_idx.append(iter_idx)
                     fslots.append(iter_idx)
-        
-        print(keep_idx)
         keep_slots = [self.shop_slots[x] for x in keep_idx]
         self.shop_slots = keep_slots
 
