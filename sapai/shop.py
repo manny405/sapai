@@ -150,6 +150,7 @@ class Shop():
         
         for slot in self.shop_slots:
             slot.roll()    
+           
             ### Add health and attack from previously purchased cans
             if slot.frozen == False:
                 if slot.slot_type == "pet":
@@ -170,6 +171,7 @@ class Shop():
             ###   the current shop
             return
         self.shop_slots[idx].freeze()
+        
     
     
     def unfreeze(self, idx):
@@ -260,6 +262,7 @@ class Shop():
         ### Look for frozen slots first
         for iter_idx,slot in enumerate(self.shop_slots):
             if slot.frozen == True:
+             
                 keep_idx.append(iter_idx)
                 if slot.slot_type == "pet":
                     pslots.append(iter_idx)
@@ -271,7 +274,8 @@ class Shop():
         ### Then add other slots only if it has not yet exceeded the rules
         for iter_idx,slot in enumerate(self.shop_slots):
             if slot.slot_type == "pet":
-                if len(pslots) < self.pslots:
+                ### Frozen indices will be ignored to prevent keeping two copies of frozen units
+                if len(pslots) < self.pslots and iter_idx not in keep_idx:
                     keep_idx.append(iter_idx)
                     pslots.append(iter_idx)
             if slot.slot_type == "food":
@@ -279,6 +283,7 @@ class Shop():
                     keep_idx.append(iter_idx)
                     fslots.append(iter_idx)
         
+        print(keep_idx)
         keep_slots = [self.shop_slots[x] for x in keep_idx]
         self.shop_slots = keep_slots
 
@@ -335,6 +340,7 @@ class ShopSlot():
         self.pack = pack
         self.frozen = False
         self.cost = 3
+      
         
         if slot_type not in ["pet", "food", "levelup"]:
             raise Exception("Unrecognized slot type {}".format(self.slot_type))
