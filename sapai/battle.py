@@ -47,6 +47,10 @@ class Fight():
     
     
     def fight(self):
+        """
+        
+        
+        """
         ### Perform all effects that occur at the start of the fight
         self.start()
         
@@ -295,56 +299,8 @@ def fight_phase(phase,
     """
     Definition for performing all effects and actions throughout the fight. 
     Implemented as function instead of class method to save an extra 
-    indentation... Also, this function is certainly a bit ugly right now. 
-    There are better ways to implement this switching behavior. However, this 
-    certainly works and other forms of implementing it would just be aesthetic
-    improvements. 
-    
-    After evey major phase, phase_faint should be checked
-    
-    Possible phases of a fight:
-        phase_move_start
-        phase_start
-        phase_attack_before
-        phase_attack
-        phase_attack_after
-        phase_faint
-        phase_summon
-        phase_move_end
-    
-    Possible pet triggers for this function:
-        StartOfBattle
-        Summoned
-        Faint
-        BeforeAttack
-        Hurt
-        AfterAttack
-        CastsAbility (Tiger)
-        KnockOut
-    
-    Possible pet triggers not for this function:
-        Sell
-        EatsShopFood
-        EndOfTurn
-        BuyFood
-        Buy
-        LevelUp
-        BuyAfterLoss
-        BuyTier1Animal
-        EndOfTurnWith2PlusGold
-        EndOfTurnWith3PlusGold
-        EndOfTurnWith4OrLessAnimals
-        EndOfTurnWithLvl3Friend
-        StartOfTurn
-        
-    triggers = []
-    for key,value in data["pets"].items():
-        if "level1Ability" in value:
-            if "trigger" in value["level1Ability"]:
-                if value["level1Ability"]["trigger"] == "CastsAbility":
-                    print(key)
-                triggers.append(value["level1Ability"]["trigger"])
-        
+    indentation.
+    s
     """
     ### Parse inputs and collect info
     pao = pet_effect_order
@@ -716,8 +672,15 @@ def fight_phase_summon(phase,teams,pet_effect_order,phase_dict):
                 
                 ### Checking for tiger beforhand is only way. Spaghetti code...
                 next_pet = next_pet_list[entry_idx]
+                if next_pet != None:
+                    if len(next_pet) == 0:
+                        next_pet = None
                 original_ability = copy.deepcopy(temp_pet.override_ability_dict)
-                targets = func(temp_idx,teams,fainted_pet=temp_pet,te=next_alive)
+                if next_pet != None and next_pet.name == "pet-tiger":
+                    targets = func(temp_idx,teams,fainted_pet=temp_pet,
+                                   te=next_alive)
+                else:
+                    targets = func(temp_idx,teams,fainted_pet=temp_pet,te=None)
                 all_targets += targets
                 
                 ### Reset entry of faint_info
@@ -782,7 +745,14 @@ def fight_phase_summon(phase,teams,pet_effect_order,phase_dict):
                                 (temp_idx[0],final_idx),
                                 (str(temp_pet)),
                                 [str(bee)]))
+                            all_targets.append(bee)
                             break
+                
+                ### Activate summon triggers
+                for temp_entry in all_targets:
+                    fteam = teams[faint_info[1][0]]
+                    for slot in fteam:
+                        slot._pet.friend_summoned_trigger(temp_entry)
                     
                     
                     
@@ -823,7 +793,8 @@ def fight_phase_faint(phase,teams,pet_effect_order,phase_dict):
                     func = get_effect_function(kind)
                     func_name = func.__name__
                     targets = func((team_idx,iter_idx),teams, 
-                                   fainted_pet=temp_slot.pet)
+                                   fainted_pet=temp_slot.pet,
+                                   te=None)
                     fainted["t{}".format(team_idx)].append((
                         func_name,
                         (team_idx,iter_idx),

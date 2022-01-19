@@ -312,10 +312,39 @@ class Shop():
                 if len(fslots) < self.fslots:
                     keep_idx.append(iter_idx)
                     fslots.append(iter_idx)
+
+        if len(pslots) < self.pslots:
+            add_slots = min(self.pslots - len(pslots), 
+                            self.max_slots - len(keep_idx))
+            for idx in range(add_slots):
+                self.shop_slots.append(ShopSlot("pet"))
+                keep_idx.append(len(self.shop_slots)-1)
+        if len(fslots) < self.fslots:
+            add_slots = min(self.fslots - len(fslots), 
+                            self.max_slots - len(keep_idx))
+            for idx in range(add_slots):
+                self.shop_slots.append(ShopSlot("food"))
+                keep_idx.append(len(self.shop_slots)-1)
         
         keep_slots = [self.shop_slots[x] for x in keep_idx]
         self.shop_slots = keep_slots
-
+        
+        ### Order shop slots
+        keep_idx = []
+        pslots = []
+        fslots = []
+        for iter_idx,slot in enumerate(self.shop_slots):
+            if slot.slot_type == "pet":
+                pslots.append(iter_idx)
+            elif slot.slot_type == "leveup":
+                pslots.append(iter_idx)
+        for iter_idx,slot in enumerate(self.shop_slots):
+            if slot.slot_type == "food":
+                fslots.append(iter_idx)
+        keep_idx = pslots+fslots
+        keep_slots = [self.shop_slots[x] for x in keep_idx]
+        self.shop_slots = keep_slots
+        
 
     def __len__(self):
         return len(self.shop_slots)
@@ -520,7 +549,6 @@ class ShopSlot():
                 self.cost = 1
         else:
             raise Exception()
-        
         
         
     

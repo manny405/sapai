@@ -48,6 +48,7 @@ def get_print_str(pets):
     
     return print_str
 
+# t = Team([Pet("fish"), Pet("dragon"), Pet("cat"), Pet("sheep")])
 #%%
 
 ################################################################################
@@ -311,4 +312,166 @@ for iter_idx,pet in enumerate(pets):
     if activated_bool != test_bool_list[iter_idx]:
         raise Exception("Incorrect activation for pet {}".format(pet))
 
+# %%
+
+################################################################################
+##### Testing all start-of-battle triggers
+################################################################################
+
+%run /Users/ibier/Software/sapai/sapai/pets.py
+from sapai.compress import compress,decompress
+
+test_team = Team([Pet("fish"), Pet("dragon"), Pet("cat")], fight=True)
+cteam = compress(test_team)
+player = Player()
+
+test_pet_names = ["mosquito", "bat", "whale", "dolphin", "skunk", "crocodile", 
+                    "leopard"]
+
+pets = [Pet(x, shop=Shop(), team=test_team.copy(), player=player) for x in test_pet_names]
+print_str = get_print_str(pets)
+print(print_str)
+
+for pet in pets:
+    pet.team.append(Pet("tiger"))
+    trigger = decompress(cteam)
+    print("------------------------")
+    print(pet)
+    print(trigger)
+    activated_bool = pet.sob_trigger(trigger)
+    if activated_bool == False:
+        raise Exception("Non-activated pet {}".format(pet))
+    print(trigger)
+    print(pet.team)
+    # print(pet.team)
+
+# %%
+
+
+################################################################################
+##### Testing all before_attack_trigger triggers
+################################################################################
+
+%run /Users/ibier/Software/sapai/sapai/pets.py
+from sapai.compress import compress,decompress
+
+test_team = Team([Pet("fish"), Pet("dragon"), Pet("cat")], fight=True)
+cteam = compress(test_team)
+player = Player()
+
+test_pet_names = ["elephant", "boar", "octopus"]
+
+pets = [Pet(x, shop=Shop(), team=test_team.copy(), player=player) for x in test_pet_names]
+pets[-1].level = 3
+print_str = get_print_str(pets)
+print(print_str)
+
+for pet in pets:
+    pet.team.append(Pet("tiger"))
+    trigger = decompress(cteam)
+    print("------------------------")
+    print(pet)
+    print(trigger)
+    activated_bool = pet.before_attack_trigger(trigger)
+    if activated_bool == False:
+        raise Exception("Non-activated pet {}".format(pet))
+    print(trigger)
+    print(pet.team)
+
+
+# %%
+
+################################################################################
+##### Testing all after_attack_trigger triggers
+################################################################################
+
+%run /Users/ibier/Software/sapai/sapai/pets.py
+from sapai.compress import compress,decompress
+
+test_team = Team([Pet("fish")], fight=True)
+cteam = compress(test_team)
+player = Player()
+
+test_pet_names = ["kangaroo","snake"]
+
+pets = [Pet(x, shop=Shop(), team=test_team.copy(), player=player) for x in test_pet_names]
+pets[-1].level = 3
+print_str = get_print_str(pets)
+print(print_str)
+
+
+for pet in pets:
+    pet.team.append(Pet("tiger"))
+    trigger = decompress(cteam)
+    print("------------------------")
+    print(pet)
+    print(trigger)
+    activated_bool = pet.after_attack_trigger(trigger)
+    if activated_bool == False:
+        raise Exception("Non-activated pet {}".format(pet))
+    print(trigger)
+    print(pet.team)
+
+#%%
+
+################################################################################
+##### Testing all hurt_trigger triggers
+################################################################################
+
+%run /Users/ibier/Software/sapai/sapai/pets.py
+from sapai.compress import compress,decompress
+
+test_team = Team([Pet("fish")], fight=True)
+cteam = compress(test_team)
+player = Player()
+
+test_pet_names = ["peacock", "blowfish", "camel", "gorilla"]
+
+pets = [Pet(x, shop=Shop(), team=test_team.copy(), player=player) for x in test_pet_names]
+print_str = get_print_str(pets)
+print(print_str)
+
+for pet in pets:
+    pet.team.append(Pet("tiger"))
+    trigger = decompress(cteam)
+    print("------------------------")
+    print(pet)
+    print(trigger)
+    activated_bool = pet.hurt_trigger(trigger)
+    if activated_bool == False:
+        raise Exception("Non-activated pet {}".format(pet))
+    print(trigger)
+    print(pet.team)
+
+# %%
+
+################################################################################
+##### Testing all knockout_trigger triggers
+################################################################################
+
+%run /Users/ibier/Software/sapai/sapai/pets.py
+from sapai.compress import compress,decompress
+
+test_team = Team([Pet("fish")], fight=True)
+cteam = compress(test_team)
+player = Player()
+
+test_pet_names = ["hippo", "rhino"]
+
+pets = [Pet(x, shop=Shop(), team=test_team.copy(), player=player) for x in test_pet_names]
+print_str = get_print_str(pets)
+print(print_str)
+
+for pet in pets:
+    pet.team.append(Pet("tiger"))
+    trigger = decompress(cteam)
+    print("------------------------")
+    print(pet)
+    print(trigger)
+    activated_bool = pet.knockout_trigger(trigger)
+    if activated_bool == False:
+        raise Exception("Non-activated pet {}".format(pet))
+    print(trigger)
+    print(pet.team)
+    
 # %%

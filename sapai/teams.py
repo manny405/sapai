@@ -183,6 +183,8 @@ class Team():
             if not found:
                 raise Exception("get_idx {} not found".format(obj))
             return found_idx
+        elif type(obj) == int:
+            return obj
         else:
             raise Exception("Object of type {} not recognized".format(type(obj)))
         
@@ -201,7 +203,7 @@ class Team():
                     fidx.append(iter_idx)
         return fidx
     
-    def get_friendahead(self, obj, n=1):
+    def get_ahead(self, obj, n=1):
         pet_idx = self.get_idx(obj)
         fidx = []
         for iter_idx,temp_slot in enumerate(self):
@@ -217,6 +219,20 @@ class Team():
             if len(ret_pets) >= n:
                 break
         return ret_pets
+    
+    
+    def get_behind(self, obj, n=1):
+        pet_idx = self.get_idx(obj)
+        fidx = []
+        for iter_idx,temp_slot in enumerate(self):
+            if not temp_slot.empty:
+                fidx.append(iter_idx)
+        chosen = []
+        for temp_idx in fidx:
+            if temp_idx > pet_idx:
+                chosen.append(self.team[temp_idx])
+        return chosen[0:n]
+        
             
     def append(self, obj):
         obj = TeamSlot(obj)

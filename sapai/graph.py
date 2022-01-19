@@ -130,7 +130,7 @@ def prep_effect(effect_list):
             effect_columns)
 
 
-def graph_fight(f,file_name="",verbose=False):
+def graph_battle(f,file_name="",verbose=False):
     g = Digraph(graph_attr={"rankdir": "TB", "clusterrank": "local"})
     prev_node = None
     node_idx = 0
