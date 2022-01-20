@@ -115,7 +115,7 @@ def timing_test():
 # %%
 
 
-from sapai.graph import graph_fight
-graph_fight(fight, file_name="Example")
+from sapai.graph import graph_battle
+b(battle, file_name="battle_graph_full")
 
 # %%

@@ -140,7 +140,9 @@ The implementation of battle is efficient. Using IPython magic, this can be test
       ###   8.12 ms ± 450 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
       ###   More than 100 battle per second on a single core
 
-      ### On 
+      ### On Xeon Platinum 8124M @ 3.00GHz
+      ###  6.06 ms ± 49.1 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+      ###  More than 150 battle per second on a single core
       
 ^^^^^^^^^^^^
 Battle Graph
