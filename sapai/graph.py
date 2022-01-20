@@ -130,11 +130,11 @@ def prep_effect(effect_list):
             effect_columns)
 
 
-def graph_fight(f,file_name="",verbose=False):
+def graph_battle(f,file_name="",verbose=False):
     g = Digraph(graph_attr={"rankdir": "TB", "clusterrank": "local"})
     prev_node = None
     node_idx = 0
-    for turn_name,phase_dict in f.fight_history.items():
+    for turn_name,phase_dict in f.battle_history.items():
         if turn_name == "init":
             pstr = prep_pet_str_obj(phase_dict)
             pstr[0] = ["Team 0: "] + pstr[0]
@@ -190,22 +190,15 @@ def graph_fight(f,file_name="",verbose=False):
                         continue
                     entries.append(["Effect", "Team", "  Pet Index  ", "  Activating Pet  ", "Targets"])
                     
-            elif "phase_faint" in phase_name:
-                if phase_name == "phase_faint":
-                    header = "{} Phase: Faint".format(turn_name)
-                elif phase_name == "phase_faint_2":
-                    header = "{} Phase: Faint 2".format(turn_name)
+            elif "phase_hurt_and_faint" in phase_name:
+                header = "{} Phase: Hurt and Faint".format(turn_name)
                 entries = []
                 if len(phase_entry) == 0:
                     phase_entry = [{}]
-                for key,value in phase_entry[0].items():
-                    if key == "t0":
-                        team_str = "Team 0"
-                    else:
-                        team_str = "Team 1"
-                    for temp_effect_info in value:
+                else:
+                    for iter_idx,temp_effect_info in enumerate(phase_entry):
                         es,ec = prep_effect(temp_effect_info)
-                        if len(entries) == 0:
+                        if iter_idx == 0:
                             entries.append(ec)
                         entries.append(es)
                 if len(entries) == 0:
@@ -213,26 +206,15 @@ def graph_fight(f,file_name="",verbose=False):
                         continue
                     entries.append(["Effect", "Team", "  Pet Index  ", "  Activating Pet  ", "Targets"])
                     
-            elif "phase_summon" == phase_name:
-                header = "{} Phase: Summon".format(turn_name)
-                entries = []
-                for temp_effect_info in phase_entry:
-                    es,ec = prep_effect(temp_effect_info)
-                    if len(entries) == 0:
-                        entries.append(ec)
-                    entries.append(es)
-                if len(entries) == 0:
-                    if not verbose:
-                        continue
-                    entries.append(["Effect", "Team", "  Pet Index  ", "  Activating Pet  ", "Targets"])
-                    
-            elif phase_name in ["phase_attack_before", "phase_attack_after", "phase_attack"]:
+            elif phase_name in ["phase_attack_before", "phase_attack_after", "phase_attack", "phase_knockout"]:
                 if phase_name == "phase_attack_before":
                     header = "{} Phase: Before Attack".format(turn_name)
                 elif phase_name == "phase_attack":
                     header = "{} Phase: Attack".format(turn_name)
                 elif phase_name == "phase_attack_after":
                     header = "{} Phase: Attack After".format(turn_name)
+                elif phase_name == "phase_knockout":
+                    header = "{} Phase: Knockout".format(turn_name)
                 entries = []
                 for temp_effect_info in phase_entry:
                     es,ec = prep_effect(temp_effect_info)

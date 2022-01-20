@@ -7,7 +7,10 @@ from sapai.data import data
 #%%
 
 class Food():
-    def __init__(self, name="food-none", shop=None, team=[]):
+    def __init__(self, 
+                 name="food-none", 
+                 shop=None, 
+                 team=[]):
         """
         Food class definition the types of interactions that food undergoes
         
@@ -18,7 +21,6 @@ class Food():
             
         self.eaten = False
         self.shop = shop
-        self.owned_pets = []
         
         self.attack = 0
         self.health = 0
@@ -45,9 +47,6 @@ class Food():
             self.base_health = fd["effect"]["healthAmount"]
         if "status" in fd["effect"]:
             self.status = fd["effect"]["status"]
-                
-        for temp_pet in self.owned_pets:
-            raise Exception("ADD IN PET MODIFICATIONS TO FOOD")
     
     
     def apply(self, pet=None):
@@ -81,6 +80,27 @@ class Food():
             ###   Python, therefore, this achieves the correct behavior
             copy_food.__dict__[key] = value
         return copy_food
+    
+    
+    @property
+    def state(self):
+        state_dict = {
+            "type": "Food",
+            "name": self.name,
+            "eaten": self.eaten,
+            "attack": self.attack,
+            "health": self.health,
+        }
+        return state_dict
+
+    
+    @classmethod
+    def from_state(cls, state):
+        food = cls(name=state["name"])
+        food.attack = state["attack"]
+        food.health = state["health"]
+        food.eaten = state["eaten"]
+        return food
     
         
     def __repr__(self):

@@ -1,31 +1,51 @@
 
 import sys,inspect
+import itertools
 import numpy as np
 
 from sapai.data import data
 from sapai.tiers import pet_tier_lookup,pet_tier_lookup_std
 from sapai.foods import Food
 
-#### Removing these to avoid circular imports
-# from sapai.pets import Pet
-# from sapai.teams import Team,TeamSlot
 
 """
 This module implements all effects in the game. API description is as follows:
 
-    - Function name must match the effect["kind"] in data.data
-    - Function must take in the pet_idx that has triggered the effect to occur 
-        where pet_idx=(team_idx,team_pet_idx)
-    - Function must take in teams referenced by pet_idx
-    - Functions may take in fainted_pet as optional input when the effect was
-        triggered by a unit that already fained. The pet_idx provided should be 
-        the position that the fainted unit was from. 
-    - Function takes in triggering entity optionally as te
-    - Functions that require the shop to interact must have required shop input
-    - Function may modify the teams freely
-    - Function must return the pets that were targeted for the effect as a list
-    - Returns nothing as further analysis of the outcome of the effect should 
-        be determined by other function
+    Arguments
+    ---------
+    apet: Pet
+        Activating Pet. Must include the attached shop or player when necessary.
+    apet_idx: list
+        List of two indices for the [team_list_idx, team_idx] from which the 
+        activating pet was called from
+    teams: list
+        List of Team objects. Either one or two teams. 
+    te: Pet
+        Triggering pet. If a pet has trigger the action. For example, if a horse
+        is on the team and then an animal is summoned. The summoned animal would
+        be the triggering pet. 
+    te_idx: list
+        List of two indices for the [team_list_idx, team_idx] from which the 
+        triggering entity exists. This is only used for SummonPet in the case
+        of a Fly summoning in the position of the fainted pet, which is the 
+        triggering entity. In all other cases, te_idx should not be used as it
+        is unnecessary. 
+    fixed_targets: list of pets
+        If a fixed target is desired for the effect. For common use, this is not
+        required. It is useful in the case that certain outcomees are being 
+        tested. It is also useful in the case that all outcomes due to 
+        randomness are exactly exactly considered rather than having to rely on bootstrapped probabilities. This leads to significantly improved 
+        efficiency for training by database purposes. 
+
+    Returns
+    -------
+    targets: list
+        List of pets that have been targeted by the effect of the ability
+    possible: list of lists
+        List of lists of all possible targets that could also be targeted. 
+        If there is an element of randomness in the outcome, all possible 
+        targets, and potentially all possible combinations of targets, is also
+        returned. 
 
 """
 
@@ -44,7 +64,7 @@ def get_effect_function(effect_kind):
     return func_dict[effect_kind]
 
 
-def get_pet(pet_idx,teams,fainted_pet=None):
+def get_pet(pet_idx,teams,fainted_pet=None,te=None):
     """ Helper function with error catching """
     team_idx = pet_idx[0]
     team_pet_idx = pet_idx[1]
@@ -58,12 +78,14 @@ def get_pet(pet_idx,teams,fainted_pet=None):
         pet = teams[team_idx][team_pet_idx].pet
     else:
         pet = fainted_pet
+    if te != None:
+        pet = te
     return pet
  
 
 def get_teams(pet_idx,teams):
     if len(teams) == 1:
-        teams = [teams[0], []]
+        return teams[0],[]
     if pet_idx[0] == 0:
         fteam = teams[0]
         oteam = teams[1]
@@ -75,7 +97,8 @@ def get_teams(pet_idx,teams):
     return fteam,oteam
 
 
-def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
+def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=False,
+               test_kind=""):
     """
     Returns the targets for a given effect. Targets are returned as a list of 
     pets. 
@@ -95,7 +118,7 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
     te: Pet
         Triggering entity
     """
-    p = get_pet(pet_idx,teams,fainted_pet)
+    p = apet
     effect = p.ability["effect"]
     
     if len(teams) == 1:
@@ -106,7 +129,7 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
         if "to" in effect:
             target = effect["to"]
         else:
-            print(p,effect)
+            print(apet,apet_idx,teams,te,fixed_targets,get_from)
             raise Exception("Target not found")
     else:
         target = effect["target"]
@@ -122,11 +145,16 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
     kind = target["kind"]
     if "n" in target:
         n = target["n"]
+    else:
+        n = 1
+        
+    if len(test_kind) != 0:
+        kind = test_kind
     
-    if pet_idx[0] == 0:
+    if apet_idx[0] == 0:
         fteam = teams[0]
         oteam = teams[1]
-    elif pet_idx[0] == 1:
+    elif apet_idx[0] == 1:
         fteam = teams[1]
         oteam = teams[0]
     else:
@@ -147,70 +175,62 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
                 oidx.append(iter_idx)
     
     if kind == "AdjacentAnimals":
-        lookup_pet_idx = -1
-        lookup = {}
-        iter_idx = 0
-        ### First add opponent indices backward 
-        for temp_idx in oidx[::-1]:
-            lookup[iter_idx] = {"oidx": temp_idx}
-            iter_idx += 1
-        ### Then add friendly indices
-        for temp_idx in fidx:
-            if temp_idx > pet_idx[1]:
-                if lookup_pet_idx < 0:
-                    ### Handle case that pet has fainted already
-                    lookup_pet_idx = iter_idx
-                    lookup[iter_idx] = {"fidx": pet_idx[1]}
-                    iter_idx += 1
-                    lookup[iter_idx] = {"fidx": temp_idx}
-                    iter_idx += 1
-                    continue
-            elif temp_idx == pet_idx[1]:
-                lookup_pet_idx = temp_idx
-            lookup[iter_idx] = {"fidx": temp_idx}
-            iter_idx += 1
-        if lookup_pet_idx < 0:
-            raise Exception("Not possible")
-        ret_pets = []
-        if lookup_pet_idx+1 in lookup:
-            if "fidx" in lookup[lookup_pet_idx+1]:
-                temp_idx = lookup[lookup_pet_idx+1]["fidx"]
-                ret_pets.append(fteam[temp_idx].pet)
-            elif "oidx" in lookup[lookup_pet_idx+1]:
-                temp_idx = lookup[lookup_pet_idx+1]["oidx"]
-                ret_pets.append(oteam[temp_idx].pet)
-        if lookup_pet_idx-1 in lookup:
-            if "fidx" in lookup[lookup_pet_idx-1]:
-                temp_idx = lookup[lookup_pet_idx-1]["fidx"]
-                ret_pets.append(fteam[temp_idx].pet)
-            elif "oidx" in lookup[lookup_pet_idx-1]:
-                temp_idx = lookup[lookup_pet_idx-1]["oidx"]
-                ret_pets.append(oteam[temp_idx].pet)
-        return ret_pets
+        all_pets = []
+        fpet_slot_idx = []
+        ### First add opponent backward 
+        for temp_slot in oteam[::-1]:
+            all_pets.append(temp_slot)
+        ### Then friendly
+        for temp_slot in fteam:
+            fpet_slot_idx.append(len(all_pets))
+            all_pets.append(temp_slot)
+        apet_in_all = fpet_slot_idx[apet_idx[1]]
+        if (apet_in_all-1) > 0:
+            left_slot = all_pets[apet_in_all-1]
+        else:
+            left_slot = None
         
-    elif kind == "AdjacentFriends":
-        lookup_pet_idx = -1
-        lookup = {}
-        for iter_idx,temp_idx in enumerate(fidx):
-            if temp_idx == pet_idx[1]:
-                lookup_pet_idx = temp_idx
-            lookup[iter_idx] = {"fidx": temp_idx}
-        if lookup_pet_idx < 0:
-            raise Exception("Not possible")
+        if (apet_in_all+1) < len(all_pets):
+            right_slot = all_pets[apet_in_all+1]
+        else:
+            right_slot = None
+
         ret_pets = []
-        if lookup_pet_idx+1 in lookup:
-            if "fidx" in lookup[lookup_pet_idx+1]:
-                temp_idx = lookup[lookup_pet_idx+1]["fidx"]
-                ret_pets.append(fteam[temp_idx].pet)
+        for temp_slot in [left_slot,right_slot]:
+            if temp_slot == None:
+                continue
+            if temp_slot.empty:
+                continue
             else:
-                raise Exception()
-        if lookup_pet_idx-1 in lookup:
-            if "fidx" in lookup[lookup_pet_idx-1]:
-                temp_idx = lookup[lookup_pet_idx-1]["fidx"]
-                ret_pets.append(fteam[temp_idx].pet)
+                ret_pets.append(temp_slot.pet)
+        return ret_pets,[ret_pets]
+    
+    elif kind == "AdjacentFriends":
+        all_pets = []
+        fpet_slot_idx = []
+        for temp_slot in fteam:
+            fpet_slot_idx.append(len(all_pets))
+            all_pets.append(temp_slot)
+        apet_in_all = fpet_slot_idx[apet_idx[1]]
+        if (apet_in_all-1) > 0:
+            left_slot = all_pets[apet_in_all-1]
+        else:
+            left_slot = None
+        
+        if (apet_in_all+1) < len(all_pets):
+            right_slot = all_pets[apet_in_all+1]
+        else:
+            right_slot = None
+            
+        ret_pets = []
+        for temp_slot in [left_slot,right_slot]:
+            if temp_slot == None:
+                continue
+            if temp_slot.empty:
+                continue
             else:
-                raise Exception()
-        return ret_pets
+                ret_pets.append(temp_slot.pet)
+        return ret_pets,[ret_pets]
     
     elif kind == "All":
         ret_pets = []
@@ -218,88 +238,105 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
             ret_pets.append(fteam[temp_idx].pet)
         for temp_idx in oidx:
             ret_pets.append(oteam[temp_idx].pet)
-        return ret_pets
+        return ret_pets,[ret_pets]
         
     elif kind == "DifferentTierAnimals":
         pet_tier_lookup = {1: [], 2: [], 3: [], 4: [], 5: [], 6:[]}
         for temp_idx in fidx:
             temp_tier = fteam[temp_idx].pet.tier
-            pet_tier_lookup[temp_tier].append(fteam[temp_idx].pet)
-        ret_pets = []
-        for _,pet_list in pet_tier_lookup.items():
-            if len(pet_list) == 0:
-                continue
-            chosen_pet = np.random.choice(pet_list, (1,))[0]
-            ret_pets.append(chosen_pet)
-        return ret_pets
+            pet_tier_lookup[temp_tier].append(temp_idx)
+        
+        ### Build lookup of all possible pets
+        idx_list = []
+        for key,value in pet_tier_lookup.items():
+            if len(value) > 0:
+                idx_list.append(value)
+        grid = np.meshgrid(*idx_list)
+        ravel_grid = [x.ravel()  for x in grid]
+        all_idx = np.array(ravel_grid).T
+        all_possible = []
+        for temp_idx in all_idx:
+            temp_chosen = [fteam[x].pet for x in temp_idx]
+            all_possible.append(temp_chosen)
+        
+        ### Choose one to return for current 
+        choice_idx_range = np.arange(0,len(all_possible))
+        choice_idx = np.random.choice(choice_idx_range, (1,))[0]
+        ret_pets = all_possible[choice_idx]
+        return ret_pets,all_possible
     
     elif kind == "EachEnemy":
         ret_pets = []
         for temp_idx in oidx:
             ret_pets.append(oteam[temp_idx].pet)
-        return ret_pets
+        return ret_pets,[ret_pets]
     
     elif kind == "EachFriend":
         ret_pets = []
         for temp_idx in fidx:
             ret_pets.append(fteam[temp_idx].pet)
-        return ret_pets
+        return ret_pets,[ret_pets]
     
     elif kind == "EachShopAnimal":
-        shop = fteam.shop
+        shop = p.shop
         if shop == None:
-            return []
+            return [],[]
         else:
-            return shop.pets
+            return shop.pets,[shop.pets]
         
     elif kind == "FirstEnemy":
         if len(oidx) > 0:
-            return [oteam[oidx[0]].pet]
+            return [oteam[oidx[0]].pet],[[oteam[oidx[0]].pet]]
         else:
-            return []
+            return [],[]
     
     elif kind == "FriendAhead":
         chosen_idx = []
         for temp_idx in fidx:
-            if temp_idx < pet_idx[1]:
+            if temp_idx < apet_idx[1]:
                 chosen_idx.append(temp_idx)
         ret_pets = []
         for temp_idx in chosen_idx[::-1]:
             ret_pets.append(fteam[temp_idx].pet)
             if len(ret_pets) >= n:
                 break
-        return ret_pets
+        return ret_pets,[ret_pets]
         
     elif kind == "FriendBehind":
         chosen_idx = []
         for temp_idx in fidx:
-            if temp_idx > pet_idx[1]:
+            if temp_idx > apet_idx[1]:
                 chosen_idx.append(temp_idx)
         ret_pets = []
         for temp_idx in chosen_idx:
             ret_pets.append(fteam[temp_idx].pet)
             if len(ret_pets) >= n:
                 break
-        return ret_pets
+        return ret_pets,[ret_pets]
     
     elif kind == "HighestHealthEnemy":
         health_list = []
         for temp_idx in oidx:
             health_list.append(oteam[temp_idx].pet.health)
         if len(health_list) > 0:
-            max_idx = np.argmax(health_list)
+            max_health = np.max(health_list)
+            choice_idx_range = np.where(np.array(health_list) == max_health)[0]
+            choice_idx = np.random.choice(choice_idx_range, (1,), replace=False)[0]
+            all_possible = [[oteam[oidx[x]].pet] for x in choice_idx_range]
             ### Dereference max_idx
-            return [oteam[oidx[max_idx]].pet]
+            return [oteam[oidx[choice_idx]].pet],all_possible
         else:
-            return []
+            return [],[]
         
-    
     elif kind == "LastEnemy":
-        return [oteam[np.max(oidx)].pet]
+        if len(oidx) > 0:
+            return [oteam[np.max(oidx)].pet],[[oteam[np.max(oidx)].pet]]
+        else:
+            return [],[]
     
     elif kind == "LeftMostFriend":
         max_idx = np.max(fidx)
-        return [fteam[max_idx].pet]
+        return [fteam[max_idx].pet],[[fteam[max_idx].pet]]
         
     elif kind == "Level2And3Friends":
         level_list = []
@@ -312,172 +349,217 @@ def get_target(pet_idx,teams,fainted_pet=None,get_from=False,te=None):
                 ### Dereference idx
                 temp_idx = fidx[temp_idx]
                 ret_pets.append(fteam[temp_idx].pet)
-            return ret_pets
+            return ret_pets,[ret_pets]
         else:
-            return []
+            return [],[]
     
     elif kind == "LowestHealthEnemy":
         health_list = []
         for temp_idx in oidx:
             health_list.append(oteam[temp_idx].pet.health)
         if len(health_list) > 0:
-            min_idx = np.argmin(health_list)
+            min_health = np.min(health_list)
+            choice_idx_range = np.where(np.array(health_list) == min_health)[0]
+            choice_idx = np.random.choice(choice_idx_range, (1,), replace=False)[0]
+            all_possible = [[oteam[oidx[x]].pet] for x in choice_idx_range]
             ### Dereference max_idx
-            return [oteam[oidx[min_idx]].pet]
+            return [oteam[oidx[choice_idx]].pet],all_possible
         else:
-            return []
+            return [],[]
     
     elif kind == "RandomEnemy":
-        cidx = []
+        ret_pets = []
+        all_possible = []
         if len(oidx) > 0:
             if len(oidx) < n:
                 n = len(oidx)
-            cidx = np.random.choice(oidx, size=(n,), replace=False)
-        ret_pets = []
-        for temp_idx in cidx:
-            ret_pets.append(oteam[temp_idx].pet)
-        return ret_pets
+            all_idx = [x for x in itertools.combinations(oidx,n)]
+            all_possible = []
+            for temp_idx in all_idx:
+                temp_chosen = [oteam[x].pet for x in temp_idx]
+                all_possible.append(temp_chosen)
+            crange = np.arange(0,len(all_possible))
+            cidx = np.random.choice(crange,(1,),replace=False)[0]
+            ret_pets = all_possible[cidx]
+        return ret_pets,all_possible
     
     elif kind == "RandomFriend":
-        pidx = []
-        for temp_idx in fidx:
-            if temp_idx != pet_idx[1]:
-                pidx.append(temp_idx)
-        if n <= len(pidx):
-            cidx = np.random.choice(pidx, size=(n,), replace=False)
-        elif len(pidx) > 0:
-            cidx = np.random.choice(pidx, size=(len(pidx),), replace=False)
-        elif len(pidx) == 0:
-            cidx = []
-        else:
-            raise Exception("That's impossible")
         ret_pets = []
-        for temp_idx in cidx:
-            ret_pets.append(teams[pet_idx[0]][temp_idx].pet)
-        return ret_pets
+        all_possible = []
+        if len(fidx) > 0:
+            if len(fidx) < n:
+                n = len(fidx)
+            keep_fidx = []
+            for temp_entry in fidx:
+                if temp_entry == apet_idx[1]:
+                    continue
+                keep_fidx.append(temp_entry)
+            fidx = keep_fidx
+            all_idx = [x for x in itertools.combinations(fidx,n)]
+            all_possible = []
+            for temp_idx in all_idx:
+                temp_chosen = [fteam[x].pet for x in temp_idx]
+                all_possible.append(temp_chosen)
+            crange = np.arange(0,len(all_possible))
+            cidx = np.random.choice(crange,(1,),replace=False)[0]
+            ret_pets = all_possible[cidx]
+        return ret_pets,all_possible
         
     elif kind == "RightMostFriend":
-        return [fteam[fidx[0]].pet]
+        return [fteam[fidx[0]].pet],[[fteam[fidx[0]].pet]]
     
     elif kind == "Self":
-        return [teams[pet_idx[0]][pet_idx[1]].pet]
+        return [apet],[[apet]]
 
     elif kind == "StrongestFriend":
         stat_list = []
         for temp_idx in fidx:
             temp_stats = fteam[temp_idx].pet.attack + fteam[temp_idx].pet.health
             stat_list.append(temp_stats)
-        max_idx = np.argmax(stat_list)
-        max_idx = fidx[max_idx]
-        return [fteam[max_idx].pet]
+        stat_list = np.array(stat_list)
+        max_stats = np.max(stat_list)
+        max_idx = np.where(stat_list == max_stats)[0]
+        all_possible = []
+        for temp_idx in max_idx:
+            all_possible.append(fteam[temp_idx].pet)
+        choice = np.random.choice(max_idx,(1,),replace=False)[0]
+        ret_pets = [fteam[choice].pet]
+        return ret_pets,all_possible
 
     elif kind == "HighestHealthFriend":
         health_list = []
         for temp_idx in fidx:
             health_list.append(fteam[temp_idx].pet.health)
-        max_idx = np.argmax(health_list)
-        return [fteam[max_idx].pet]
+        max_health = np.max(health_list)
+        max_idx = np.where(health_list == max_health)[0]
+        all_possible = []
+        for temp_idx in max_idx:
+            all_possible.append(fteam[temp_idx].pet)
+        choice = np.random.choice(max_idx,(1,),replace=False)[0]
+        ret_pets = [fteam[choice].pet]
+        return ret_pets,all_possible
+
     
     elif kind == "TriggeringEntity":
         if te != None:
-            return [te]
+            return [te],[[te]]
         else:
-            return []
+            return [],[]
+        
+    elif kind == "NonWeakEnemy":
+        possible = []
+        for temp_idx in oidx:
+            temp_pet = oteam[temp_idx].pet
+            if temp_pet.status == "status-weak":
+                continue
+            else:
+                possible.append([temp_pet])
+        if len(possible) == 0:
+            return [],[]
+        idx_range = np.arange(0,len(possible))
+        chosen_idx = np.random.choice(idx_range,(1,),replace=False)[0]
+        return possible[chosen_idx],possible
           
     elif kind == "none":
         ### No targets
-        return []
+        return [],[]
 
     else:
         raise Exception("Target {} impelementation not found".format(kind))
     
 
-def AllOf(pet_idx, teams, fainted_pet=None, te=None):
-    p = get_pet(pet_idx,teams,fainted_pet)
-    original_effect = p.ability["effect"]
-    effects = p.ability["effect"]["effects"]
+def AllOf(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    """ AllOf will return list of lists """
+    original_effect = apet.ability["effect"]
+    effects = apet.ability["effect"]["effects"]
     target = []
-    for temp_effect in effects:
+    possible_targets = []
+    for iter_idx,temp_effect in enumerate(effects):
         effect_kind = temp_effect["kind"]
         func = get_effect_function(effect_kind)
-        p.ability["effect"] = temp_effect
-        target += func(pet_idx,teams,te=te)
-    p.ability["effect"] = original_effect
-    return target
+        apet.ability["effect"] = temp_effect
+        temp_target,temp_possible = func(
+            apet,apet_idx,teams,te,fixed_targets)
+        target.append(temp_target)
+        possible_targets.append(temp_possible)
+    apet.ability["effect"] = original_effect
+    return target,possible_targets
 
 
-def ApplyStatus(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
-    status = pet.ability["effect"]["status"]
+def ApplyStatus(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    if len(fixed_targets) == 0:
+        target,possible = get_target(apet, apet_idx, teams, te=te)
+    else:
+        target = fixed_targets
+        possible = [fixed_targets]
+    status = apet.ability["effect"]["status"]
     for target_pet in target:
         target_pet.status = status
-    return target
+    return target,possible
 
 
-def DealDamage(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
-    health_amount = pet.ability["effect"]["amount"]
+def DealDamage(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    if len(fixed_targets) == 0:
+        target,possible = get_target(apet, apet_idx, teams, te=te)
+    else:
+        target = fixed_targets
+        possible = [fixed_targets]
+    health_amount = apet.ability["effect"]["amount"]
     if type(health_amount) == dict:
         if "attackDamagePercent" in health_amount:
-            health_amount = int(pet.attack*health_amount["attackDamagePercent"]*0.01)
+            health_amount = int(apet.attack*health_amount["attackDamagePercent"]*0.01)
         else:
             raise Exception()
     for target_pet in target:
-        target_pet.health -= health_amount
-    return target
+        target_pet.hurt(health_amount)
+    return target,possible
 
 
-def GainExperience(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
+def GainExperience(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    if len(fixed_targets) == 0:
+        target,possible = get_target(apet, apet_idx, teams, te=te)
+    else:
+        target = fixed_targets
+        possible = [fixed_targets]
     for target_pet in target:
         amount = target_pet.ability["effect"]["amount"]
         level_up = target_pet.gain_experience(amount=amount)
         if level_up:
-            if target_pet.ability["trigger"] == "LevelUp":
-                func = get_effect_function(target_pet.ability["effect"]["kind"])
-                ### Maybe return TeamSlot instead of pet and TeamSlot contains
-                ### meta-data on exactly where it comes from? Or just return 
-                ### those idx from get_target...
-                ### For now, do nothing smart...
-                if pet.ability["effect"]["target"]["kind"] != "Self":
-                    raise Exception("Not implemented")
-                func(pet_idx, teams,te=target_pet)
-    return target
+            target_pet.levelup_trigger(target_pet)
+    return target,possible
 
 
-def GainGold(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    fteam,oteam = get_teams(pet_idx, teams)
-    amount = pet.ability["effect"]["amount"]
-    player = fteam.player
+def GainGold(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    amount = apet.ability["effect"]["amount"]
+    player = apet.player
     if player != None:
-        fteam.player.gold += amount
-    return player
+        apet.player.gold += amount
+    return player,[player]
 
 
-def Evolve(pet_idx,teams,fainted_pet=None,te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    fteam,oteam = get_teams(pet_idx, teams)
-    target = [pet]
-    spet = pet.ability["effect"]["into"]
-    fteam.remove(pet)
-    fteam[pet_idx[1]] = spet
+def Evolve(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    if len(fixed_targets) == 0:
+        target,possible = get_target(apet, apet_idx, teams, te=te)
+    else:
+        target = fixed_targets
+        possible = [fixed_targets]
+    fteam,oteam = get_teams(apet_idx, teams)
+    target = [apet]
+    spet = apet.ability["effect"]["into"]
+    fteam.remove(apet)
+    fteam[apet_idx[1]] = spet
     kind = spet.ability["effect"]["kind"]
     func = get_effect_function(kind)
-    target = func(pet_idx,teams,te=spet)
-    return target
+    target = func(apet_idx,teams,te=spet)
+    return target,possible
 
 
-def FoodMultiplier(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    if pet.shop == None:
-        return []
+def FoodMultiplier(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    if te == None:
+        raise Exception("Must input purchased food to FoodMultiplier")
     
-    mult = int(pet.ability["effect"]["amount"])
-    food_list = pet.shop.foods
+    mult = int(apet.ability["effect"]["amount"])
+    food_list = [te]
     for food in food_list:
         ### Multiplier is not strict multiplier of current value, but additive
         ###   multiplier of base attack and health
@@ -487,64 +569,89 @@ def FoodMultiplier(pet_idx, teams, fainted_pet=None, te=None):
             mult = mult - 1
         food.attack += food.base_attack*mult
         food.health += food.base_health*mult
-        
-    return food
+    return food_list,[food_list]
 
 
-def ModifyStats(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
+def ModifyStats(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    # print("CALLED ModifyStats")
+    # print("----------------")
+    # print(pet_idx)
+    # print(teams)
+    # print(fainted_pet)
+    # print(te)
+    
+    if len(fixed_targets) == 0:
+        target,possible = get_target(apet, apet_idx, teams, te=te)
+    else:
+        target = fixed_targets
+        possible = [fixed_targets]
+    
     attack_amount = 0
     health_amount = 0
-    if "attackAmount" in pet.ability["effect"]:
-        attack_amount = pet.ability["effect"]["attackAmount"]
-    if "healthAmount" in pet.ability["effect"]:
-        health_amount = pet.ability["effect"]["healthAmount"]
+    if "attackAmount" in apet.ability["effect"]:
+        attack_amount = apet.ability["effect"]["attackAmount"]
+    if "healthAmount" in apet.ability["effect"]:
+        health_amount = apet.ability["effect"]["healthAmount"]
     for target_pet in target:
-        target_pet.attack += attack_amount
-        target_pet.health += health_amount
-        target_pet.attack = min([target_pet.attack,50])
-        target_pet.health = min([target_pet.health,50])
-    return target
+        target_pet._attack += attack_amount
+        target_pet._health += health_amount
+        target_pet._attack = min([target_pet.attack,50])
+        target_pet._health = min([target_pet.health,50])
+    
+    return target,possible
 
 
-def OneOf(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    original_effect = pet.ability["effect"]
-    effects = pet.ability["effect"]["effects"]
+def OneOf(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    """ 
+    Dog is only one with OneOf anyways
+    However, OneOf current not returning possible correctly because I haven't
+      decided exactly how possible will be used...
+    """
+    # if len(fixed_targets) == 0:
+    #     target,possible = get_target(apet, apet_idx, teams, te=te)
+    # else:
+    #     target = fixed_targets
+    #     possible = [fixed_targets]
+    
+    target = [apet]
+    possible = [[apet]]
+    original_effect = apet.ability["effect"]
+    effects = apet.ability["effect"]["effects"]
     chosen_idx = np.random.choice(np.arange(0,len(effects)), size=(1,))[0]
     effect = effects[chosen_idx]
     effect_kind = effect["kind"]
-    pet.ability["effect"] = effect
+    apet.ability["effect"] = effect
     func = get_effect_function(effect_kind)
-    target = func(pet_idx,teams,te=te)
-    pet.ability["effect"] = original_effect
-    return target
+    target = func(apet, apet_idx, teams, te, fixed_targets)[0]
+    apet.ability["effect"] = original_effect
+    return target,possible
 
 
-def ReduceHealth(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
-    per = pet.ability["effect"]["percentage"]*0.01
+def ReduceHealth(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    if len(fixed_targets) == 0:
+        target,possible = get_target(apet, apet_idx, teams, te=te)
+    else:
+        target = fixed_targets
+        possible = [fixed_targets]
+    per = apet.ability["effect"]["percentage"]*0.01
     for temp_pet in target:
         if temp_pet.health > 0:
-            temp_pet.health = int(temp_pet.health*per)
-            if temp_pet.health == 0:
+            temp_pet._health = int(temp_pet.health*per)
+            if temp_pet._health == 0:
                 ### Floor health of 1
-                temp_pet.health = 1
-    return target
+                temp_pet._health = 1
+    return target,possible
 
 
-def RefillShops(pet_idx, teams, fainted_pet=None, te=None):
+def RefillShops(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     """
     Only Cow has refill shop in newest patch anyways...
     
     """
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    if pet.name != "pet-cow":
+    if apet.name != "pet-cow":
         raise Exception("Only cow implemented for RefillShops")
-    shop = pet.shop
-    level = pet.level
+    shop = apet.shop
+    level = apet.level
     targets = []
     for slot in shop:
         if slot.slot_type == "food":
@@ -553,62 +660,76 @@ def RefillShops(pet_idx, teams, fainted_pet=None, te=None):
             temp_food.health *= level
             slot.item = temp_food
             targets.append(slot)
-    return targets
+    return targets,[targets]
 
 
-def RepeatAbility(pet_idx,teams, fainted_pet=None, te=None, shop=None):
+def RepeatAbility(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     """ 
-    Tiger implementation
-    
-    Find the animal infront of the Tiger and call their ability again. Keep
-    in mind that the same effect priority should be given to the animal that's
-    infront of the tiger. Maybe should be handled on the effect order stage?
+    Tiger implementation. 
     
     """
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
-    raise Exception()
-    return target
+    ### First, modify te by the level of the tiger
+    original_level = te.level
+    te.level = apet.level
+    
+    ### Get te ability
+    func = get_effect_function(te)
+    
+    ### Call will te as apet
+    if len(fixed_targets) == 0:
+        targets,possible = func(te, apet_idx, teams, te=None, fixed_targets=[])
+    else:
+        ### Use fixed_targets if the repeated function is supposed to target
+        ### exactly the same pets again
+        targets,possible = func(te, apet_idx, teams, te=fixed_targets)
+    
+    te.level = original_level
+    return targets,possible
 
 
-def SummonPet(pet_idx, teams, fainted_pet=None, te=None):
+def SummonPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     """
-    te is tiger if calling from tiger or for next alive 
+    
     """
-    pet = get_pet(pet_idx,teams,fainted_pet)       
-    fteam,oteam = get_teams(pet_idx,teams)
-        
-    spet_name = pet.ability["effect"]["pet"]
-    if pet.ability["effect"]["team"] == "Friendly":
+    # print("CALLED SUMMON")
+    # print("----------------")
+    # print(pet_idx)
+    # print(teams)
+    # print(fainted_pet)
+    # print(te)
+    if len(te_idx) == 0:
+        raise Exception(
+            "Indices of triggering entity must be provided as te_idx")
+    
+    fteam,oteam = get_teams(apet_idx,teams)
+    spet_name = apet.ability["effect"]["pet"]
+    team = apet.ability["effect"]["team"]
+    summon_idx = te_idx
+    
+    if len(fixed_targets) > 0:
+        raise Exception("Not implemented")
+    
+    if team == "Friendly":
         target_team = fteam
-        if fainted_pet != None:
-            if te == None:
-                ### Added fainted pet back in
-                fteam[pet_idx[1]] = fainted_pet
-        ### First move team as far backward as possible
-        target_team.move_backward()
-        ### Then move all animals forward that are infront of the target pet
-        if te == None:
-            end_idx = target_team.get_idx(pet)
-        else:
-            end_idx = target_team.get_idx(te)
-        target_team.move_forward(start_idx=0, end_idx=end_idx)
-        if fainted_pet != None:
-            if te == None:
-                ### Remove fainted pet
-                temp_idx = target_team.get_idx(pet)
-                target_team.remove(temp_idx)
-    elif pet.ability["effect"]["team"] == "Enemy":
+        #### First, determine how many pets should be infront
+        nahead = len(fteam.get_ahead(te_idx[1],n=5))
+        npets = len(fteam)
+        ### Then move team as far backward as possible
+        fteam.move_backward()
+        ### Move nahead pets forward which should be infront of the triggering pet
+        end_idx = (5-npets)+nahead
+        fteam.move_forward(start_idx=0, end_idx=end_idx)
+    elif team == "Enemy":
         target_team = oteam
         target_team.move_forward()
     else:
-        raise Exception(pet.ability["effect"]["team"])
+        raise Exception(apet.ability["effect"]["team"])
     
     n = 1
-    if pet.name == "pet-sheep":
+    if apet.name == "pet-sheep":
         n = 2
-    elif pet.name == "pet-rooster":
-        n = pet.level
+    elif apet.name == "pet-rooster":
+        n = apet.level
     
     target = []
     for _ in range(n):
@@ -619,63 +740,66 @@ def SummonPet(pet_idx, teams, fainted_pet=None, te=None):
                 empty_idx.append(iter_idx)
         if len(empty_idx) == 0:
             ### Can safely return, cannot summon
-            return target
+            return target,[target]
                 
         target_slot_idx = np.max(empty_idx)
         target_team[target_slot_idx] = spet_name
         spet = target_team[target_slot_idx].pet
         
-        if "withAttack" in pet.ability["effect"]:
-            spet.attack = pet.ability["effect"]["withAttack"]
-        if "withHealth" in pet.ability["effect"]:
-            spet.health = pet.ability["effect"]["withHealth"]
-        if "withLevel" in pet.ability["effect"]:
-            spet.level = pet.ability["effect"]["withLevel"]
-        if pet.name == "pet-rooster":
-            spet.attack = pet.attack
+        if "withAttack" in apet.ability["effect"]:
+            spet._attack = apet.ability["effect"]["withAttack"]
+        if "withHealth" in apet.ability["effect"]:
+            spet._health = apet.ability["effect"]["withHealth"]
+        if "withLevel" in apet.ability["effect"]:
+            spet.level = apet.ability["effect"]["withLevel"]
+        if apet.name == "pet-rooster":
+            spet._attack = int(apet.attack*0.5)
         
         target.append(spet)
         
     ### Move back forward
     target_team.move_forward()
+    for temp_slot in target_team:
+        ### Make sure team is assigned correctly to all pets
+        temp_slot.pet.team = target_team 
     
-    return target
+    return target,[target]
 
 
-def SummonRandomPet(pet_idx, teams, fainted_pet=None, te=None):
+def SummonRandomPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     """
-    te is tiger if calling from tiger or for next alive 
+    
     """
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    fteam,oteam = get_teams(pet_idx,teams)
-    tier = pet.ability["effect"]["tier"]
-    if fteam.pack == "StandardPack":
-        possible = pet_tier_lookup_std[tier]
-    elif fteam.pack == "ExpansionPack1":
-        possible = pet_tier_lookup[tier]
+    fteam,oteam = get_teams(apet_idx,teams)
+    summon_idx = te_idx
+    
+    if len(fixed_targets) > 0:
+        chosen = fixed_targets[0]
+        if len(fixed_targets) > 1:
+            raise Exception(
+                "Only 1 fixed_targets input allowed for SummonRandomPet")
     else:
-        raise Exception()
-    chosen = np.random.choice(possible, (1,))[0]
+        tier = apet.ability["effect"]["tier"]
+        if fteam.pack == "StandardPack":
+            possible = pet_tier_lookup_std[tier]
+        elif fteam.pack == "ExpansionPack1":
+            possible = pet_tier_lookup[tier]
+        else:
+            raise Exception()
+        chosen = np.random.choice(possible, (1,))[0]
+    
+    
     
     #### Perform team movement to ensure that the pet is summoned in the 
-    #### correct position
-    if fainted_pet != None:
-        if te == None:
-            ### Added fainted pet back in
-            fteam[pet_idx[1]] = fainted_pet
-    ### First move team as far backward as possible
+    ####   correct position
+    #### First, determine how many pets should be infront
+    nahead = len(fteam.get_ahead(te_idx[1],n=5))
+    npets = len(fteam)
+    ### Then move team as far backward as possible
     fteam.move_backward()
-    ### Then move all animals forward that are infront of the target pet
-    if te == None:
-        end_idx = fteam.get_idx(pet)
-    else:
-        end_idx = fteam.get_idx(te)
+    ### Move nahead pets forward which should be infront of the triggering pet
+    end_idx = (5-npets)+nahead
     fteam.move_forward(start_idx=0, end_idx=end_idx)
-    if fainted_pet != None:
-        if te == None:
-            ### Remove fainted pet
-            temp_idx = fteam.get_idx(pet)
-            fteam.remove(temp_idx)
     
     ### Check for furthest back open position
     empty_idx = []
@@ -689,26 +813,34 @@ def SummonRandomPet(pet_idx, teams, fainted_pet=None, te=None):
     target_slot_idx = np.max(empty_idx)
     fteam[target_slot_idx] = str(chosen)
     spet = fteam[target_slot_idx].pet
-    if "baseAttack" in pet.ability["effect"]:
-        sattack = pet.ability["effect"]["baseAttack"]
+    if "baseAttack" in apet.ability["effect"]:
+        sattack = apet.ability["effect"]["baseAttack"]
     else:
         sattack = data["pets"][spet.name]["baseAttack"]
-    if "baseHealth" in pet.ability["effect"]:
-        shealth = pet.ability["effect"]["baseHealth"]
+    if "baseHealth" in apet.ability["effect"]:
+        shealth = apet.ability["effect"]["baseHealth"]
     else:
         shealth = data["pets"][spet.name]["baseHealth"]
-    spet.attack = sattack
-    spet.health = shealth
+        
+    spet._attack = sattack
+    spet._health = shealth
     fteam.move_forward()
-    return [spet]
+    for temp_slot in fteam:
+        temp_slot.pet.team = fteam
+    
+    return [spet],[[x] for x in possible]
 
-def Swallow(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    fteam,oteam = get_teams(pet_idx,teams)
-    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
+def Swallow(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    fteam,oteam = get_teams(apet_idx,teams)
+    if len(fixed_targets) == 0:
+        target,possible = get_target(apet, apet_idx, teams, te=te)
+    else:
+        target = fixed_targets
+        possible = [fixed_targets]
+        
     if len(target) == 0:
         return target
-    output_level = pet.level
+    output_level = apet.level
     if output_level == 1:
         level_attack = 0
         level_health = 0
@@ -721,7 +853,7 @@ def Swallow(pet_idx, teams, fainted_pet=None, te=None):
     else:
         raise Exception()
     
-    if pet.name != "pet-whale":
+    if apet.name != "pet-whale":
         raise Exception("Swallow only done by whale")
     
     ### Remove target from team and shop this pet as the given level as a 
@@ -749,87 +881,89 @@ def Swallow(pet_idx, teams, fainted_pet=None, te=None):
         'withHealth': base_attack+level_health,
         'withLevel': output_level,
         'team': 'Friendly'}}
-        pet.set_ability(summon_dict)
+        apet.set_ability(summon_dict)
         faint_idx = fteam.get_idx(temp_target)
-        temp_target.health = -1
-        
-        #### NO! Fainting should be handled outside this function during the 
-        #### phase_faint
-        # fteam.remove(temp_target)
-        # ### Check temp_target for Faint Trigger
-        # if temp_target.ability["trigger"] == "Faint":
-        #     faint_kind = temp_target.ability["effect"]["kind"]
-        #     faint_func = get_effect_function(faint_kind)
-        #     faint_target = faint_func((pet_idx[0],faint_idx),teams,fainted_pet=temp_target)
-            
-        # break
+        temp_target._health = -1
     
     fteam.move_forward()
-    # target += faint_target
+    return target,possible
+
+
+def TransferAbility(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    fteam,oteam = get_teams(apet_idx,teams)
+    if len(fixed_targets) == 0:
+        target,possible = get_target(apet,apet_idx,teams,te=te,get_from=True)
+    else:
+        target = fixed_targets
+        possible = [fixed_targets]
     
-    return target
+    if len(target) > 0:
+        apet.set_ability(target[0].ability)
+        
+    return target,possible
 
 
-def TransferAbility(pet_idx,teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
-    target_from = get_target(pet_idx,teams,get_from=True,te=te)
-    pet.set_ability(target_from[0].ability)
-    return target
-
-
-def TransferStats(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    target = get_target(pet_idx,teams,fainted_pet=fainted_pet,te=te)
-    target_from = get_target(pet_idx,teams,get_from=True,te=te)
-    effect = pet.ability["effect"]
+def TransferStats(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    fteam,oteam = get_teams(apet_idx,teams)
+    if len(fixed_targets) == 0:
+        target,possible = get_target(apet,apet_idx,teams,te=te)
+    else:
+        target = fixed_targets
+        possible = [fixed_targets]
+        
+    effect = apet.ability["effect"]
     copy_attack = effect["copyAttack"]
     copy_health = effect["copyHealth"]
-    n = 1
-    if pet.name == "pet-dodo":
-        n = pet.level
-    if len(target) == 1:
-        if len(target_from) == 1:
+    percentage = 1
+    if "percentage" in effect["to"]:
+        percentage = effect["to"]["percentage"]*0.01
+    from_self = effect["from"]["kind"] == True
+    
+    for entry in target:
+        if from_self:
+            #### dodo is only from_self and it is additive, not copy, unlike
+            #### what the database says
             if copy_attack:
-                if pet.name == "pet-dodo":
-                    ### This needs to be checked because their definition is 
-                    ### conflicting as towards if it should be equal or sum
-                    target[0].attack += target_from[0].attack*n
-                else:
-                    target[0].attack = target_from[0].attack*n
-                
-                target[0].attack = min([target[0].attack,50])
+                entry.attack += max(int(apet.attack*percentage),1)
             if copy_health:
-                target[0].health = target_from[0].health*n
-                target[0].health = min([target[0].health,50])
-        elif len(target_from) == 0:
-            pass
+                raise Exception("This should not be possible")
         else:
-            raise Exception()
-    elif len(target) == 0:
-        pass
-    else:
-        raise Exception()
-    return target
+            temp_from = get_target(apet,apet_idx,teams,te=te,get_from=True)
+            ### Randomness not needed as outcome will be the same for all pets
+            ###   that have this ability
+            temp_from = temp_from[0][0]
+            if copy_attack:
+                apet._attack = temp_from.attack
+            if copy_health:
+                apet._health = temp_from.health
+    
+    return target,possible
 
 
-def DiscountFood(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    shop = pet.shop
+def DiscountFood(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    shop = apet.shop
     if shop == None:
         raise Exception("No shop found to discount food")
-    amount = pet.ability["effect"]["amount"]
+    amount = apet.ability["effect"]["amount"]
     targets = []
     for slot in shop:
         if slot.slot_type == "food":
             slot.cost = max((slot.cost - amount), 0)
             targets.append(slot)
-    return targets
+    return targets,[targets]
 
 
-def none(pet_idx, teams, fainted_pet=None, te=None):
-    pet = get_pet(pet_idx,teams,fainted_pet)
-    return []
+def GainAbility(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    """ 
+    Only Octopus has GainAbility. Also, within programming framework, 
+    GainAbility is not necessary because the ability is automatically 
+    updated with levelup. 
+    """
+    return [apet],[[apet]]
+
+
+def none(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    return [],[]
 
 
 curr = sys.modules[__name__]

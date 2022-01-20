@@ -6,7 +6,7 @@
 class Play():
     """
     Input the player list and mode that the game should be played in. This class
-    Defines the actions of an overall game including shopping, fights, and 
+    Defines the actions of an overall game including shopping, battles, and 
     lives of the player. 
     
     Tournament mode will be the most basic mode for learning purposes. This just

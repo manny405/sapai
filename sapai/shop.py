@@ -6,7 +6,8 @@ import numpy as np
 from sapai.data import data
 from sapai.foods import Food
 from sapai.pets import Pet
-from sapai.foods import Food
+import sapai.foods
+import sapai.pets
 
 #%%
 
@@ -90,7 +91,11 @@ for key,value in data["foods"].items():
 #%%
 
 class Shop():
-    def __init__(self, turn=1, pack="StandardPack"):
+    def __init__(self, 
+                 shop_slots=[], 
+                 turn=1, 
+                 can=0,
+                 pack="StandardPack"):
         self.turn = turn
         self.pack = pack
         self.tier_avail = 0
@@ -101,8 +106,7 @@ class Shop():
         self.fslots = 0
         self.pslots = 0
         self.max_slots = 7
-        self.can = 0                    ### Keep track of can stats
-        self.freeze_idx = []
+        self.can = can                  ### Keep track of can stats
         
         if pack == "StandardPack":
             self.turn_prob_pets = turn_prob_pets_std
@@ -115,12 +119,39 @@ class Shop():
         
         self.update_shop_rules()
         
+        if len(shop_slots) > 0:
+            self.shop_slots = [ShopSlot(x) for x in shop_slots]
+            
     
-    def __repr__(self):
-        repr_str = ""
+    def buy(self, obj):
+        """ Only thing that buy does is to remove the item from the shop list """
+        if type(obj) == int:
+            idx = obj
+        else:
+            idx = -1
+            for iter_idx,slot in enumerate(self.shop_slots):
+                if slot.item == obj:
+                    idx = iter_idx
+                    break
+        
+        if idx < 0:
+            raise Exception("Unrecognized Shop Object {}".format(obj))
+        
+        del(self.shop_slots[idx])
+        
+    
+    def index(self, obj):
+        if type(obj).__name__ == "ShopSlot":
+            obj = obj.item
+        idx = -1
         for iter_idx,slot in enumerate(self.shop_slots):
-            repr_str += "{}: {} \n    ".format(iter_idx, slot)
-        return repr_str
+            if slot.item == obj:
+                idx = iter_idx
+                break
+        if idx < 0:
+            raise Exception("Unrecognized Shop Object {}".format(obj))
+        return idx
+        
     
     @property
     def pets(self):
@@ -153,8 +184,8 @@ class Shop():
             ### Add health and attack from previously purchased cans
             if slot.frozen == False:
                 if slot.slot_type == "pet":
-                    slot.item.attack += self.can
-                    slot.item.health += self.can
+                    slot.item._attack += self.can
+                    slot.item._health += self.can
         
         for team_slot in team:
             team_slot._pet.shop_ability(shop=self,trigger="roll")
@@ -270,6 +301,9 @@ class Shop():
         
         ### Then add other slots only if it has not yet exceeded the rules
         for iter_idx,slot in enumerate(self.shop_slots):
+            if slot.frozen == True:
+                ### Skip frozen slots because they have already been added
+                continue
             if slot.slot_type == "pet":
                 if len(pslots) < self.pslots:
                     keep_idx.append(iter_idx)
@@ -278,10 +312,39 @@ class Shop():
                 if len(fslots) < self.fslots:
                     keep_idx.append(iter_idx)
                     fslots.append(iter_idx)
+
+        if len(pslots) < self.pslots:
+            add_slots = min(self.pslots - len(pslots), 
+                            self.max_slots - len(keep_idx))
+            for idx in range(add_slots):
+                self.shop_slots.append(ShopSlot("pet"))
+                keep_idx.append(len(self.shop_slots)-1)
+        if len(fslots) < self.fslots:
+            add_slots = min(self.fslots - len(fslots), 
+                            self.max_slots - len(keep_idx))
+            for idx in range(add_slots):
+                self.shop_slots.append(ShopSlot("food"))
+                keep_idx.append(len(self.shop_slots)-1)
         
         keep_slots = [self.shop_slots[x] for x in keep_idx]
         self.shop_slots = keep_slots
-
+        
+        ### Order shop slots
+        keep_idx = []
+        pslots = []
+        fslots = []
+        for iter_idx,slot in enumerate(self.shop_slots):
+            if slot.slot_type == "pet":
+                pslots.append(iter_idx)
+            elif slot.slot_type == "leveup":
+                pslots.append(iter_idx)
+        for iter_idx,slot in enumerate(self.shop_slots):
+            if slot.slot_type == "food":
+                fslots.append(iter_idx)
+        keep_idx = pslots+fslots
+        keep_slots = [self.shop_slots[x] for x in keep_idx]
+        self.shop_slots = keep_slots
+        
 
     def __len__(self):
         return len(self.shop_slots)
@@ -322,6 +385,34 @@ class Shop():
         new_slots += [x for x in fslots]
         
         self.shop_slots = new_slots
+        
+        
+    @property
+    def state(self):
+        state_dict = {
+            "type": "Shop",
+            "shop_slots": [x.state for x in self.shop_slots],
+            "turn": self.turn,
+            "can": self.can,
+            "pack": self.pack,
+        }
+        return state_dict
+    
+    
+    @classmethod
+    def from_state(cls, state):
+        return cls(
+            shop_slots=[ShopSlot.from_state(x) for x in state["shop_slots"]],
+            turn=state["turn"],
+            can=state["can"],
+            pack=state["pack"])
+    
+    
+    def __repr__(self):
+        repr_str = ""
+        for iter_idx,slot in enumerate(self.shop_slots):
+            repr_str += "{}: {} \n    ".format(iter_idx, slot)
+        return repr_str
     
 
 class ShopSlot():
@@ -329,17 +420,23 @@ class ShopSlot():
     Class for a slot in the shop
     
     """
-    def __init__(self, obj=None, slot_type="pet", turn=1, pack="StandardPack"):
+    def __init__(self, 
+                 obj=None, 
+                 slot_type="pet", 
+                 frozen=False,
+                 turn=1, 
+                 cost=3,
+                 pack="StandardPack"):
         self.slot_type = slot_type
         self.turn = turn
         self.pack = pack
-        self.frozen = False
-        self.cost = 3
+        self.frozen = frozen
+        self.cost = cost
         
         if slot_type not in ["pet", "food", "levelup"]:
             raise Exception("Unrecognized slot type {}".format(self.slot_type))
         
-        if type(obj) != None and type(obj) != str:
+        if obj != None and type(obj) != str:
             if type(obj).__name__ == "Pet":
                 self.slot_type = "pet"
                 self.item = obj
@@ -355,11 +452,30 @@ class ShopSlot():
                 self.item = obj.item.copy()
         else:
             if type(obj) == str:
-                self.slot_type = obj
+                if obj not in ["pet", "food", "levelup"]:
+                    if obj in data["pets"]:
+                        name = obj
+                        self.slot_type = "pet"  
+                    elif obj in data["foods"]       :
+                        name = obj
+                        self.slot_type = "food"
+                    elif "pet-{}".format(obj) in data["pets"]:
+                        name = obj
+                        self.slot_type = "pet"
+                    elif "food-{}".format(obj) in data["foods"]:
+                        name = obj
+                        self.slot_type = "food"
+                    else:
+                        raise Exception("Unrecognized ShopSlot Object {}"
+                                        .format(obj))
+                else:
+                    self.slot_type = obj
+                    name = "none"
+                
             if self.slot_type == "pet":
-                self.item = Pet()
+                self.item = Pet(name)
             elif self.slot_type == "food":
-                self.item = Food()
+                self.item = Food(name)
             elif self.slot_type == "levelup":
                 self.roll_levelup()
             
@@ -428,8 +544,12 @@ class ShopSlot():
             self.item = Pet(choice)
         elif self.slot_type == "food":
             self.item = Food(choice)
+            if self.item.name == "food-sleeping-pill":
+                ### Hard-coded for pill because of limitations of data json
+                self.cost = 1
         else:
             raise Exception()
+        
         
     
     def roll_levelup(self):
@@ -443,6 +563,43 @@ class ShopSlot():
                                         size=(1,),
                                         replace=True)[0]
         self.item = Pet(pet_choice)
+        
+        
+    @property
+    def state(self):
+        state_dict = {
+            "type": "ShopSlot",
+            "slot_type": self.slot_type,
+            "item": self.item.state,
+            "turn": self.turn,
+            "pack": self.pack,
+            "cost": self.cost, 
+            "frozen": self.frozen
+        }
+        return state_dict
+    
+    
+    @classmethod
+    def from_state(cls, state):
+        slot_type = state["slot_type"]
+        obj_state = state["item"]
+        if state["item"]["type"] == "Pet":
+            item_cls = getattr(sapai.pets, "Pet")
+        elif state["item"]["type"] == "Food":
+            item_cls = getattr(sapai.foods, "Food")
+        else:
+            raise Exception("Unrecognized item state")
+        obj = item_cls.from_state(state["item"])
+        turn = state["turn"]
+        pack = state["pack"]
+        cost = state["cost"]
+        frozen = state["frozen"]
+        return cls(obj=obj, 
+                   slot_type=slot_type,
+                   frozen=frozen,
+                   turn=turn,
+                   cost=cost,
+                   pack=pack)
         
 
 def get_shop_rules(turn, pack="StandardPack"):
