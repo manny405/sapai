@@ -803,7 +803,7 @@ def battle_phase_attack(battle_obj,
             phase_list.append([
                 "splash",
                 (aidx[1]),
-                (str(p0)),
+                (str(p1)),
                 [str(pn0)]])
             
             if pn0.health <= 0:

@@ -826,7 +826,8 @@ def tiger_func(func, te_fainted, *args):
     
     ### Reset activiting pet's original ability because that's what should
     ###  be duplicated. This is important for Whale.
-    apet.override_ability = False
+    if te_fainted == False:
+        apet.override_ability = False
     if len(args) == 5:
         te_idx = [0,args[4][1]+len(targets)]
         ### Run function again
