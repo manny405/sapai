@@ -759,6 +759,9 @@ def SummonPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         
     ### Move back forward
     target_team.move_forward()
+    for temp_slot in target_team:
+        ### Make sure team is assigned correctly to all pets
+        temp_slot.pet.team = target_team 
     
     return target,[target]
 
@@ -822,6 +825,9 @@ def SummonRandomPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     spet._attack = sattack
     spet._health = shealth
     fteam.move_forward()
+    for temp_slot in fteam:
+        temp_slot.pet.team = fteam
+    
     return [spet],[[x] for x in possible]
 
 def Swallow(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):

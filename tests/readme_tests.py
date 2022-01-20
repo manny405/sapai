@@ -9,10 +9,10 @@ if os.path.exists("__pycache__"):
 from sapai.data import data
 from sapai.pets import Pet
 from sapai.foods import Food
-from sapai.store import Store
+from sapai.shop import Shop
 from sapai.teams import Team,TeamSlot
-from sapai.fight import Fight
-from sapai.graph import graph_fight
+from sapai.battle import Battle
+from sapai.graph import graph_battle
 
 
 #%%
@@ -34,32 +34,30 @@ r = Pet("pet-rhino")
 e = Pet("pet-elephant")
 d = Pet("pet-dragon")
 scorp = Pet("pet-scorpion")
-d.health = 50
+d._health = 50
 
 honey = Food("honey")
 melon = Food("melon")
 chili = Food("chili")
 spider.eat(melon)
 d.eat(melon)
-scorp.attack = 21
+scorp._attack = 21
 
 # %%
 
 #%%
 
-%run /Users/ibier/Software/sapai/sapai/fight.py
-
 s.level = 2
-t0 = Team([scorp,s,t.copy()])
+t0 = Team([scorp,s,t])
 # t0[1].pet.eat(chili)
 t1 = Team([d,s,w])
 # t1[2].pet.eat(melon)
-f = Fight(t1,t0)
-print("WINNER", f.fight())
+b = Battle(t1,t0)
+print("WINNER", b.battle())
 
 #%%
 
-g = graph_fight(f, "test")
+graph_battle(b)
 
 #%%
  
@@ -73,7 +71,8 @@ g = graph_fight(f, "test")
 from sapai.pets import Pet
 pet = Pet("ant")
 print(pet)
-pet.attack += 3
+pet._attack += 3
+pet.gain_experience()
 print(pet)
 print(pet.ability)
 
@@ -81,15 +80,11 @@ print(pet.ability)
 
 from sapai.pets import Pet
 from sapai.teams import Team
-ant = Pet("ant")
-ox = Pet("ox")
-tiger = Pet("tiger")
-sheep = Pet("sheep")
-team0 = Team([ant,ox,tiger])
-team1 = Team([sheep,tiger])
+team0 = Team(["ant","ox","tiger"])
+team1 = Team(["sheep","tiger"])
 print(team0)
 print(team1)
-team0.move(2,4)
+team0.move(1,4)
 print(team0)
 team0.move_forward()
 print(team0)
@@ -97,9 +92,9 @@ print(team0)
 # %%
 
 ### Using the teams created in the last section
-from sapai.fight import Fight
-fight = Fight(team0,team1)
-winner = fight.fight()
+from sapai.battle import Battle
+battle = Battle(team0,team1)
+winner = battle.battle()
 print(winner)
     
     
@@ -107,17 +102,13 @@ print(winner)
 
 from sapai.pets import Pet
 from sapai.teams import Team
-from sapai.fight import Fight
-ant = Pet("ant")
-ox = Pet("ox")
-tiger = Pet("tiger")
-sheep = Pet("sheep")
-team0 = Team([ant,ox,tiger])
-team1 = Team([sheep,tiger])
+from sapai.battle import Battle
+team0 = Team(["ant","ox","tiger"])
+team1 = Team(["sheep","tiger"])
 
 def timing_test():
-    f = Fight(team0,team1)
-    winner = f.fight()
+    b = Battle(team0,team1)
+    winner = b.battle()
 
 %timeit timing_test()      
 

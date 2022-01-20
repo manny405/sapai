@@ -49,11 +49,12 @@ Creating a Pet
     >>> from sapai.pets import Pet
     >>> pet = Pet("ant")
     >>> print(pet)
-    ### Printing pet is given in the form of < PetName Attack-Health Status > 
-    < pet-ant 2-1 none >
-    >>> pet.attack += 3
+    ### Printing pet is given in the form of < PetName Attack-Health Status Level-Exp > 
+    < pet-ant 2-1 none 1-0 >
+    >>> pet._attack += 3
+    >>> pet.gain_experience()
     >>> print(pet)
-    < pet-ant 5-1 none >
+    < pet-ant 5-1 none 1-1 >
     >>> print(pet.ability)
     ### Organization of pet abilities provided by super-auto-pets-db project
     {'description': 'Faint: Give a random friend +2/+1',
@@ -74,49 +75,45 @@ Creating a Team
     
     >>> from sapai.pets import Pet
     >>> from sapai.teams import Team
-    >>> ant = Pet("ant")
-    >>> ox = Pet("ox")
-    >>> tiger = Pet("tiger")
-    >>> sheep = Pet("sheep")
-    >>> team0 = Team([ant,ox,tiger])
-    >>> team1 = Team([sheep,tiger])
+    >>> team0 = Team(["ant","ox","tiger"])
+    >>> team1 = Team(["sheep","tiger"])
     >>> print(team0)
-    0: < Slot pet-ant 2-1 none > 
-      1: < Slot pet-ox 1-4 none > 
-      2: < Slot pet-tiger 4-3 none > 
+    0: < Slot pet-ant 2-1 none 1-0 > 
+      1: < Slot pet-ox 1-4 none 1-0 > 
+      2: < Slot pet-tiger 4-3 none 1-0 > 
       3: < Slot EMPTY > 
       4: < Slot EMPTY > 
    >>> print(team1)
-   0: < Slot pet-sheep 2-2 none > 
-     1: < Slot pet-tiger 4-3 none > 
-     2: < Slot EMPTY > 
-     3: < Slot EMPTY > 
-     4: < Slot EMPTY >
+   0: < Slot pet-sheep 2-2 none 1-0 > 
+      1: < Slot pet-tiger 4-3 none 1-0 > 
+      2: < Slot EMPTY > 
+      3: < Slot EMPTY > 
+      4: < Slot EMPTY > 
    >>> team0.move(1,4)
    >>> print(team0)
-   0: < Slot pet-ant 2-1 none > 
-     1: < Slot pet-ox 1-4 none > 
-     2: < Slot EMPTY > 
-     3: < Slot EMPTY > 
-     4: < Slot pet-tiger 4-3 none > 
+   0: < Slot pet-ant 2-1 none 1-0 > 
+      1: < Slot EMPTY > 
+      2: < Slot pet-tiger 4-3 none 1-0 > 
+      3: < Slot EMPTY > 
+      4: < Slot pet-ox 1-4 none 1-0 >  
    >>> team0.move_forward()
    >>> print(team0)
-   0: < Slot pet-ant 2-1 none > 
-     1: < Slot pet-ox 1-4 none > 
-     2: < Slot pet-tiger 4-3 none > 
-     3: < Slot EMPTY > 
-     4: < Slot EMPTY >
+   0: < Slot pet-ant 2-1 none 1-0 > 
+      1: < Slot pet-tiger 4-3 none 1-0 > 
+      2: < Slot pet-ox 1-4 none 1-0 > 
+      3: < Slot EMPTY > 
+      4: < Slot EMPTY > 
     
-######
-Fights
-######
+#######
+Battles
+#######
 
 .. code-block:: python
     
     ### Using the teams created in the last section
-    >>> from sapai.fight import Fight
-    >>> fight = Fight(team0,team1)
-    >>> winner = fight.fight()
+    >>> from sapai.battle import Battle
+    >>> battle = Battle(team0,team1)
+    >>> winner = battle.battle()
     >>> print(winner)
     2
     ### Possible fight outputs:
@@ -124,40 +121,38 @@ Fights
     ### 1 = Team1 Wins
     ### 2 = Draw
 
-The implementation of fights is efficient. Using IPython magic, this can be tested using the following IPython method:
+The implementation of battle is efficient. Using IPython magic, this can be tested using the following IPython method:
 
 .. code-block:: python
 
       from sapai.pets import Pet
       from sapai.teams import Team
-      from sapai.fight import Fight
-      ant = Pet("ant")
-      ox = Pet("ox")
-      tiger = Pet("tiger")
-      sheep = Pet("sheep")
-      team0 = Team([ant,ox,tiger.copy()])
-      team1 = Team([sheep,tiger.copy()])
+      from sapai.battle import Battle
+      team0 = Team(["ant","ox","tiger"])
+      team1 = Team(["sheep","tiger"])
       
       def timing_test():
-          f = Fight(team0,team1)
-          winner = f.fight()
+          b = Battle(team0,team1)
+          winner = b.battle()
       
       %timeit timing_test()      
       ### On 2019 Macbook Pro:
-      ###   1.75 ms ± 145 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
-      ###   More than 500 fights per second on a single core
+      ###   8.12 ms ± 450 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+      ###   More than 100 battle per second on a single core
+
+      ### On 
       
-^^^^^^^^^^^
-Fight Graph
-^^^^^^^^^^^
+^^^^^^^^^^^^
+Battle Graph
+^^^^^^^^^^^^
 
-All fight history is stored for every phase, effect, and attack that occured during the fight. This fight history can be graphed and visualized. The full graph for the fight is shown below. 
+All battle history is stored for every phase, effect, and attack that occured during the battle. This battle history can be graphed and visualized. The full graph for the battle is shown below. 
 
-  >>> from sapai.graph import graph_fight
-  >>> graph_fight(fight, file_name="Example")
+  >>> from sapai.graph import graph_battle
+  >>> graph_battle(battle, file_name="Example")
 
 
-.. figure:: doc/static/fight_graph_full.png
+.. figure:: doc/static/battle_graph_full.png
     :height: 1333
     :width: 500
     :align: center
@@ -168,11 +163,5 @@ Status
 
 Ongoing
 
-1. The engine is still a work in progress. Notes are included for next steps. 
-
-2. Player needs to be implemented with all possible player actions that can be taken. 
-
-3. Play needs to be implemented with AI player organization through multiple different types of competitions. 
-
-4. Model implementation is largely untouched. 
+1. See the issues page for ongoing discussions. The code-base is completely ready for the development of AI engines around SAP. 
 
