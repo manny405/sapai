@@ -258,7 +258,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
         for temp_idx in all_idx:
             temp_chosen = [fteam[x].pet for x in temp_idx]
             all_possible.append(temp_chosen)
-        
+        if len(all_possible) == 0:
+            return [],[]
         ### Choose one to return for current 
         choice_idx_range = np.arange(0,len(all_possible))
         choice_idx = np.random.choice(choice_idx_range, (1,))[0]
@@ -378,6 +379,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
             for temp_idx in all_idx:
                 temp_chosen = [oteam[x].pet for x in temp_idx]
                 all_possible.append(temp_chosen)
+            if len(all_possible) == 0:
+                return [],[]
             crange = np.arange(0,len(all_possible))
             cidx = np.random.choice(crange,(1,),replace=False)[0]
             ret_pets = all_possible[cidx]
@@ -400,6 +403,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
             for temp_idx in all_idx:
                 temp_chosen = [fteam[x].pet for x in temp_idx]
                 all_possible.append(temp_chosen)
+            if len(all_possible) == 0:
+                return [],[]
             crange = np.arange(0,len(all_possible))
             cidx = np.random.choice(crange,(1,),replace=False)[0]
             ret_pets = all_possible[cidx]
@@ -422,6 +427,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
         all_possible = []
         for temp_idx in max_idx:
             all_possible.append(fteam[temp_idx].pet)
+        if len(all_possible) == 0:
+            return [],[]
         choice = np.random.choice(max_idx,(1,),replace=False)[0]
         ret_pets = [fteam[choice].pet]
         return ret_pets,all_possible
@@ -430,6 +437,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
         health_list = []
         for temp_idx in fidx:
             health_list.append(fteam[temp_idx].pet.health)
+        if len(health_list) == 0:
+            return [],[]
         max_health = np.max(health_list)
         max_idx = np.where(health_list == max_health)[0]
         all_possible = []
