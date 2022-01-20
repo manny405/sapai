@@ -775,7 +775,7 @@ def battle_phase_attack(battle_obj,
     if p0.status == "status-splash-attack":
         original_attack = p0.attack
         original_status = p0.status
-        p0.attack = 5
+        p0._attack = 5
         if len(nidx[1]) != 0:
             pn1 = teams[1][nidx[1][1]].pet
             p0a,p1a = get_attack(p0,pn1)
@@ -790,12 +790,12 @@ def battle_phase_attack(battle_obj,
                 knockout_list.append((p0,0))
                 
         p0.status = original_status
-        p0.attack = original_attack
+        p0._attack = original_attack
         
     if p1.status == "status-splash-attack":
         original_attack = p1.attack
         original_status = p1.status
-        p1.attack = 5
+        p1._attack = 5
         if len(nidx[0]) != 0:
             pn0 = teams[0][nidx[0][1]].pet
             p0a,p1a = get_attack(pn0,p1)
@@ -810,7 +810,7 @@ def battle_phase_attack(battle_obj,
                 knockout_list.append((p1,1))
                 
         p1.status = original_status
-        p1.attack = original_attack
+        p1._attack = original_attack
     
     ### Add knockout list to the end of phase_list. This is later removed
     ###   in the knockout phase
