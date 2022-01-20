@@ -10,33 +10,33 @@ from sapai.data import data
 from sapai.pets import Pet
 from sapai.foods import Food
 from sapai.teams import Team,TeamSlot
-from sapai.fight import Fight
-from sapai.graph import graph_fight
+from sapai.battle import Battle
+from sapai.graph import graph_battle
 
 
 #%%
 
-%run /Users/ibier/Software/sapai/sapai/store.py
+%run /Users/ibier/Software/sapai/sapai/shop.py
 
-slot = StoreSlot("pet")
+slot = ShopSlot("pet")
 slot.item = Pet("ant")
 print(slot)
 slot.roll()
 print(slot)
-slot = StoreSlot("food")
+slot = ShopSlot("food")
 slot.item = Food("apple")
 print(slot)
 slot.roll()
 print(slot)
-# s = Store()
+# s = Shop()
 
-slot = StoreSlot("levelup")
+slot = ShopSlot("levelup")
 print(slot)
 
 #%%
 
-%run /Users/ibier/Software/sapai/sapai/store.py
-s = Store()
+%run /Users/ibier/Software/sapai/sapai/shop.py
+s = Shop()
 print(s)
 
 s.freeze(0)

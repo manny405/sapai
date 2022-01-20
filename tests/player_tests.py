@@ -11,8 +11,8 @@ from sapai.pets import Pet
 from sapai.foods import Food
 from sapai.teams import Team,TeamSlot
 from sapai.shop import Shop
-from sapai.fight import Fight
-from sapai.graph import graph_fight
+from sapai.battle import Battle
+from sapai.graph import graph_battle
 
 #%%
 
@@ -140,43 +140,43 @@ pack = "StandardPack"
 ##############################################
 #### Checking pill behavior
 ##############################################
-# ["ant", "cricket", "flamingo", "hedgehog", "spider", "badger", 
-#  "ox", "sheep", "turtle", "deer", "rooster", "microbe", 
-#  "eagle", "shark", "fly", "mammoth"]
+["ant", "cricket", "flamingo", "hedgehog", "spider", "badger", 
+ "ox", "sheep", "turtle", "deer", "rooster", "microbe", 
+ "eagle", "shark", "fly", "mammoth"]
 
-# player = Player(shop=["ant", "fish", "fish", "food-sleeping-pill"], 
-#                 team=["rooster", "ant", "cricket", "sheep"], 
-#                 pack=pack)
-# print(player)
-# player.buy_food(player.shop[-1], player.team[1])
-# print(player)
+player = Player(shop=["ant", "fish", "fish", "food-sleeping-pill"], 
+                team=["rooster", "ant", "cricket", "sheep"], 
+                pack=pack)
+print(player)
+player.buy_food(player.shop[-1], player.team[1])
+print(player)
 
-### Check multi-faints
-# player = Player(shop=["ant", "fish", "fish", "food-sleeping-pill"], 
-#                 team=["hedgehog", "ant", "ox", "sheep", "dragon"], 
-#                 pack=pack)
-# # player.team[0]._pet.level=1
-# print(player)
-# player.buy_food(player.shop[-1], player.team[0])
-# print(player)
+## Check multi-faints
+player = Player(shop=["ant", "fish", "fish", "food-sleeping-pill"], 
+                team=["hedgehog", "ant", "ox", "sheep", "dragon"], 
+                pack=pack)
+# player.team[0]._pet.level=1
+print(player)
+player.buy_food(player.shop[-1], player.team[0])
+print(player)
 
-#### Check deer, microbe, and shark
-# player = Player(shop=["ant", "fish", "fish", "food-sleeping-pill"], 
-#                 team=["deer", "microbe", "eagle", "shark"], 
-#                 pack=pack)
-# # player.team[0]._pet.level=1
-# print(player)
-# player.buy_food(player.shop[-1], player.team[2])
-# print(player)
+### Check deer, microbe, and shark
+player = Player(shop=["ant", "fish", "fish", "food-sleeping-pill"], 
+                team=["deer", "microbe", "eagle", "shark"], 
+                pack=pack)
+# player.team[0]._pet.level=1
+print(player)
+player.buy_food(player.shop[-1], player.team[2])
+print(player)
 
-#### Check deer, badger, fly, sheep
-# player = Player(shop=["ant", "fish", "fish", "food-sleeping-pill"], 
-#                 team=["deer", "badger", "sheep", "fly"], 
-#                 pack=pack)
-# # player.team[0]._pet.level=1
-# print(player)
-# player.buy_food(player.shop[-1], player.team[1])
-# print(player)
+### Check deer, badger, fly, sheep
+player = Player(shop=["ant", "fish", "fish", "food-sleeping-pill"], 
+                team=["deer", "badger", "sheep", "fly"], 
+                pack=pack)
+# player.team[0]._pet.level=1
+print(player)
+player.buy_food(player.shop[-1], player.team[1])
+print(player)
 
 #%%
 

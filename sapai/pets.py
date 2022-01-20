@@ -36,8 +36,9 @@ class Pet():
         self.tier = data["pets"][name]["tier"]
         
         ### Overall stats that should be brought into a battle
-        self.attack = fd["baseAttack"]
-        self.health = fd["baseHealth"]
+        self._attack = fd["baseAttack"]
+        self._health = fd["baseHealth"]
+        self._hurt = False
         self.status = "none"
         if "status" in self.fd:
             self.status = self.fd["status"]
@@ -47,7 +48,7 @@ class Pet():
         
         #### Add pet to team if not already present
         if self.team != None:
-            if self.attack != "none":
+            if self._attack != "none":
                 if self not in team:
                     team.append(self)
 
@@ -62,6 +63,20 @@ class Pet():
             if self.shop != None:
                 player.shop = self.shop
                 
+    
+    @property
+    def attack(self):
+        return self._attack
+    
+    
+    @property
+    def health(self):
+        return self._health
+    
+    
+    def hurt(self,value):
+        self._health -= value
+        self._hurt = True
     
     @property
     def ability(self):
@@ -81,20 +96,20 @@ class Pet():
     
     def eat(self, food):
         """ Returns bool of whether pet levelups"""
-        self.attack += food.attack
-        self.health += food.health
+        self._attack += food.attack
+        self._health += food.health
         if food.status != "none":
             self.status = food.status
         if food.name == "food-chocolate":
             return self.gain_experience()
         elif food.name == "food-sleeping-pill":
-            self.health = -1000
+            self._health = -1000
         return False
                 
                 
     def init_battle(self):
-        self.fhealth = int(self.health)
-        self.fattack = int(self.attack)
+        self.fhealth = int(self._health)
+        self.fattack = int(self._attack)
         
     
     def combine(self, pet):
@@ -297,7 +312,6 @@ class Pet():
             if self.player.lf_winner != False:
                 return activated,targets,possible
             
-        ### Specific check for goat
         if "maxTriggers" in self.ability:
             if self.ability_counter >= self.ability["maxTriggers"]:
                 return activated,targets,possible
@@ -332,6 +346,12 @@ class Pet():
             ### Do not activate for summoning self
             return activated,targets,possible
         
+        if "maxTriggers" in self.ability:
+            if self.ability_counter >= self.ability["maxTriggers"]:
+                return activated,targets,possible
+            else:
+                self.ability_counter += 1
+        
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
         targets,possible = tiger_func(
@@ -357,6 +377,12 @@ class Pet():
         
         if type(trigger).__name__ != "Pet":
             raise Exception("Trigger must be a Pet")
+        
+        if "maxTriggers" in self.ability:
+            if self.ability_counter >= self.ability["maxTriggers"]:
+                return activated,targets,possible
+            else:
+                self.ability_counter += 1
         
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
@@ -408,6 +434,12 @@ class Pet():
             if self.ability["trigger"] != "EndOfTurn":
                 raise Exception("Unrecognized trigger {}"
                                 .format(self.ability["trigger"]))
+                
+        if "maxTriggers" in self.ability:
+            if self.ability_counter >= self.ability["maxTriggers"]:
+                return activated,targets,possible
+            else:
+                self.ability_counter += 1
         
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
@@ -455,6 +487,18 @@ class Pet():
         else:
             pass
         
+        ### Check for Fly
+        if self.name == "pet-fly":
+            if trigger.name == "pet-zombie-fly":
+                ### Do not activate if another zombie-fly faints
+                return activated,targets,possible
+            
+        if "maxTriggers" in self.ability:
+            if self.ability_counter >= self.ability["maxTriggers"]:
+                return activated,targets,possible
+            else:
+                self.ability_counter += 1
+        
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
         
@@ -488,6 +532,12 @@ class Pet():
         if type(trigger).__name__ != "Team":
             raise Exception("Trigger must be a Team")
         
+        if "maxTriggers" in self.ability:
+            if self.ability_counter >= self.ability["maxTriggers"]:
+                return activated,targets,possible
+            else:
+                self.ability_counter += 1
+        
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
         targets,possible = tiger_func(
@@ -513,6 +563,12 @@ class Pet():
         
         if type(trigger).__name__ != "Team":
             raise Exception("Trigger must be a Team")
+        
+        if "maxTriggers" in self.ability:
+            if self.ability_counter >= self.ability["maxTriggers"]:
+                return activated,targets,possible
+            else:
+                self.ability_counter += 1
         
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
@@ -553,6 +609,12 @@ class Pet():
         if self.team.index(slot_ahead[0]) != 0:
             return activated,targets,possible
         
+        if "maxTriggers" in self.ability:
+            if self.ability_counter >= self.ability["maxTriggers"]:
+                return activated,targets,possible
+            else:
+                self.ability_counter += 1
+        
         ### Otherwise, the pet ahead is the pet the just attacked and the 
         ###   ability after attack should be activated
         func = get_effect_function(self)
@@ -587,9 +649,27 @@ class Pet():
         if type(trigger).__name__ != "Team":
             raise Exception("Trigger must be a Team")
         
+        if self.ability["triggeredBy"]["kind"] == "Self":
+            pass
+        else:
+            raise Exception("Only Self trigger available for hurt_trigger")
+        
         ### Cannot call if health is less than zero because fainted
-        if self.health <= 0:
+        if self._health <= 0:
             return activated,targets,possible
+        
+        if self._hurt == False:
+            raise Exception("Called hurt trigger on pet that was not hurt")
+        else:
+            ### Since hurt trigger has now been called, the hurt bool should
+            ###   be reset
+            self._hurt = False
+            
+        if "maxTriggers" in self.ability:
+            if self.ability_counter >= self.ability["maxTriggers"]:
+                return activated,targets,possible
+            else:
+                self.ability_counter += 1
         
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
@@ -622,8 +702,14 @@ class Pet():
             raise Exception("Trigger must be a Team")
         
         ### Cannot call if health is less than zero because fainted
-        if self.health <= 0:
+        if self._health <= 0:
             return activated,targets,possible
+        
+        if "maxTriggers" in self.ability:
+            if self.ability_counter >= self.ability["maxTriggers"]:
+                return activated,targets,possible
+            else:
+                self.ability_counter += 1
         
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)
@@ -637,7 +723,7 @@ class Pet():
     def __repr__(self):
         return "< {} {}-{} {} {}-{} >".format(
             self.name, 
-            self.attack, self.health, 
+            self._attack, self._health, 
             self.status, 
             self.level, self.experience)
         
@@ -669,8 +755,8 @@ class Pet():
             "ability_counter": self.ability_counter,
             "override_ability": self.override_ability,
             "override_ability_dict": self.override_ability_dict,
-            "attack": self.attack,
-            "health": self.health,
+            "attack": self._attack,
+            "health": self._health,
             "status": self.status,
             "level": self.level,
             "experience": self.experience
@@ -693,8 +779,8 @@ class Pet():
         pet.ability_counter = state["ability_counter"]
         pet.override_ability = state["override_ability"]
         pet.override_ability_dict = state["override_ability_dict"]
-        pet.attack = state["attack"]
-        pet.health = state["health"]
+        pet._attack = state["attack"]
+        pet._health = state["health"]
         pet.status = state["status"]
         pet.level = state["level"]
         pet.experience = state["experience"]
@@ -733,19 +819,15 @@ def tiger_func(func, te_fainted, *args):
     pet_behind = pet_behind[0].pet
     if pet_behind.name != "pet-tiger":
         return targets,possible
+    if pet_behind.health <= 0:
+        ### If tiger died and has been removed don't run function again
+        if apet.team.check_friend(pet_behind) == False:
+            return targets,possible
     
     ### Reset activiting pet's original ability because that's what should
     ###  be duplicated. This is important for Whale.
     apet.override_ability = False
-    
-    pet_behind_idx = apet.team.index(pet_behind)
     if len(args) == 5:
-        ### Edit te_idx if summoning occured for all but fly
-        # if apet.name != "pet-fly":
-        #     te_idx = [0,args[4][1]]
-        # else:
-        #     te_idx = args[4]
-        
         te_idx = [0,args[4][1]+len(targets)]
         ### Run function again
         temp_targets,temp_possible = func(

@@ -9,10 +9,10 @@ if os.path.exists("__pycache__"):
 from sapai.data import data
 from sapai.pets import Pet
 from sapai.foods import Food
-from sapai.store import Store
+from sapai.shop import Shop
 from sapai.teams import Team,TeamSlot
-from sapai.fight import Fight
-from sapai.graph import graph_fight
+from sapai.battle import Battle
+from sapai.graph import graph_battle
 
 #%%
 
@@ -103,5 +103,7 @@ test_shop = decompress(test)
 test = compress(p)
 test_player = decompress(test)
 print(test_player)
+
+# %%
 
 # %%

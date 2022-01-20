@@ -185,6 +185,9 @@ class Team():
             return found_idx
         elif type(obj) == int:
             return obj
+        elif type(obj).__name__ == "int64":
+            ### For numpy int
+            return obj
         else:
             raise Exception("Object of type {} not recognized".format(type(obj)))
         

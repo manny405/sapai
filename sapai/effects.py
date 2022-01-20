@@ -511,7 +511,7 @@ def DealDamage(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         else:
             raise Exception()
     for target_pet in target:
-        target_pet.health -= health_amount
+        target_pet.hurt(health_amount)
     return target,possible
 
 
@@ -593,10 +593,10 @@ def ModifyStats(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     if "healthAmount" in apet.ability["effect"]:
         health_amount = apet.ability["effect"]["healthAmount"]
     for target_pet in target:
-        target_pet.attack += attack_amount
-        target_pet.health += health_amount
-        target_pet.attack = min([target_pet.attack,50])
-        target_pet.health = min([target_pet.health,50])
+        target_pet._attack += attack_amount
+        target_pet._health += health_amount
+        target_pet._attack = min([target_pet.attack,50])
+        target_pet._health = min([target_pet.health,50])
     
     return target,possible
 
@@ -636,10 +636,10 @@ def ReduceHealth(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     per = apet.ability["effect"]["percentage"]*0.01
     for temp_pet in target:
         if temp_pet.health > 0:
-            temp_pet.health = int(temp_pet.health*per)
-            if temp_pet.health == 0:
+            temp_pet._health = int(temp_pet.health*per)
+            if temp_pet._health == 0:
                 ### Floor health of 1
-                temp_pet.health = 1
+                temp_pet._health = 1
     return target,possible
 
 
@@ -747,13 +747,13 @@ def SummonPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         spet = target_team[target_slot_idx].pet
         
         if "withAttack" in apet.ability["effect"]:
-            spet.attack = apet.ability["effect"]["withAttack"]
+            spet._attack = apet.ability["effect"]["withAttack"]
         if "withHealth" in apet.ability["effect"]:
-            spet.health = apet.ability["effect"]["withHealth"]
+            spet._health = apet.ability["effect"]["withHealth"]
         if "withLevel" in apet.ability["effect"]:
             spet.level = apet.ability["effect"]["withLevel"]
         if apet.name == "pet-rooster":
-            spet.attack = int(apet.attack*0.5)
+            spet._attack = int(apet.attack*0.5)
         
         target.append(spet)
         
@@ -819,8 +819,8 @@ def SummonRandomPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     else:
         shealth = data["pets"][spet.name]["baseHealth"]
         
-    spet.attack = sattack
-    spet.health = shealth
+    spet._attack = sattack
+    spet._health = shealth
     fteam.move_forward()
     return [spet],[[x] for x in possible]
 
@@ -877,7 +877,7 @@ def Swallow(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         'team': 'Friendly'}}
         apet.set_ability(summon_dict)
         faint_idx = fteam.get_idx(temp_target)
-        temp_target.health = -1
+        temp_target._health = -1
     
     fteam.move_forward()
     return target,possible
@@ -927,9 +927,9 @@ def TransferStats(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
             ###   that have this ability
             temp_from = temp_from[0][0]
             if copy_attack:
-                apet.attack = temp_from.attack
+                apet._attack = temp_from.attack
             if copy_health:
-                apet.health = temp_from.health
+                apet._health = temp_from.health
     
     return target,possible
 

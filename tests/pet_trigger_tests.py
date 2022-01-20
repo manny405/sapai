@@ -47,7 +47,6 @@ def get_print_str(pets):
     
     return print_str
 
-# t = Team([Pet("fish"), Pet("dragon"), Pet("cat"), Pet("sheep")])
 #%%
 
 ################################################################################
@@ -470,6 +469,7 @@ print(print_str)
 
 for pet in pets:
     pet.team.append(Pet("tiger"))
+    pet.hurt(1)
     trigger = decompress(cteam)
     print("###################################################################")
     print(pet)

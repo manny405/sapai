@@ -27,10 +27,10 @@ for slot in t0:
     slot.pet.shop = shop
 for slot in t1:
     slot.pet.shop = shop
-t1[0].pet.health = 7
+t1[0].pet._health = 7
 t0[0].pet.level = 2
 t0[1].pet.level = 3
-t0[0].pet.health = 8
+t0[0].pet._health = 8
 
 apet=t0[0].pet
 apet_idx=[0,3]
@@ -277,11 +277,13 @@ from sapai import Pet,Shop,Food,Team
 
 #%%
 
-t = Team(["spider", "tiger"], fight=True)
+t = Team(["spider", "tiger"], battle=True)
 print(t)
 slot_list = [x for x in t]
 for slot in slot_list:
-    slot.pet.faint_trigger(slot.pet)
+    if slot.empty == True:
+        continue
+    slot.pet.faint_trigger(slot.pet, [0,t.index(slot)])
     print(t)
 
 # %%

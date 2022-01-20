@@ -177,7 +177,7 @@ class Player():
             for fainted_pet in fainted_list:
                 fainted_pet_idx = self.team.index(fainted_pet)+1
                 for slot in self.team:
-                    slot._pet.faint_trigger(fainted_pet, fainted_pet_idx)
+                    slot._pet.faint_trigger(fainted_pet, [0,fainted_pet_idx])
                 if self.team.check_friend(fainted_pet):
                     self.team.remove(fainted_pet)
             if len(fainted_list) == 0:

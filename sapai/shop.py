@@ -184,8 +184,8 @@ class Shop():
             ### Add health and attack from previously purchased cans
             if slot.frozen == False:
                 if slot.slot_type == "pet":
-                    slot.item.attack += self.can
-                    slot.item.health += self.can
+                    slot.item._attack += self.can
+                    slot.item._health += self.can
         
         for team_slot in team:
             team_slot._pet.shop_ability(shop=self,trigger="roll")
