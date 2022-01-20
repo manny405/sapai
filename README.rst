@@ -155,8 +155,9 @@ All battle history is stored for every phase, effect, and attack that occured du
 
 
 .. figure:: doc/static/battle_graph_full.png
-    :height: 1333
-    :width: 500
+
+    :height: 2140
+    :width: 536
     :align: center
 
 ------
