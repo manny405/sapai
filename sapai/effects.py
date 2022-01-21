@@ -645,7 +645,7 @@ def ReduceHealth(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     per = apet.ability["effect"]["percentage"]*0.01
     for temp_pet in target:
         if temp_pet.health > 0:
-            temp_pet._health = int(temp_pet.health*per)
+            temp_pet._health = temp_pet.health-int(np.round(temp_pet.health*per))
             if temp_pet._health == 0:
                 ### Floor health of 1
                 temp_pet._health = 1

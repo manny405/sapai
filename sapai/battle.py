@@ -2,6 +2,7 @@
 import copy
 import numpy as np
 
+from sapai.data import data
 from sapai.pets import Pet
 from sapai.teams import Team
 from sapai.effects import get_effect_function,get_pet,get_teams,\
@@ -394,15 +395,15 @@ def check_summon_triggers(phase_list,
                           targets,
                           possible):
     if activated == False:
-        return
+        return 0
     
     func = get_effect_function(p)
     if func not in [SummonPet,SummonRandomPet]:
-        return
+        return 0
     
     team = p.ability["effect"]["team"]
     if team == "Enemy":
-        return 
+        return 0
 
     ### Otherwise, summon triggers need to be checked for each Pet in targets
     if len(targets) > 0:
@@ -421,6 +422,27 @@ def check_summon_triggers(phase_list,
                               team_idx, 
                               pet_idx,
                               tempa,tempt,tempp)
+    
+    return len(targets)
+
+
+def check_honey(phase_list,p,team_idx,pet_idx,teams):
+    if p.status != "status-honey-bee":
+        return 
+    
+    honey_ability = data["statuses"]["status-honey-bee"]["ability"]
+    p.set_ability(honey_ability)
+    te_idx = [team_idx,pet_idx]
+    activated,targets,possible = p.faint_trigger(trigger=p, te_idx=te_idx)
+    append_phase_list(phase_list,p,team_idx,pet_idx,activated,targets,possible)
+    check_summon_triggers(phase_list,
+                            p,
+                            team_idx,
+                            pet_idx,
+                            teams[team_idx],
+                            activated,
+                            targets,
+                            possible)
     
 
 def battle_phase_start(battle_obj,
@@ -455,12 +477,19 @@ def battle_phase_hurt_and_faint(battle_obj,
         if p.health <= 0:
             ### Pet has fainted
             te_idx = [team_idx,pet_idx]
-            ### First activate animals own faint trigger
-            activated,targets,possible = p.faint_trigger(trigger=p, te_idx=te_idx)
-            append_phase_list(phase_list,p,team_idx,pet_idx,activated,targets,possible)
+            
+            ### Activate animals own faint trigger
+            activated,targets,possible = p.faint_trigger(p,te_idx,oteam)
+            append_phase_list(phase_list,
+                              p,
+                              team_idx,
+                              pet_idx,
+                              activated,
+                              targets,
+                              possible)
             
             ### If animal was summoned, then need to check for summon triggers
-            check_summon_triggers(phase_list,
+            nsummoned = check_summon_triggers(phase_list,
                                   p,
                                   team_idx,
                                   pet_idx,
@@ -468,6 +497,9 @@ def battle_phase_hurt_and_faint(battle_obj,
                                   activated,
                                   targets,
                                   possible)
+            
+            ### Check for honey on pet
+            check_honey(phase_list,p,team_idx,pet_idx+nsummoned,teams)
             
             ### Then pass to all other animals on friendly team
             ### Keep track of activations such that they may only be performed
@@ -486,7 +518,7 @@ def battle_phase_hurt_and_faint(battle_obj,
                     if temp_pet in activated_dict:
                         continue
                     activated,targets,possible = temp_pet.faint_trigger(
-                                                        trigger=p, te_idx=te_idx)
+                                                    trigger=p, te_idx=te_idx)
                     append_phase_list(phase_list,temp_pet,team_idx,pet_idx,
                                     activated,targets,possible)
                     ### If animal was summoned, then need to check for summon triggers

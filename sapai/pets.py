@@ -449,7 +449,7 @@ class Pet():
         return activated,targets,possible
     
     
-    def faint_trigger(self, trigger=None, te_idx=[]):
+    def faint_trigger(self, trigger=None, te_idx=[], oteam=None):
         """
         Apply pet's ability associated with a friend (or self) fainting
         
@@ -500,15 +500,23 @@ class Pet():
                 self.ability_counter += 1
         
         func = get_effect_function(self)
-        pet_idx = self.team.get_idx(self)
+        if self.team.check_friend(self):
+            pet_idx = self.team.get_idx(self)
+        else:
+            pet_idx = te_idx
+        
+        if oteam != None:
+            teams = [self.team,oteam]
+        else:
+            teams = [self.team]
         
         if func in [SummonPet,SummonRandomPet]:
             ### API for SummonPet is slightly different
             targets,possible = tiger_func(
-                func,True,self,[0,pet_idx],[self.team],trigger,te_idx)
+                func,True,self,[0,pet_idx],teams,trigger,te_idx)
         else:
             targets,possible = tiger_func(
-                func,True,self,[0,pet_idx],[self.team],trigger)
+                func,True,self,[0,pet_idx],teams,trigger)
         
         activated = True
         return activated,targets,possible
@@ -796,6 +804,13 @@ def tiger_func(func, te_fainted, *args):
         ### Just run function
         return func(*args)
     
+    ### If checked on Bee status, then not repeated because this is a status
+    ###   and not an ability
+    if "pet" in apet.ability["effect"]:
+        if apet.ability["effect"]["pet"] == "pet-bee":
+            targets,possible = func(*args)
+            return targets,possible
+    
     ### Get pet behind apet before running function
     pet_behind = apet.team.get_behind(apet,n=1)
     
@@ -867,5 +882,5 @@ empty_ability = {'description': 'none',
   'food': 'none',
   'level': 'none'},
  'maxTriggers': 'none'}
+
 # %%
-""
