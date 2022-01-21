@@ -401,9 +401,10 @@ def check_summon_triggers(phase_list,
     if func not in [SummonPet,SummonRandomPet]:
         return 0
     
-    team = p.ability["effect"]["team"]
-    if team == "Enemy":
-        return 0
+    if "team" in p.ability["effect"]:
+        team = p.ability["effect"]["team"]
+        if team == "Enemy":
+            return 0
 
     ### Otherwise, summon triggers need to be checked for each Pet in targets
     if len(targets) > 0:
@@ -499,7 +500,7 @@ def battle_phase_hurt_and_faint(battle_obj,
                                   possible)
             
             ### Check for honey on pet
-            check_honey(phase_list,p,team_idx,pet_idx+nsummoned,teams)
+            check_honey(phase_list,p,team_idx,pet_idx,teams)
             
             ### Then pass to all other animals on friendly team
             ### Keep track of activations such that they may only be performed
@@ -733,12 +734,16 @@ def battle_phase_knockout(battle_obj,
 def get_attack(p0,p1):
     """ Ugly but works """
     attack_list = [int(p0.attack), int(p1.attack)]
+    
+    ### Garlic
     if p0.status == "status-garlic-armor":
         attack_list[1] -= 2
         attack_list[1] = max([attack_list[1], 1])
     if p1.status ==  "status-garlic-armor":
         attack_list[0] -= 2
-        attack_list[0] = max([attack_list[0], 0])
+        attack_list[0] = max([attack_list[0], 1])
+        
+    ### Melon
     if p0.status == "status-melon-armor":
         attack_list[1] -= 20
         attack_list[1] = max([attack_list[1], 0])
@@ -747,10 +752,14 @@ def get_attack(p0,p1):
         attack_list[0] -= 20
         attack_list[0] = max([attack_list[0], 0])
         p1.status = "none"
+        
+    ### Meat
     if p0.status == "status-bone-attack":
         attack_list[0] = attack_list[0]+5
     if p1.status == "status-bone-attack":
         attack_list[1] = attack_list[1]+5
+        
+    ### Steak
     if p0.status == "status-steak-attack":
         attack_list[0] = attack_list[0]+20
         p0.status = "none"

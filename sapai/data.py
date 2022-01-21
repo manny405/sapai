@@ -45,6 +45,7 @@ After new patch updates:
       is not a copy operation
   6. Bat target RandomEnergy -> NonWeakEnemy. Bat does not apply weak randomly. 
       It only applies weak to an enemy that is not already weak. 
+  7. Update croc to 8,16,24
 
 """
 
@@ -9307,7 +9308,7 @@ data = {
           "target": {
             "kind": "LastEnemy"
           },
-          "amount": 7
+          "amount": 8
         }
       },
       "level2Ability": {
@@ -9321,7 +9322,7 @@ data = {
           "target": {
             "kind": "LastEnemy"
           },
-          "amount": 14
+          "amount": 16
         }
       },
       "level3Ability": {
@@ -9335,7 +9336,7 @@ data = {
           "target": {
             "kind": "LastEnemy"
           },
-          "amount": 21
+          "amount": 24
         }
       },
       "probabilities": [

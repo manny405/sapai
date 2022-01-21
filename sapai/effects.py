@@ -797,8 +797,6 @@ def SummonRandomPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
             raise Exception()
         chosen = np.random.choice(possible, (1,))[0]
     
-    
-    
     #### Perform team movement to ensure that the pet is summoned in the 
     ####   correct position
     #### First, determine how many pets should be infront
@@ -830,6 +828,8 @@ def SummonRandomPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         shealth = apet.ability["effect"]["baseHealth"]
     else:
         shealth = data["pets"][spet.name]["baseHealth"]
+    if "level" in apet.ability["effect"]:
+        spet.level = apet.ability["effect"]["level"]
         
     spet._attack = sattack
     spet._health = shealth
@@ -838,6 +838,7 @@ def SummonRandomPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         temp_slot.pet.team = fteam
     
     return [spet],[[x] for x in possible]
+
 
 def Swallow(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     fteam,oteam = get_teams(apet_idx,teams)
