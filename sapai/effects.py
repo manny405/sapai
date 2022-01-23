@@ -263,6 +263,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
         ### Choose one to return for current 
         choice_idx_range = np.arange(0,len(all_possible))
         choice_idx = apet.rs.choice(choice_idx_range, (1,))[0]
+        ### Update internal state of random generator
+        apet.seed_state = apet.rs.get_state()
         ret_pets = all_possible[choice_idx]
         return ret_pets,all_possible
     
@@ -324,6 +326,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
             choice_idx_range = np.where(np.array(health_list) == max_health)[0]
             choice_idx = apet.rs.choice(choice_idx_range, (1,), replace=False)[0]
             all_possible = [[oteam[oidx[x]].pet] for x in choice_idx_range]
+            ### Update internal state of random generator
+            apet.seed_state = apet.rs.get_state()
             ### Dereference max_idx
             return [oteam[oidx[choice_idx]].pet],all_possible
         else:
@@ -363,6 +367,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
             choice_idx_range = np.where(np.array(health_list) == min_health)[0]
             choice_idx = apet.rs.choice(choice_idx_range, (1,), replace=False)[0]
             all_possible = [[oteam[oidx[x]].pet] for x in choice_idx_range]
+            ### Update internal state of random generator
+            apet.seed_state = apet.rs.get_state()
             ### Dereference max_idx
             return [oteam[oidx[choice_idx]].pet],all_possible
         else:
@@ -383,6 +389,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
                 return [],[]
             crange = np.arange(0,len(all_possible))
             cidx = apet.rs.choice(crange,(1,),replace=False)[0]
+            ### Update internal state of random generator
+            apet.seed_state = apet.rs.get_state()
             ret_pets = all_possible[cidx]
         return ret_pets,all_possible
     
@@ -407,6 +415,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
                 return [],[]
             crange = np.arange(0,len(all_possible))
             cidx = apet.rs.choice(crange,(1,),replace=False)[0]
+            ### Update internal state of random generator
+            apet.seed_state = apet.rs.get_state()
             ret_pets = all_possible[cidx]
         return ret_pets,all_possible
         
@@ -430,6 +440,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
         if len(all_possible) == 0:
             return [],[]
         choice = apet.rs.choice(max_idx,(1,),replace=False)[0]
+        ### Update internal state of random generator
+        apet.seed_state = apet.rs.get_state()
         ret_pets = [fteam[choice].pet]
         return ret_pets,all_possible
 
@@ -445,6 +457,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
         for temp_idx in max_idx:
             all_possible.append(fteam[temp_idx].pet)
         choice = apet.rs.choice(max_idx,(1,),replace=False)[0]
+        ### Update internal state of random generator
+        apet.seed_state = apet.rs.get_state()
         ret_pets = [fteam[choice].pet]
         return ret_pets,all_possible
 
@@ -467,6 +481,8 @@ def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=F
             return [],[]
         idx_range = np.arange(0,len(possible))
         chosen_idx = apet.rs.choice(idx_range,(1,),replace=False)[0]
+        ### Update internal state of random generator
+        apet.seed_state = apet.rs.get_state()
         return possible[chosen_idx],possible
           
     elif kind == "none":
@@ -627,6 +643,8 @@ def OneOf(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     original_effect = apet.ability["effect"]
     effects = apet.ability["effect"]["effects"]
     chosen_idx = apet.rs.choice(np.arange(0,len(effects)), size=(1,))[0]
+    ### Update internal state of random generator
+    apet.seed_state = apet.rs.get_state()
     effect = effects[chosen_idx]
     effect_kind = effect["kind"]
     apet.ability["effect"] = effect
@@ -800,6 +818,8 @@ def SummonRandomPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         else:
             raise Exception()
         chosen = apet.rs.choice(possible, (1,))[0]
+        ### Update internal state of random generator
+        apet.seed_state = apet.rs.get_state()
     
     #### Perform team movement to ensure that the pet is summoned in the 
     ####   correct position
