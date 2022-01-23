@@ -10,6 +10,7 @@ from sapai.compress import compress,decompress
 from sapai import Team
 from sapai.graph import graph_battle
 from sapai.battle import Battle
+from sapai.shop import Shop
 
 %load_ext line_profiler
 
@@ -29,3 +30,18 @@ for i in range(20):
     winner = b.battle()
     # Same state should result in draw
     print(winner)
+#%%
+
+################################################################################
+####### Testing Shop reproducibility
+################################################################################
+state = np.random.RandomState(seed=20).get_state()
+s = Shop(turn=11,seed_state=state)
+print(s)
+
+#s.freeze(0)
+#print(s)
+
+for i in range(2):
+    s.roll()
+    print(s)
