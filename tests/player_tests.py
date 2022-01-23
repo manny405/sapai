@@ -14,10 +14,11 @@ from sapai.teams import Team,TeamSlot
 from sapai.shop import Shop
 from sapai.battle import Battle
 from sapai.graph import graph_battle
+from sapai import Player
 
 #%%
 
-%run /Users/ibier/Software/sapai/sapai/player.py
+# %run /Users/ibier/Software/sapai/sapai/player.py
 
 pack = "StandardPack"
 # pack="ExpansionPack1"

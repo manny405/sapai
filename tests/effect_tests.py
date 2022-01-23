@@ -10,6 +10,7 @@ from sapai import data
 from sapai import Pet,Shop,Food
 from sapai.teams import Team,TeamSlot
 from sapai.compress import compress,decompress
+from sapai.effects import *
 
 
 #%%
@@ -17,7 +18,7 @@ from sapai.compress import compress,decompress
 ################################################################################
 ##### Testing get_target function
 ################################################################################
-%run /Users/ibier/Software/sapai/sapai/effects.py
+# %run /Users/ibier/Software/sapai/sapai/effects.py
 
 shop = Shop()
 shop.roll()
@@ -212,7 +213,7 @@ get_from=False
 ################################################################################
 ##### Testing all functions
 ################################################################################
-%run /Users/ibier/Software/sapai/sapai/effects.py
+# %run /Users/ibier/Software/sapai/sapai/effects.py
 
 all_func = [x for x in func_dict.keys()]
 pet_func = {}

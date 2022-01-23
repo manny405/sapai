@@ -11,12 +11,13 @@ from sapai.pets import Pet
 from sapai.foods import Food
 from sapai.teams import Team,TeamSlot
 from sapai.battle import Battle
+from sapai.shop import Shop,ShopSlot
 from sapai.graph import graph_battle
 
 
 #%%
 
-%run /Users/ibier/Software/sapai/sapai/shop.py
+# %run /Users/ibier/Software/sapai/sapai/shop.py
 
 slot = ShopSlot("pet")
 slot.item = Pet("ant")
@@ -35,7 +36,7 @@ print(slot)
 
 #%%
 
-%run /Users/ibier/Software/sapai/sapai/shop.py
+# %run /Users/ibier/Software/sapai/sapai/shop.py
 s = Shop(turn=11)
 print(s)
 

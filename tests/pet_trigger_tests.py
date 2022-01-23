@@ -7,7 +7,7 @@ if os.path.exists("__pycache__"):
     shutil.rmtree("__pycache__")
 
 from sapai.data import data
-# from sapai.pets import Pet
+from sapai.pets import Pet
 from sapai.foods import Food
 from sapai.teams import Team,TeamSlot
 from sapai.battle import Battle
@@ -53,7 +53,7 @@ def get_print_str(pets):
 ##### Testing all start-of-turn pets
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 
 test_pet_names = ["dromedary", "swan", "caterpillar", "squirrel"]
 pets = [Pet(x, shop=Shop(), team=Team(), player=Player()) for x in test_pet_names]
@@ -78,7 +78,7 @@ for pet in pets:
 ##### Testing all sell_trigger pets
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 
 test_team = Team([Pet("dragon"), Pet("cat"), Pet("horse")])
 
@@ -115,7 +115,7 @@ for iter_idx,pet in enumerate(pets):
 ##### Testing all buy_food_trigger pets
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 
 test_team = Team([Pet("dragon"), Pet("cat")])
 
@@ -154,7 +154,7 @@ for iter_idx,pet in enumerate(pets):
 ##### Testing all buy_friend_trigger pets
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 
 test_team = Team([Pet("fish"), Pet("dragon"), Pet("cat")])
 
@@ -203,7 +203,7 @@ for iter_idx,pet in enumerate(pets):
 ##### Testing all friend_summoned_trigger triggers
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 
 test_team = Team([Pet("fish"), Pet("dragon"), Pet("cat")])
 
@@ -231,7 +231,7 @@ for pet in pets:
 ##### Testing all levelup_trigger triggers
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 
 test_team = Team([Pet("fish"), Pet("dragon"), Pet("cat")])
 
@@ -258,7 +258,7 @@ for pet in pets:
 ##### Testing all eot_trigger triggers
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 
 test_team = Team([Pet("fish"), Pet("dragon"), Pet("cat")])
 test_team[0].pet.level = 3
@@ -291,7 +291,7 @@ for pet in pets:
 ##### Testing all faint_trigger triggers
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 from sapai.compress import compress,decompress
 
 test_team = Team([Pet("fish")], battle=True)
@@ -352,7 +352,7 @@ for iter_idx,pet in enumerate(pets):
 ##### Testing all start-of-battle triggers
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 from sapai.compress import compress,decompress
 
 test_team = Team([Pet("fish"), Pet("dragon"), Pet("cat")], battle=True)
@@ -386,7 +386,7 @@ for pet in pets:
 ##### Testing all before_attack_trigger triggers
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 from sapai.compress import compress,decompress
 
 test_team = Team([Pet("fish"), Pet("dragon"), Pet("cat")], battle=True)
@@ -420,7 +420,7 @@ for pet in pets:
 ##### Testing all after_attack_trigger triggers
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 from sapai.compress import compress,decompress
 
 test_team = Team([Pet("fish")], battle=True)
@@ -454,7 +454,7 @@ for pet in pets:
 ##### Testing all hurt_trigger triggers
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 from sapai.compress import compress,decompress
 
 test_team = Team([Pet("fish")], battle=True)
@@ -487,7 +487,7 @@ for pet in pets:
 ##### Testing all knockout_trigger triggers
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/pets.py
+# %run /Users/ibier/Software/sapai/sapai/pets.py
 from sapai.compress import compress,decompress
 
 test_team = Team([Pet("fish")], battle=True)

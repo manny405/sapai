@@ -10,17 +10,28 @@ from sapai.tiers import pet_tier_lookup,pet_tier_lookup_std
 #%%
 
 class Pet():
-    def __init__(self, name="pet-none", shop=None, team=None, player=None, seed_state = None):
-        """
-        Food class definition the types of interactions that food undergoes
+    """
+    Pet class defines all properties and triggers for Pets during gameplay
+    
+    """
+    def __init__(self, 
+                 name="pet-none", 
+                 shop=None, 
+                 team=None, 
+                 player=None, 
+                 seed_state=None):
         
-        """
         if len(name) != 0:
             if not name.startswith("pet-"):
                 name = "pet-{}".format(name)
         self.seed_state = seed_state
         self.rs = np.random.RandomState()
         if self.seed_state != None:
+            self.rs.set_state(self.seed_state)
+        else:
+            ### Otherwise, set new random state
+            rand_int = np.random.randint(0, 1e6)
+            self.seed_state = np.random.RandomState(rand_int).get_state()
             self.rs.set_state(self.seed_state)
       
         self.eaten = False
@@ -758,6 +769,11 @@ class Pet():
         #### Cannot get state for attached objects such as shop, team, or player
         ####   as this will lead to circular logic. Therefore, state should be
         ####   saved at the Player level if all info is desired. 
+        
+        #### Ensure that state can be JSON serialized
+        seed_state = list(self.rs.get_state())
+        seed_state[1] = seed_state[1].tolist()
+        
         state_dict = {
             "type": "Pet",
             "name": self.name,
@@ -773,7 +789,7 @@ class Pet():
             "status": self.status,
             "level": self.level,
             "experience": self.experience,
-            "seed_state": self.rs.get_state()
+            "seed_state": seed_state
         }
         
         return state_dict
@@ -798,7 +814,8 @@ class Pet():
         pet.level = state["level"]
         pet.experience = state["experience"]
         pet.seed_state = state["seed_state"]
-        pet.rs = np.random.RandomState().set_state(pet.seed_state)
+        pet.rs = np.random.RandomState()
+        pet.rs.set_state(pet.seed_state)
         return pet
 
 

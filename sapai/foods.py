@@ -28,6 +28,11 @@ class Food():
         self.rs = np.random.RandomState()
         if self.seed_state != None:
             self.rs.set_state(self.seed_state)
+        else:
+            ### Otherwise, set new random state
+            rand_int = np.random.randint(0, 1e6)
+            self.seed_state = np.random.RandomState(rand_int).get_state()
+            self.rs.set_state(self.seed_state)
 
         self.attack = 0
         self.health = 0
@@ -91,13 +96,17 @@ class Food():
     
     @property
     def state(self):
+        #### Ensure that state can be JSON serialized
+        seed_state = list(self.rs.get_state())
+        seed_state[1] = seed_state[1].tolist()
+        
         state_dict = {
             "type": "Food",
             "name": self.name,
             "eaten": self.eaten,
             "attack": self.attack,
             "health": self.health,
-            "seed_state":self.seed_state
+            "seed_state": seed_state
         }
         return state_dict
 
@@ -109,6 +118,8 @@ class Food():
         food.health = state["health"]
         food.eaten = state["eaten"],
         food.seed_state = state["seed_state"]
+        food.rs = np.random.RandomState()
+        food.rs.set_state(state["seed_state"])
         return food
     
         

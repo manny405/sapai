@@ -21,11 +21,12 @@ class Team():
                  shop=None, 
                  player=None, 
                  pack="StandardPack",
-                 seed_state = None):
+                 seed_state=None):
         self._battle = battle
         self.max_slots = 5
         self.seed_state = seed_state
-        self.team = [TeamSlot(seed_state = self.seed_state) for x in range(self.max_slots)]
+        self.team = [TeamSlot(seed_state=self.seed_state) 
+                     for x in range(self.max_slots)]
         for iter_idx,obj in enumerate(obj_list):
             self[iter_idx] = obj
             self[iter_idx]._pet.team = self
@@ -301,6 +302,8 @@ class Team():
     
     @property
     def state(self):
+        ### seed_state doesn't need to be stored for Team because the seed_state
+        ###   is stored by pets
         state_dict = {
             "type": "Team",
             "battle": self.battle,
@@ -321,7 +324,7 @@ class Team():
     
         
 class TeamSlot():
-    def __init__(self, obj=None,seed_state=None):
+    def __init__(self, obj=None, seed_state=None):
         self.seed_state = seed_state
         if type(obj).__name__ == "Pet":
             self._pet = obj
@@ -372,15 +375,16 @@ class TeamSlot():
 
     
     def copy(self):
-        return TeamSlot(self._pet.copy(),seed_state = self.seed_state)
+        return TeamSlot(self._pet.copy(),seed_state=self.seed_state)
     
     
     @property
     def state(self):
+        ### seed_state doesn't need to be stored for TeamSlot because the 
+        ###   seed_state is stored by pets
         state_dict = {
             "type": "TeamSlot",
             "pet": self._pet.state,
-            "seed_state":self.seed_state
         }
         return state_dict
     

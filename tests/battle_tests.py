@@ -8,16 +8,17 @@ if os.path.exists("__pycache__"):
     
 from sapai.compress import compress,decompress
 from sapai import Team
+from sapai.battle import Battle
 from sapai.graph import graph_battle
 
-%load_ext line_profiler
+# %load_ext line_profiler
 
 #%%
 
 ################################################################################
 ####### Testing multi-hurt 
 ################################################################################
-%run /Users/ibier/Software/sapai/sapai/battle.py 
+# %run /Users/ibier/Software/sapai/sapai/battle.py 
 
 t0 = Team(["badger", "camel", "fish"])
 t0[0].pet._health = 1
@@ -36,7 +37,7 @@ graph_battle(b)
 ################################################################################
 ####### Testing multi-faint
 ################################################################################
-%run /Users/ibier/Software/sapai/sapai/battle.py 
+# %run /Users/ibier/Software/sapai/sapai/battle.py 
 
 t0 = Team(["badger", "camel", "fish"])
 t0[0].pet._health = 1
@@ -56,7 +57,7 @@ graph_battle(b)
 ################################################################################
 ####### Testing before and after attack
 ################################################################################
-%run /Users/ibier/Software/sapai/sapai/battle.py 
+# %run /Users/ibier/Software/sapai/sapai/battle.py 
 
 t0 = Team(["elephant", "snake", "dragon", "fish"])
 t1 = Team(["cricket", "horse", "fly", "tiger"])
@@ -73,8 +74,7 @@ graph_battle(b)
 ################################################################################
 ####### Rhino test
 ################################################################################
-
-%run /Users/ibier/Software/sapai/sapai/battle.py 
+# %run /Users/ibier/Software/sapai/sapai/battle.py 
 
 t0 = Team(["horse", "horse", "horse", "horse"])
 t1 = Team(["rhino", "tiger"])
@@ -91,7 +91,7 @@ graph_battle(b)
 ################################################################################
 ####### Hippo test
 ################################################################################
-%run /Users/ibier/Software/sapai/sapai/battle.py 
+# %run /Users/ibier/Software/sapai/sapai/battle.py 
 
 t0 = Team(["horse", "horse", "horse", "horse"])
 t1 = Team(["hippo", "tiger"])

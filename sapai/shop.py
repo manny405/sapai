@@ -98,10 +98,17 @@ class Shop():
                  can=0,
                  pack="StandardPack",
                  seed_state=None):
+        #### Setting up state
         self.rs = np.random.RandomState()
         self.seed_state = seed_state
         if seed_state != None:
             self.rs.set_state(self.seed_state)
+        else:
+            ### Otherwise, set new random state
+            rand_int = np.random.randint(0, 1e6)
+            self.seed_state = np.random.RandomState(rand_int).get_state()
+            self.rs.set_state(self.seed_state)
+            
         self.turn = turn
         self.pack = pack
         self.tier_avail = 0
@@ -188,7 +195,7 @@ class Shop():
         for slot in self.shop_slots:
             # New RandomState per roll or else every slot will roll the same pet/food
             slot.rs = np.random.RandomState()
-            slot.rs.set_state(self.seed_state)   
+            slot.rs.set_state(self.seed_state)
             slot.roll() 
             self.seed_state = slot.seed_state
             ### Add health and attack from previously purchased cans
@@ -403,13 +410,16 @@ class Shop():
         
     @property
     def state(self):
+        #### Ensure that state can be JSON serialized
+        seed_state = list(self.rs.get_state())
+        seed_state[1] = seed_state[1].tolist()
         state_dict = {
             "type": "Shop",
             "shop_slots": [x.state for x in self.shop_slots],
             "turn": self.turn,
             "can": self.can,
             "pack": self.pack,
-            "seed_state": self.seed_state,
+            "seed_state": seed_state,
         }
         return state_dict
     
@@ -421,7 +431,7 @@ class Shop():
             turn=state["turn"],
             can=state["can"],
             pack=state["pack"],
-            seed_state = state["seed_state"])
+            seed_state=state["seed_state"])
     
     
     def __repr__(self):
@@ -582,13 +592,17 @@ class ShopLearn(Shop):
     
     @property
     def state(self):
+        #### Ensure that state can be JSON serialized
+        seed_state = list(self.rs.get_state())
+        seed_state[1] = seed_state[1].tolist()
+        
         state_dict = {
             "type": "ShopLearn",
             "shop_slots": [x.state for x in self.shop_slots],
             "turn": self.turn,
             "can": self.can,
             "pack": self.pack,
-            "seed_state":self.seed_state
+            "seed_state": seed_state
         }
         return state_dict
     
@@ -600,7 +614,7 @@ class ShopLearn(Shop):
             turn=state["turn"],
             can=state["can"],
             pack=state["pack"],
-            seed_state = state["seed_state"])
+            seed_state=state["seed_state"])
                 
 
 
@@ -620,6 +634,11 @@ class ShopSlot():
         self.seed_state = seed_state
         self.rs = np.random.RandomState()
         if seed_state != None:
+            self.rs.set_state(self.seed_state)
+        else:
+            ### Otherwise, set new random state
+            rand_int = np.random.randint(0, 1e6)
+            self.seed_state = np.random.RandomState(rand_int).get_state()
             self.rs.set_state(self.seed_state)
        
         self.slot_type = slot_type
@@ -763,6 +782,9 @@ class ShopSlot():
         
     @property
     def state(self):
+        #### Ensure that state can be JSON serialized
+        seed_state = list(self.rs.get_state())
+        seed_state[1] = seed_state[1].tolist()
         state_dict = {
             "type": "ShopSlot",
             "slot_type": self.slot_type,
@@ -771,7 +793,7 @@ class ShopSlot():
             "pack": self.pack,
             "cost": self.cost, 
             "frozen": self.frozen,
-            "seed_state": self.seed_state
+            "seed_state": seed_state,
         }
         return state_dict
     
@@ -792,9 +814,12 @@ class ShopSlot():
         cost = state["cost"]
         frozen = state["frozen"]
         seed_state = state["seed_state"]
-        obj.rs = np.random.RandomState()
-        if seed_state != None:
-            obj.rs.set_state(state["item"]["seed_state"])
+        
+        ### This should no longer be possible
+        # obj.rs = np.random.RandomState()
+        # if seed_state != None:
+        #     obj.rs.set_state(state["item"]["seed_state"])
+        
         return cls(obj=obj, 
                    slot_type=slot_type,
                    frozen=frozen,
