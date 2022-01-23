@@ -20,10 +20,12 @@ class Team():
                  battle=False, 
                  shop=None, 
                  player=None, 
-                 pack="StandardPack"):
+                 pack="StandardPack",
+                 seed_state = None):
         self._battle = battle
         self.max_slots = 5
-        self.team = [TeamSlot() for x in range(self.max_slots)]
+        self.seed_state = seed_state
+        self.team = [TeamSlot(seed_state = self.seed_state) for x in range(self.max_slots)]
         for iter_idx,obj in enumerate(obj_list):
             self[iter_idx] = obj
             self[iter_idx]._pet.team = self
@@ -40,7 +42,7 @@ class Team():
         ### Move
         self[tidx] = self[sidx]
         ### Dereference original position
-        self[sidx] = TeamSlot()
+        self[sidx] = TeamSlot(seed_state = self.seed_state)
             
     
     def move_forward(self, start_idx=0, end_idx=10):
@@ -119,7 +121,7 @@ class Team():
     
     def remove(self, obj):
         if type(obj) == int:
-            self.team[obj] = TeamSlot()
+            self.team[obj] = TeamSlot(seed_state = self.seed_state)
         elif type(obj).__name__ == "TeamSlot":
             found = False
             for iter_idx,temp_slot in enumerate(self.team):
@@ -128,7 +130,7 @@ class Team():
                     found = True
             if not found:
                 raise Exception("Remove {} not found".format(obj))
-            self.team[found_idx] = TeamSlot()
+            self.team[found_idx] = TeamSlot(seed_state = self.seed_state)
         elif type(obj).__name__ == "Pet":
             found = False
             for iter_idx,temp_slot in enumerate(self.team):
@@ -138,7 +140,7 @@ class Team():
                     found = True
             if not found:
                 raise Exception("Remove {} not found".format(obj))
-            self.team[found_idx] = TeamSlot()
+            self.team[found_idx] = TeamSlot(seed_state = self.seed_state)
         else:
             raise Exception("Object of type {} not recognized".format(type(obj)))
         
@@ -238,7 +240,7 @@ class Team():
         
             
     def append(self, obj):
-        obj = TeamSlot(obj)
+        obj = TeamSlot(obj,seed_state = self.seed_state)
         n = len(self)
         if n == len(self.team):
             raise Exception("Attempted to append to a full team")
@@ -273,11 +275,11 @@ class Team():
     
     def __setitem__(self, idx, obj):
         if type(obj).__name__ == "Pet":
-            self.team[idx] = TeamSlot(obj)
+            self.team[idx] = TeamSlot(obj,seed_state = self.seed_state)
         elif type(obj).__name__ == "TeamSlot":
             self.team[idx] = obj
         elif type(obj) == str:
-            self.team[idx] = TeamSlot(obj)
+            self.team[idx] = TeamSlot(obj,seed_state = self.seed_state)
         else:
             raise Exception("Tried setting a team slot with type {}"
                 .format(type(obj).__name__))
@@ -291,7 +293,7 @@ class Team():
     
     
     def copy(self):
-        return Team([x.copy() for x in self], self.battle, self.player)
+        return Team([x.copy() for x in self], self.battle, self.player,seed_state=self.seed_state)
     
     
     @property
@@ -316,15 +318,16 @@ class Team():
     
         
 class TeamSlot():
-    def __init__(self, obj=None):
+    def __init__(self, obj=None,seed_state=None):
+        self.seed_state = seed_state
         if type(obj).__name__ == "Pet":
             self._pet = obj
         elif type(obj).__name__ == "TeamSlot":
             self._pet = obj.pet
         elif type(obj).__name__ == "NoneType":
-            self._pet = Pet()
+            self._pet = Pet(seed_state=self.seed_state)
         elif type(obj) == str:
-            self._pet = Pet(obj)
+            self._pet = Pet(obj,seed_state=self.seed_state)
         else:
             raise Exception("Tried initalizing TeamSlot with type {}"
                     .format(type(obj).__name__))
@@ -366,14 +369,15 @@ class TeamSlot():
 
     
     def copy(self):
-        return TeamSlot(self._pet.copy())
+        return TeamSlot(self._pet.copy(),seed_state = self.seed_state)
     
     
     @property
     def state(self):
         state_dict = {
             "type": "TeamSlot",
-            "pet": self._pet.state
+            "pet": self._pet.state,
+            "seed_state":self.seed_state
         }
         return state_dict
     

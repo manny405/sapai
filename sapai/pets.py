@@ -1,7 +1,8 @@
 
 
 #%%
-
+from random import seed
+import numpy as np
 from sapai.data import data
 from sapai.effects import get_effect_function,SummonPet,SummonRandomPet
 from sapai.tiers import pet_tier_lookup,pet_tier_lookup_std
@@ -9,7 +10,7 @@ from sapai.tiers import pet_tier_lookup,pet_tier_lookup_std
 #%%
 
 class Pet():
-    def __init__(self, name="pet-none", shop=None, team=None, player=None):
+    def __init__(self, name="pet-none", shop=None, team=None, player=None, seed_state = None):
         """
         Food class definition the types of interactions that food undergoes
         
@@ -17,7 +18,10 @@ class Pet():
         if len(name) != 0:
             if not name.startswith("pet-"):
                 name = "pet-{}".format(name)
-            
+        self.seed_state = seed_state
+        self.rs = np.random.RandomState()
+        if self.seed_state != None:
+            self.rs.set_state(self.seed_state)
         self.eaten = False
         self.shop = shop
         self.team = team
@@ -62,7 +66,7 @@ class Pet():
                 player.team = self.team
             if self.shop != None:
                 player.shop = self.shop
-                
+
     
     @property
     def attack(self):
@@ -737,7 +741,7 @@ class Pet():
         
         
     def copy(self):
-        copy_pet = Pet(self.name, self.shop)
+        copy_pet = Pet(self.name, self.shop,seed_state=self.seed_state)
         for key,value in self.__dict__.items():
             ### Although this approach will copy the internal dictionaries by 
             ###   reference rather than copy by value, these dictionaries will 
@@ -767,7 +771,8 @@ class Pet():
             "health": self._health,
             "status": self.status,
             "level": self.level,
-            "experience": self.experience
+            "experience": self.experience,
+            "seed_state": self.rs.get_state()
         }
         
         return state_dict
@@ -792,6 +797,8 @@ class Pet():
         pet.status = state["status"]
         pet.level = state["level"]
         pet.experience = state["experience"]
+        pet.seed_state = state["seed_state"]
+        pet.rs = np.random.RandomState().from_state(pet.seed_state)
         
         return pet
 
