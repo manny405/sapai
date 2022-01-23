@@ -258,7 +258,7 @@ class Team():
             if slot.pet.level == 3:
                 return True
         return False
-        
+    
     
     @property
     def battle(self):

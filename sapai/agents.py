@@ -188,7 +188,7 @@ class CombinatorialAgent():
         if len(team_range) == 0:
             return []
         
-        for order in itertools.combinations(team_range, r=len(team_range)):
+        for order in itertools.permutations(team_range, r=len(team_range)):
             action_list.append((player.reorder, order))
         
         return action_list

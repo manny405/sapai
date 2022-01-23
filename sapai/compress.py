@@ -6,7 +6,7 @@ import json,zlib
 import sapai
 
 
-def compress(obj):
+def compress(obj,minimal=False):
     """
     Will compress objects such that they can be stored and searched by a single
     string. This makes storage and quering of teams naively simple.
@@ -15,6 +15,8 @@ def compress(obj):
     state = getattr(obj, "state", False)
     if not state:
         raise Exception("No state found for obj {}".format(obj))
+    if minimal == True:
+        state = minimal_state(obj)
     json_str = json.dumps(state)
     compressed_str = zlib.compress(json_str.encode())
     return compressed_str
@@ -43,6 +45,57 @@ def sapai_hash(obj):
         raise Exception("No state found for obj {}".format(obj))
     raise Exception("I can't find faster way to do this... But it would be very nice.")
 
+
+def minimal_state(obj):
+    """
+    Including the seed_state from food/pets and including the action history from
+    player creates a 10 times increase in the compressed byte size. In many 
+    situations it is advantageous to create a minimal state for only the team
+    stats and current shop pets. This will save memory/storage and improve
+    computational efficiency. 
+    
+    """
+    state = obj.state
+    
+    def minimal_pet_state(state):
+        if "seed_state" in state:
+            del(state["seed_state"])
+    
+    def minimal_team_state(state):
+        for teamslot_state in state["team"]:
+            minimal_pet_state(teamslot_state["pet"])
+    
+    def minimal_shop_state(state):
+        if "seed_state" in state:
+            del(state["seed_state"])
+        for shopslot_state in state["shop_slots"]:
+            if "seed_state" in shopslot_state:
+                del(shopslot_state["seed_state"])
+            minimal_pet_state(shopslot_state["item"])
+    
+    def minimal_player_state(state):
+        if "seed_state" in state:
+            del(state["seed_state"])
+        if "action_history" in state:
+            del(state["action_history"])
+        minimal_team_state(state["team"])
+        minimal_shop_state(state["shop"])
+    
+    
+    if state["type"] == "Pet":
+        minimal_pet_state(state)
+    elif state["type"] == "Food":
+        minimal_pet_state(state)
+    elif state["type"] == "Team":
+        minimal_team_state(state)
+    elif state["type"] == "Shop":
+        minimal_shop_state(state)
+    elif state["type"] == "Player":
+        minimal_player_state(state)
+    else:
+        raise Exception("Unrecognized state type {}".format(state["type"]))
+    
+    return state
 
 #%%
         

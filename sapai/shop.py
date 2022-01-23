@@ -411,8 +411,11 @@ class Shop():
     @property
     def state(self):
         #### Ensure that state can be JSON serialized
-        seed_state = list(self.rs.get_state())
-        seed_state[1] = seed_state[1].tolist()
+        if getattr(self, "rs", False):
+            seed_state = list(self.rs.get_state())
+            seed_state[1] = seed_state[1].tolist()
+        else:
+            seed_state = None
         state_dict = {
             "type": "Shop",
             "shop_slots": [x.state for x in self.shop_slots],
@@ -426,12 +429,18 @@ class Shop():
     
     @classmethod
     def from_state(cls, state):
+        ### Supply seed_state in state dict should be optional
+        if "seed_state" in state:
+            if state["seed_state"] != None:
+                seed_state = state["seed_state"]
+        else:
+            seed_state = None
         return cls(
             shop_slots=[ShopSlot.from_state(x) for x in state["shop_slots"]],
             turn=state["turn"],
             can=state["can"],
             pack=state["pack"],
-            seed_state=state["seed_state"])
+            seed_state=seed_state)
     
     
     def __repr__(self):

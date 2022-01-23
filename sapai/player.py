@@ -68,14 +68,14 @@ class Player():
         
         ### Initialize shop and team if not provided
         if self.shop == None:
-            self.shop = Shop(pack=self.pack)
+            self.shop = Shop(pack=self.pack,seed_state=seed_state)
         if self.team == None:
-            self.team = Team()
+            self.team = Team(seed_state=seed_state)
         
         if type(self.shop) == list:
-            self.shop = Shop(self.shop)
+            self.shop = Shop(self.shop,seed_state=seed_state)
         if type(self.team) == list:
-            self.team = Team(self.team)
+            self.team = Team(self.team,seed_state=seed_state)
             
         ### Connect objects
         self.team.player = self
@@ -389,7 +389,9 @@ class Player():
             raise Exception("Cannot input duplicate indices to reorder: {}"
                             .format(idx))
             
-        self.team = [self.team[x] for x in idx]
+        self.team = Team([self.team[x] for x in idx],
+                         seed_state=self.team.seed_state)
+        
         return idx
     
     

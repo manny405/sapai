@@ -771,8 +771,11 @@ class Pet():
         ####   saved at the Player level if all info is desired. 
         
         #### Ensure that state can be JSON serialized
-        seed_state = list(self.rs.get_state())
-        seed_state[1] = seed_state[1].tolist()
+        if getattr(self, "rs", False):
+            seed_state = list(self.rs.get_state())
+            seed_state[1] = seed_state[1].tolist()
+        else:
+            seed_state = None
         
         state_dict = {
             "type": "Pet",
@@ -813,9 +816,14 @@ class Pet():
         pet.status = state["status"]
         pet.level = state["level"]
         pet.experience = state["experience"]
-        pet.seed_state = state["seed_state"]
-        pet.rs = np.random.RandomState()
-        pet.rs.set_state(pet.seed_state)
+        
+        ### Supply seed_state in state dict should be optional
+        if "seed_state" in state:
+            if state["seed_state"] != None:
+                pet.seed_state = state["seed_state"]
+                pet.rs = np.random.RandomState()
+                pet.rs.set_state(pet.seed_state)
+            
         return pet
 
 
