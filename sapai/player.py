@@ -50,7 +50,8 @@ class Player():
                  turn=1,
                  lf_winner=None,
                  action_history=[],
-                 pack="StandardPack"):
+                 pack="StandardPack",
+                 seed_state=None):
         self.shop = shop
         self.team = team
         self.lives = lives

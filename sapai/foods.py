@@ -2,6 +2,7 @@
 
 #%%
 from sapai.data import data
+import numpy as np
 
 
 #%%
@@ -10,7 +11,8 @@ class Food():
     def __init__(self, 
                  name="food-none", 
                  shop=None, 
-                 team=[]):
+                 team=[],
+                 seed_state = None):
         """
         Food class definition the types of interactions that food undergoes
         
@@ -22,6 +24,11 @@ class Food():
         self.eaten = False
         self.shop = shop
         
+        self.seed_state = seed_state
+        self.rs = np.random.RandomState()
+        if self.seed_state != None:
+            self.rs.set_state(self.seed_state)
+
         self.attack = 0
         self.health = 0
         self.base_attack = 0
@@ -90,6 +97,7 @@ class Food():
             "eaten": self.eaten,
             "attack": self.attack,
             "health": self.health,
+            "seed_state":self.seed_state
         }
         return state_dict
 
@@ -99,7 +107,8 @@ class Food():
         food = cls(name=state["name"])
         food.attack = state["attack"]
         food.health = state["health"]
-        food.eaten = state["eaten"]
+        food.eaten = state["eaten"],
+        food.seed_state = state["seed_state"]
         return food
     
         
