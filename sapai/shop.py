@@ -668,8 +668,8 @@ class ShopSlot():
             else:
                 pet_repr = str(self.item)
                 pet_repr = pet_repr[2:-2]
-                return "< ShopSlot-{} {} {} >".format(
-                    self.slot_type, fstr, pet_repr)
+                return "< ShopSlot-{} {} {}-gold {} >".format(
+                    self.slot_type, fstr, self.cost, pet_repr)
         else:
             if self.item.name == "food-none":
                 return "< ShopSlot-{} {} EMPTY >".format(
@@ -677,8 +677,8 @@ class ShopSlot():
             else:
                 food_repr = str(self.item)
                 food_repr = food_repr[2:-2]
-                return "< ShopSlot-{} {} {} >".format(
-                    self.slot_type, fstr, food_repr)
+                return "< ShopSlot-{} {} {}-gold {} >".format(
+                    self.slot_type, fstr, self.cost, food_repr)
     
     def freeze(self):
         """

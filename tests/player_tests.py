@@ -99,13 +99,15 @@ pack = "StandardPack"
 ##############################################
 #### Checking start of turn behavior
 ##############################################
-# player = Player(shop=["ant", "fish", "fish", "pear"], 
-#                 team=["dromedary", "swan", "caterpillar", "squirrel"], 
-#                 pack=pack)
-# player.team[0]._pet.level = 2
-# print(player)
-# player.start_turn()
-# print(player)
+player = Player(shop=["ant", "fish", "fish", "pear"], 
+                team=["dromedary", "swan", "caterpillar", "squirrel"], 
+                pack=pack)
+player.team[0]._pet.level = 2
+print(player)
+player.start_turn()
+print(player)
+
+#%%
 
 
 ##############################################
