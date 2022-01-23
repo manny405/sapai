@@ -33,7 +33,15 @@ def decompress(compressed_str):
     return obj
 
 
-
+def sapai_hash(obj):
+    """
+    Fast method for hashing the object 
+    
+    """
+    state = getattr(obj, "state", False)
+    if not state:
+        raise Exception("No state found for obj {}".format(obj))
+    raise Exception("I can't find faster way to do this... But it would be very nice.")
 
 
 #%%

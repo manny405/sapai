@@ -6,6 +6,7 @@ import numpy as np
 if os.path.exists("__pycache__"):
     shutil.rmtree("__pycache__")
 
+from sapai.compress import compress,decompress
 from sapai.data import data
 from sapai.pets import Pet
 from sapai.foods import Food
@@ -178,11 +179,21 @@ print(player)
 player.buy_food(player.shop[-1], player.team[1])
 print(player)
 
-#%%
+test = decompress(compress(player))
 
 #%%
 
 #%%
- 
+
+#%%
+
+%run /Users/ibier/Software/sapai/sapai/player.py
+
+player = Player(pack=pack)
+player.start_turn()
+player.buy_pet(0)
+player.buy_pet(1)
+player.sell(0)
+print(player.action_history)
 
 # %%

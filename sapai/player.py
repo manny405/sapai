@@ -1,8 +1,27 @@
 
 import numpy as np
 
+import sapai.shop
 from sapai.shop import Shop
 from sapai.teams import Team,TeamSlot
+
+
+def storeaction(func):
+    def store_action(*args, **kwargs):
+        player = args[0]
+        action_name = str(func.__name__).split(".")[-1]
+        targets = func(*args,**kwargs)
+        store_targets = []
+        if targets != None:
+            for entry in targets:
+                if getattr(entry, "state", False):
+                    store_targets.append(entry.state)
+        player.action_history.append((action_name, store_targets))
+        
+    ### Make sure that the func returned as the same name as input func
+    store_action.__name__ = func.__name__
+    
+    return store_action
 
 
 class Player():
@@ -30,6 +49,7 @@ class Player():
                  gold=10, 
                  turn=1,
                  lf_winner=None,
+                 action_history=[],
                  pack="StandardPack"):
         self.shop = shop
         self.team = team
@@ -61,8 +81,15 @@ class Player():
         for slot in self.team:
             slot._pet.player = self
             slot._pet.shop = self.shop
-            
+        
+        ### This stores the history of actions taken by the given player
+        if len(action_history) == 0:
+            self.action_history = []
+        else:
+            self.action_history = list(action_history)
     
+    
+    @storeaction
     def start_turn(self, winner=None):
         ### Update turn count and gold
         self.turn += 1
@@ -77,13 +104,17 @@ class Player():
         for slot in self.team:
             slot._pet.sot_trigger()
             
-        return
+        return ()
     
     
+    @storeaction
     def buy_pet(self, pet):
         """ Buy one pet from the shop """
         if len(self.team) == self._max_team:
             raise Exception("Attempted to buy Pet on full team")
+        
+        if type(pet) == int:
+            pet = self.shop[pet]
         
         if type(pet).__name__ == "ShopSlot":
             pet = pet.item
@@ -117,11 +148,19 @@ class Player():
         for slot in self.team:
             slot._pet.friend_summoned_trigger(pet)
         
-        return 
+        return (pet,)
     
     
+    @storeaction
     def buy_food(self, food, team_pet):
         """ Buy and feed one food from the shop to a pet """
+        if type(food) == int:
+            food = self.shop[food]
+            if food.slot_type != "food":
+                raise Exception("Shop slot not food")
+        if type(team_pet) == int:
+            team_pet = self.team[team_pet]
+            
         if type(food).__name__ == "ShopSlot":
             food = food.item
             
@@ -133,7 +172,7 @@ class Player():
             
         if not self.team.check_friend(team_pet):
             raise Exception("Attempted to buy food for Pet not on team {}"
-                            .format(temp_pet))
+                            .format(team_pet))
         
         if type(team_pet).__name__ != "Pet":
             raise Exception("Attempted to buy_pet using object {}".format(team_pet))
@@ -183,14 +222,18 @@ class Player():
             if len(fainted_list) == 0:
                 break
         
-        return 
+        return (food,team_pet)
     
     
+    @storeaction
     def sell(self, pet):
         """ Sell one pet on the team """
+        if type(pet) == int:
+            pet = self.team[pet]
+            
         if type(pet).__name__ == "TeamSlot":
             pet = pet._pet
-        
+            
         if type(pet).__name__ != "Pet":
             raise Exception("Attempted to sell Object {}".format(pet))
         
@@ -198,14 +241,13 @@ class Player():
         for slot in self.team:
             slot._pet.sell_trigger(pet)
             
-        ### Then delete from team
-        del_idx = self.team.index(pet)
-        del(self.team.team[del_idx])
-        
+        if self.team.check_friend(pet):
+            self.team.remove(pet)
+
         ### Add default gold
         self.gold += 1
         
-        return
+        return (pet,)
     
     
     def freeze(self, obj):
@@ -217,20 +259,27 @@ class Player():
             shop_idx = obj
         shop_slot = self.shop.shop_slots[shop_idx]
         shop_slot.freeze()
-        return
+        return (shop_slot,)
         
     
+    @storeaction
     def roll(self):
         """ Roll shop """
         if self.gold < 1:
             raise Exception("Attempt to roll without gold")
         self.shop.roll()
         self.gold -= 1
-        return
+        return ()
     
     
+    @storeaction
     def buy_combine(self, shop_pet, team_pet):
         """ Combine two pets on purchase """
+        if type(shop_pet) == int:
+            shop_pet = self.shop[shop_pet]
+        if type(team_pet) == int:
+            team_pet = self.team[team_pet]
+            
         if type(shop_pet).__name__ == "ShopSlot":
             shop_pet = shop_pet.item
         if type(team_pet).__name__ == "TeamSlot":
@@ -261,8 +310,10 @@ class Player():
         ### Perform combine
         cattack = max(shop_pet.attack, team_pet.attack)+1
         chealth = max(shop_pet.health, team_pet.health)+1
-        team_pet.attack = cattack
-        team_pet.health = chealth
+        cstatus = team_pet.status
+        team_pet._attack = cattack
+        team_pet._health = chealth
+        team_pet.status = cstatus
         levelup = team_pet.gain_experience()
         
         ### Check for levelup triggers if appropriate
@@ -275,10 +326,18 @@ class Player():
         ### Check for buy_pet triggers
         for slot in self.team:
             slot._pet.buy_friend_trigger(team_pet)
+            
+        return shop_pet,team_pet
     
     
+    @storeaction
     def combine(self, pet1, pet2):
         """ Combine two pets on the team together """
+        if type(pet1) == int:
+            pet1 = self.team[pet1]
+        if type(pet2) == int:
+            pet2 = self.team[pet2]
+            
         if type(pet1).__name__ == "TeamSlot":
             pet1 = pet1._pet
         if type(pet2).__name__ == "TeamSlot":
@@ -298,8 +357,10 @@ class Player():
         ### Perform combine
         cattack = max(pet1.attack, pet2.attack)+1
         chealth = max(pet1.health, pet2.health)+1
-        pet1.attack = cattack
-        pet1.health = chealth
+        cstatus = get_combined_status(pet1,pet2)
+        pet1._attack = cattack
+        pet1._health = chealth
+        pet1.status = cstatus
         levelup = pet1.gain_experience()
         
         ### Check for levelup triggers if appropriate
@@ -312,9 +373,11 @@ class Player():
         ### Remove pet2 from team
         idx = self.team.index(pet2)
         self.team[idx] = TeamSlot()
-        return
+        
+        return pet1,pet2 
         
     
+    @storeaction
     def reorder(self, idx):
         """ Reorder team """
         if len(idx) != len(self.team):
@@ -326,14 +389,16 @@ class Player():
                             .format(idx))
             
         self.team = [self.team[x] for x in idx]
-        return self.team
+        return idx
     
     
+    @storeaction
     def end_turn(self):
         """ End turn and move to battle phase """
         ### Activate eot trigger
         for slot in self.team:
             slot._pet.eot_trigger()
+        return None
         
         
     @property
@@ -348,6 +413,7 @@ class Player():
             "lf_winner": self.lf_winner,
             "pack": self.pack,
             "turn": self.turn, 
+            "action_history": self.action_history,
         }
         return state_dict
     
@@ -355,7 +421,10 @@ class Player():
     @classmethod
     def from_state(cls, state):
         team = Team.from_state(state["team"])
-        shop = Shop.from_state(state["shop"])
+        shop_type = state["shop"]["type"]
+        shop_cls = getattr(sapai.shop, shop_type)
+        shop = shop_cls.from_state(state["shop"])
+        action_history = state["action_history"]
         return cls(team=team,
                    shop=shop,
                    lives=state["lives"],
@@ -363,7 +432,8 @@ class Player():
                    gold=state["gold"],
                    turn=state["turn"],
                    lf_winner=state["lf_winner"],
-                   pack=state["pack"])
+                   pack=state["pack"],
+                   action_history=action_history)
     
     
     def __repr__(self):
@@ -376,3 +446,29 @@ class Player():
         print_str += "CURRENT TEAM: \n--------------\n"+self.team.__repr__()+"\n"
         print_str += "CURRENT SHOP: \n--------------\n"+self.shop.__repr__()
         return print_str
+    
+    
+def get_combined_status(pet1, pet2):
+    """
+    Statuses are combined based on the tier that they come from.
+    
+    """
+    status_tier = {
+        0: ["status-weak", "status-extra-life", "none"],
+        1: ["status-honey-bee"],
+        2: ["status-bone-attack"],
+        3: ["status-garlic-armor"],
+        4: ["status-splash-attack"],
+        5: ["status-melon-armor", "status-steak-attack", "status-extra-life"],
+    }
+    
+    status_lookup = {}
+    for key,value in status_tier.items():
+        for entry in value:
+            status_lookup[entry] = key
+    
+    ### If there is a tie in tier, then pet1 status is used
+    max_idx = np.argmax([status_lookup[pet1.status], 
+                         status_lookup[pet2.status]])
+    
+    return [pet1.status, pet2.status][max_idx]

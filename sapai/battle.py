@@ -314,7 +314,44 @@ class Battle():
                 continue
             self.pet_priority.append((t,i))
             
+
+
+class RBattle(Battle):
+    """
+    This class will calculate all possible outcomes of a SAP battle considering
+    all paths of random behavior. The advantage is that probabilities of winning
+    are evaluated exactly rather than requiring bootstrapped probabilities. 
     
+    Disadvantage is that it is possible that huge number of paths must be 
+    evaluated to determine exact probabilities. Protection against (could) be
+    implemented in two ways:
+        1. Determining that paths lead to nomial identical results and can 
+            merge back together improving calculation efficiency
+        2. Define a maximum path size and if the number paths detected is larger 
+            then probabilities are bootstrapped. 
+    
+    """
+    def __init__(self, t0, t1, max_paths=1000):
+        """
+        Performs the battle between the input teams t1 and t2. 
+        
+        """
+        ### Make copy each team to cary out the battle so that the original
+        ### pets are not modified in any way after the battle
+        self.t0 = t0.copy()
+        self.t0._battle = True
+        self.t1 = t1.copy()
+        self.t1._battle = True
+        
+        ### Internal storage
+        self.battle_list = []
+        
+        ### Build initial effect queue order
+        self.update_pet_priority()
+        
+        raise Exception("Not implemented")
+
+
     
 def battle_phase(
                 battle_obj,

@@ -120,7 +120,8 @@ class Shop():
         self.update_shop_rules()
         
         if len(shop_slots) > 0:
-            self.shop_slots = [ShopSlot(x) for x in shop_slots]
+            self.shop_slots = [
+                ShopSlot(x,pack=self.pack,turn=self.turn) for x in shop_slots]
             
     
     def buy(self, obj):
@@ -221,7 +222,7 @@ class Shop():
         with a new pet
         
         """
-        new_slot = ShopSlot("levelup", pack=self.pack)
+        new_slot = ShopSlot("levelup",pack=self.pack,turn=self.turn)
         self.append(new_slot)
         
     
@@ -256,11 +257,13 @@ class Shop():
             
         add_pets = self.pslots - len(new_shop_slots_pet)
         for i in range(add_pets):
-            new_shop_slots_pet.append(ShopSlot("pet", pack=self.pack))
+            new_shop_slots_pet.append(
+                ShopSlot("pet",pack=self.pack,turn=self.turn))
         
         add_foods = self.fslots - len(new_shop_slots_food)
         for i in range(add_foods):
-            new_shop_slots_food.append(ShopSlot("food", pack=self.pack))
+            new_shop_slots_food.append(
+                ShopSlot("food",pack=self.pack,turn=self.turn))
         
         self.shop_slots = new_shop_slots_pet+new_shop_slots_food
         
@@ -317,13 +320,15 @@ class Shop():
             add_slots = min(self.pslots - len(pslots), 
                             self.max_slots - len(keep_idx))
             for idx in range(add_slots):
-                self.shop_slots.append(ShopSlot("pet"))
+                self.shop_slots.append(
+                    ShopSlot("pet", turn=self.turn, pack=self.pack))
                 keep_idx.append(len(self.shop_slots)-1)
         if len(fslots) < self.fslots:
             add_slots = min(self.fslots - len(fslots), 
                             self.max_slots - len(keep_idx))
             for idx in range(add_slots):
-                self.shop_slots.append(ShopSlot("food"))
+                self.shop_slots.append(
+                    ShopSlot("food", turn=self.turn, pack=self.pack))
                 keep_idx.append(len(self.shop_slots)-1)
         
         keep_slots = [self.shop_slots[x] for x in keep_idx]
@@ -370,7 +375,7 @@ class Shop():
             ### Max slots already reached so cannot be added
             return
         
-        add_slot = ShopSlot(obj, pack=self.pack)
+        add_slot = ShopSlot(obj, pack=self.pack, turn=self.turn)
         pslots = []
         fslots = []
         for iter_idx,slot in enumerate(self.shop_slots):
@@ -413,7 +418,178 @@ class Shop():
         for iter_idx,slot in enumerate(self.shop_slots):
             repr_str += "{}: {} \n    ".format(iter_idx, slot)
         return repr_str
+
+
+class ShopLearn(Shop):
+    """
+    Shop behavior designed for learning algorithms. In this shop, all Pets and 
+    Foods are presented for a given tier. In this way, the all possible can 
+    be considered and becaues the API is considered with a regular shop, the
+    agent can automatically be executed with normal random shop behavior. 
+    Only disadvantage is that rolling behavior can not be learned by this method
+    until transitioning to normal random shop behavior.
     
+    Rolling behavior is emulated. For example, on the first round, if 3 pets
+    are bought, then all pets in the shop are removed requiring that a roll
+    takes place before another pet can be bought. Without this requirement,
+    teams that could never be built in the real game are possible by buying 
+    and selling more than 3 pets without rolling a single time. 
+    
+    """
+    def __init__(self,*args,**kwargs):
+        self.npet_bought = 0
+        self.nfood_bought = 0
+        self.nmax_levelup = 0
+        self.nlevelup_bought = 0
+        self.shop_names = {}
+        super().__init__(*args,**kwargs)
+        self.max_slots = int(1e6)
+    
+    
+    def roll(self):
+        ### Reset npet_bought and nfood_bough upon rolling
+        self.npet_bought = 0
+        self.nfood_bought = 0
+        self.nlevelup_bought = 0
+        
+        ### Return the number of pets that can be bought from the next tier
+        ###   to zero
+        self.nmax_levelup = 0
+        
+        ### Rebuild ShopLearn
+        self.update_shop_rules()
+
+
+    def buy(self, obj):
+        """ 
+        Buy has slightly different behavior than normal. After buying a pet, 
+        it is never removed. However, all levelup slots are removed. What this
+        does is that Pets from a higher tier that is available from a combining
+        to levelup can only be considered or bought a single time. This provides
+        very good emulation of realistic game behavior during the shopping 
+        phase. 
+        
+        """
+        ### Desired object is ShopSlot in this case
+        if type(obj).__name__ == "ShopSlot":
+            pass
+        elif type(obj) == int:
+            obj = self.shop_slots[obj]
+        else:
+            idx = -1
+            for iter_idx,slot in enumerate(self.shop_slots):
+                if slot.item == obj:
+                    idx = iter_idx
+                    obj = slot
+                    break
+            if idx < 0:
+                raise Exception("Unrecognized Shop Object {}".format(obj))
+        
+        if obj.slot_type == "pet":
+            self.npet_bought += 1
+        elif obj.slot_type == "food":
+            self.nfood_bought += 1
+        elif obj.slot_type == "levelup":
+            self.nlevelup_bought += 1
+        else:
+            raise Exception("Unrecognized ShopSlot {}".format(obj))
+            
+        ### Rebuild ShopLearn to remove all levelup ShopSlots
+        self.update_shop_rules()
+            
+        
+    
+    def update_shop_rules(self, turn=-1):
+        """
+        Rebuilds ShopLearn using all Pets and Foods available for the givne turn
+        
+        """
+        if turn < 0:
+            turn = self.turn
+        
+        ### Turn 11 is max shopd info
+        if turn > 11:
+            turn = 11
+            
+        rules = get_shop_rules(turn)
+        self.pslots = rules[0]
+        self.fslots = rules[1]
+        self.tier_avail = rules[2]
+        self.levelup_tier = rules[3]
+        self.avail_pets = rules[4]
+        self.avail_foods = rules[5]
+        self.pp = len(self.avail_pets)
+        self.fp = len(self.avail_foods)
+        
+        ### Setup the shop slots
+        self.shop_names = {}
+        self.shop_slots = []
+        new_shop_slots_pet = []
+        new_shop_slots_food = []
+        new_shop_slots_levelup = []
+        
+        ### Check if Pet purchase limit or Food purchase limit has been reached
+        if self.npet_bought < self.pslots:
+            for pet in self.avail_pets:
+                new_shop_slots_pet.append(
+                    ShopSlot(pet,pack=self.pack,turn=self.turn))
+                self.shop_names[pet] = True
+        if self.nfood_bought < self.fslots:
+            for food in self.avail_foods:
+                new_shop_slots_food.append(
+                    ShopSlot(food,pack=self.pack,turn=self.turn))
+                self.shop_names[food] = True
+        if self.nlevelup_bought < self.nmax_levelup:
+            if self.pack == "StandardPack":
+                levelup_avail_pets = pet_tier_lookup_std[self.levelup_tier]
+            else:
+                levelup_avail_pets = pet_tier_lookup[self.levelup_tier]
+            for pet in levelup_avail_pets:
+                if pet not in self.shop_names:
+                    temp_slot = ShopSlot(slot_type="levelup",
+                                        pack=self.pack,
+                                        turn=self.turn)
+                    temp_slot.item = Pet(pet)
+                    new_shop_slots_levelup.append(temp_slot)
+                    self.shop_names[pet] = True
+        
+        self.shop_slots = new_shop_slots_pet+\
+                          new_shop_slots_levelup+\
+                          new_shop_slots_food
+            
+        
+    def levelup(self):
+        ### Add 1 to the number of levelup pets that can be bought
+        self.nmax_levelup += 1
+        ### Rebuild shop
+        self.update_shop_rules()
+                
+    
+    def check_rules(self):
+        raise Exception("ShopLearn does not use check_rules")
+    
+    
+    @property
+    def state(self):
+        state_dict = {
+            "type": "ShopLearn",
+            "shop_slots": [x.state for x in self.shop_slots],
+            "turn": self.turn,
+            "can": self.can,
+            "pack": self.pack,
+        }
+        return state_dict
+    
+    
+    @classmethod
+    def from_state(cls, state):
+        return cls(
+            shop_slots=[ShopSlot.from_state(x) for x in state["shop_slots"]],
+            turn=state["turn"],
+            can=state["can"],
+            pack=state["pack"])
+                
+
 
 class ShopSlot():
     """

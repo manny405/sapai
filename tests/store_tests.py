@@ -36,7 +36,7 @@ print(slot)
 #%%
 
 %run /Users/ibier/Software/sapai/sapai/shop.py
-s = Shop()
+s = Shop(turn=11)
 print(s)
 
 s.freeze(0)

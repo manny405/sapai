@@ -1,6 +1,7 @@
 
 
-import os,json
+import os,json,zlib,itertools,torch
+import numpy as np
 from sapai import Player
 from sapai.battle import Battle
 from sapai.compress import compress,decompress
@@ -13,6 +14,7 @@ random_buy_pets = {"pet-otter"}
 random_sell_pets = {"pet-beaver"}
 random_pill_pets = {"pet-ant"}
 random_battle_pets = {"pet-mosquito"}
+
 
 class CombinatorialAgent():
     """
@@ -49,23 +51,226 @@ class CombinatorialAgent():
                              turn=turn,
                              lf_winner=lf_winner,
                              pack=pack)
-        
+        self.player_state = self.player.state 
         self.ranker = ranker
+        
+        ### This stores the player lists for performing all possible actions
+        self.player_list = []
+        
+        ### Player dict stores compressed str of all players such that if the
+        ###   same player state will never be used twice
+        self.player_state_dict = {}
+        
+    
+    def avail_actions(self, player):
+        """
+        Return all possible available actions
+        
+        """
+        action_list = [()]
+        ### Include only the actions that cost gold
+        action_list += self.avail_buy_pets(player)
+        action_list += self.avail_buy_food(player)
+        action_list += self.avail_buy_combine(player)
+        action_list += self.avail_team_combine(player)
+        action_list += self.avail_sell(player)
+        action_list += self.avail_roll(player)
+        return action_list
+        
+    
+    def avail_buy_pets(self, player):
+        """
+        Returns all possible pets that can be bought from the player's shop
+        """
+        action_list = []
+        gold = player.gold
+        if len(player.team) == 5:
+            ### Cannot buy for full team
+            return action_list
+        for shop_idx,shop_slot in enumerate(player.shop):
+            if shop_slot.slot_type == "pet":
+                if shop_slot.cost <= gold:
+                    action_list.append((player.buy_pet,shop_idx))
+        return action_list
+    
+    
+    def avail_buy_food(self, player):
+        """
+        Returns all possible food that can be bought from the player's shop
+        """
+        action_list = []
+        gold = player.gold
+        if len(player.team) == 0:
+            return action_list
+        for shop_idx,shop_slot in enumerate(player.shop):
+            if shop_slot.slot_type == "food":
+                if shop_slot.cost <= gold:
+                    for team_idx,team_slot in enumerate(player.team):
+                        if team_slot.empty:
+                            continue
+                        action_list.append(
+                            (player.buy_food,
+                             shop_idx,
+                             team_idx))
+        return action_list
+    
+    
+    def avail_buy_combine(self, player):
+        action_list = []
+        gold = player.gold
+        team_names = {}
+        for team_idx,slot in enumerate(player.team):
+            if slot.empty:
+                continue
+            if slot.pet.name not in team_names:
+                team_names[slot.pet.name] = []
+            team_names[slot.pet.name].append(team_idx)
+        if len(player.team) == 0:
+            return action_list
+        for shop_idx,shop_slot in enumerate(player.shop):
+            if shop_slot.slot_type == "pet":
+                ### Can't combine if pet not already on team
+                if shop_slot.item.name not in team_names:
+                    continue
+                
+                if shop_slot.cost <= gold:
+                    for team_idx in team_names[shop_slot.item.name]:
+                        action_list.append(
+                            (player.buy_combine,
+                             shop_idx,
+                             team_idx))
+        return action_list
+    
+    
+    def avail_team_combine(self, player):
+        action_list = []
+        if len(player.team) == 0:
+            return action_list
+        
+        team_names = {}
+        for slot_idx,slot in enumerate(player.team):
+            if slot.empty:
+                continue
+            if slot.pet.name not in team_names:
+                team_names[slot.pet.name] = []
+            team_names[slot.pet.name].append(slot_idx)
+            
+        for key,value in team_names.items():
+            if len(value) == 1:
+                continue
+            
+            for idx0,idx1 in itertools.combinations(value,r=2):
+                action_list.append(
+                    (player.combine,
+                    idx0,
+                    idx1))
+        
+        return action_list
+    
+    
+    def avail_sell(self, player):
+        action_list = []
+        if len(player.team) <= 1:
+            ### Not able to sell the final friend on team
+            return action_list
+        for team_idx,slot in enumerate(player.team):
+            if slot.empty:
+                continue
+            action_list.append((player.sell, team_idx))
+        return action_list
+    
+    
+    def avail_team_order(self, player):
+        """ Returns all possible orderings for the team """
+        action_list = []
+        
+        team_range = np.arange(0,len(player.team))
+        if len(team_range) == 0:
+            return []
+        
+        for order in itertools.combinations(team_range, r=len(team_range)):
+            action_list.append((player.reorder, order))
+        
+        return action_list
+    
+    
+    def avail_roll(self, player):
+        action_list = []
+        ##### ASSUMPTION: If gold is not 1, do not roll for now because with 
+        #####   ShopLearn, rolling has no meaning
+        if player.gold != 1:
+            return action_list
+        if player.gold > 0:
+            action_list.append((player.roll,))
+        return action_list
         
     
     def train(self):
-        ### Start turn
-        self.player.start_turn()
-        self.player.buy_pet(self.player.shop[0])
-        self.player.buy_pet(self.player.shop[0])
-        self.player.buy_pet(self.player.shop[0])
+        self.player_state = self.player.state
+        self.player_list = self.build_player_list(self.player)
+        ### End turn for all in player list
+        for temp_player in self.player_list:
+            temp_player.end_turn()
+    
+    
+    def build_player_list(self, player, player_list=[]):
+        """
+        Recursive function for building player list for a given turn
+
+        """
+        if player.gold <= 0:
+            ### If gold is 0, then this is exit condition for the 
+            ### recursive function
+            return []
+
+        player_state = player.state
+        print(player.gold, 
+              [x.pet._attack for x in player.team],
+              len(self.player_state_dict),
+              len(self.player.shop))
         
-        # self.player.start_turn()
-        # self.player.buy_pet(self.player.shop[0])
-        # self.player.buy_pet(self.player.shop[0])
+        avail_actions = self.avail_actions(player)
+        for temp_action in avail_actions:
+            if temp_action == ():
+                ### Null action
+                continue
+            
+            #### Re-initialize Player
+            temp_player = Player.from_state(player_state)
+            
+            #### Perform action
+            action_name = str(temp_action[0].__name__).split(".")[-1]
+            action = getattr(temp_player,action_name)
+            action(*temp_action[1:])
+            
+            ### Check if this is unique player state
+            temp_player.team.move_forward()     ### Move team forward so that
+                                                ### team is index invariant
+
+            ### Don't need history in order to check for redundancy of the 
+            ###   shop state. This means that it does not matter how a Shop
+            ###   gets to a state, just that the state is identical to others. 
+            temp_state = temp_player.state
+            temp_state["action_history"] = []
+            cstate = zlib.compress(json.dumps(temp_state).encode())
+            # cstate = hash(json.dumps(temp_player.state))
+            if cstate not in self.player_state_dict:
+                self.player_state_dict[cstate] = temp_player
+            else:
+                ### If player state has been seen before, then do not append
+                ### to the player list.
+                continue
+            
+            player_list.append(temp_player)
         
-        self.player.end_turn()
-        rank = self.ranker(self.player.team)
+        full_player_list = player_list
+        for player in player_list:
+            ### Now, call this function recurisvely to add the next action
+            temp_player_list = []
+            self.build_player_list(player, temp_player_list)
+            full_player_list += temp_player_list
+        
+        return full_player_list
         
 
 class DatabaseLookupRanker():
@@ -76,12 +281,8 @@ class DatabaseLookupRanker():
     """
     def __init__(self, 
                  path="",
-                 turn=1,
-                 randn=100,
                 ):
         self.path = path
-        self.turn = turn
-        self.randn = randn
         
         if os.path.exists(path):
             with open(path, "r") as f:
@@ -147,3 +348,170 @@ class DatabaseLookupRanker():
                 wins += 1
             total += 1
         return wins,total
+    
+    
+class PairwiseBattles():
+    """
+    Parallel function using MPI for calculation Pairwise battles. 
+    
+    Disadvantage of current method is that not check-pointing is done in the
+    calculation. This means that the results will be written as all or nothing. 
+    If the calculation is interrupted before finishing, than all results will 
+    be lost. This is a common issue of simple parallelization...
+    
+    """
+    def __init__(self, output="results.pt"):
+        try: 
+            from mpi4py import MPI
+            parallel_check = True
+        except:
+            parallel_check = False
+        
+        if parallel_check == False:
+            raise Exception("MPI parallelization not available")
+
+        self.comm = MPI.COMM_WORLD
+        self.size = self.comm.Get_size()
+        self.rank = self.comm.Get_rank()
+        self.output = output
+        
+    
+    def battle(self, obj):
+        ### Prepare job-list on rank 0 
+        if self.rank == 0:
+            team_list = []
+            if type(obj) == dict:
+                team_list += list(obj.values())
+            else:
+                team_list += list(obj)
+            
+            if type(team_list[0]).__name__ != "Team":
+                raise Exception("Input object is not Team Dict or Team List")
+            
+            print("------------------------------------")
+            print("RUNNING PAIRWISE BATTLES")
+            print("{:16s}: {}".format("INFO", "NUMBER"))
+            print("{:16s}: {}".format("NUM RANKS", self.size))
+            print("{:16s}: {}".format("INPUT TEAMS", len(obj)))
+            
+            ### Easier for indexing
+            team_array = np.zeros((len(team_list),), dtype=object)
+            team_array[:] = team_list[:]
+            pair_idx = self._get_pair_idx(team_list)
+            print("{:16s}: {}".format("NUMBER BATTLES", len(pair_idx)))
+            ### Should I send just index and read in files on all ranks...
+            ###   or should Teams be sent to ranks...
+            ### Well, I don't think this function will every have >2 GB sized 
+            ###   team dataset anyways...
+            for temp_rank in np.arange(1,self.size):
+                temp_idx = pair_idx[temp_rank::self.size]
+                temp_teams = np.take(team_array, temp_idx)
+                self.comm.send((temp_idx, temp_teams), temp_rank)
+                
+            my_idx = pair_idx[0::self.size]
+            my_teams = np.take(team_array, my_idx)
+            print("{:16s}: {}".format("BATTLES PER RANK", len(my_teams)))            
+            
+        else:
+            ### Wait for info from rank 0
+            my_idx,my_teams = self.comm.recv(source=0)
+    
+        if self.rank != 0:
+            winner_list = []
+            iter_idx = 0
+            for t0,t1 in my_teams:
+                b = Battle(t0,t1)
+                temp_winner = b.battle()
+                winner_list.append(temp_winner)
+                iter_idx += 1
+        else:
+            #### This is split to remove branching code in the for loop above
+            winner_list = []
+            iter_idx = 0
+            for t0,t1 in my_teams:
+                b = Battle(t0,t1)
+                temp_winner = b.battle()
+                winner_list.append(temp_winner)
+                iter_idx += 1
+                if iter_idx % 1000 == 0:
+                    print("{:16s}: {} of {}".format(
+                                "FINISHED", iter_idx*self.size, len(pair_idx)))
+        
+        winner_list = np.array(winner_list).astype(int)
+        
+        ### Send results back to rank 0
+        self.comm.barrier()
+        
+        if self.rank == 0:
+            print("------------------------------------")
+            print("DONE CALCULATING BATTLES")
+            ### Using +1 so that the last entry in the array can be used as 
+            ###   as throw-away when draws occur
+            wins = np.zeros((len(team_array)+1,)).astype(int)
+            total = np.zeros((len(team_array)+1,)).astype(int)
+            ### Add info from rank 0
+            add_totals_idx,add_totals= np.unique(my_idx[:,0],return_counts=True)
+            total[add_totals_idx] += add_totals
+            add_totals_idx,add_totals= np.unique(my_idx[:,1],return_counts=True)
+            total[add_totals_idx] += add_totals
+            ### Use for fast indexing for counting up wins
+            temp_draw_idx = np.zeros((len(my_idx),))-1
+            winner_idx_mask = np.hstack([my_idx, temp_draw_idx[:,None]])
+            winner_idx_mask = winner_idx_mask.astype(int)
+            winner_idx = winner_idx_mask[np.arange(0,len(winner_list)),
+                                            winner_list]
+            winner_idx,win_count = np.unique(winner_idx, return_counts=True)
+            wins[winner_idx] += win_count
+            
+            for temp_rank in np.arange(1,self.size):
+                temp_idx,temp_winner_list = self.comm.recv(source=temp_rank)
+                add_totals_idx,add_totals= np.unique(temp_idx[:,0],
+                                                     return_counts=True)
+                total[add_totals_idx] += add_totals
+                add_totals_idx,add_totals= np.unique(temp_idx[:,1],
+                                                     return_counts=True)
+                total[add_totals_idx] += add_totals
+                ### Use for fast indexing for counting up wins
+                temp_draw_idx = np.zeros((len(temp_idx),))-1
+                winner_idx_mask = np.hstack([temp_idx, temp_draw_idx[:,None]])
+                winner_idx_mask = winner_idx_mask.astype(int)
+                winner_idx = winner_idx_mask[np.arange(0,len(temp_winner_list)),
+                                             temp_winner_list]
+                winner_idx,win_count = np.unique(winner_idx, return_counts=True)
+                wins[winner_idx] += win_count
+            
+            ### Throw away last entry for ties
+            wins = wins[0:-1]
+            total = total[0:-1]
+            frac = wins / total
+            
+            results = {}
+            for iter_idx,temp_team in enumerate(team_list):
+                temp_frac = frac[iter_idx]
+                results[compress(temp_team)] = temp_frac
+                
+            print("WRITING OUTPUTS AT: {}".format(self.output))
+            torch.save(results, self.output)
+            
+            print("------------------------------------")
+            print("COMPLETED")
+        else:
+            self.comm.send((my_idx, winner_list), 0)
+        
+        ### Barrier before exiting
+        self.comm.barrier()
+        return 
+    
+    def _get_pair_idx(self, team_list):
+        """
+        Get the dictionary of pair_dict that have to be made for pair mode
+        esxecution.
+        
+        """
+        idx = np.triu_indices(n=len(team_list),
+                              k=1,
+                              m=len(team_list)) 
+        return np.array([x for x in zip(idx[0], idx[1])])
+        
+        
+        

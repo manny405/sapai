@@ -19,7 +19,7 @@ You may see and use ``sapai`` examples easily through `Google Colab <https://col
 Installation
 ------------
 
-To start installing and using ``mcse``, it's highly recommended to start from an Anaconda distribution of Python, which can be downloaded for free here_. 
+To start installing and using ``sapai``, it's highly recommended to start from an Anaconda distribution of Python, which can be downloaded for free here_. 
 
 .. _here: https://www.anaconda.com/products/individual
 

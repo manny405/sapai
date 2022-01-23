@@ -730,6 +730,10 @@ def SummonPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         fteam.move_forward(start_idx=0, end_idx=end_idx)
     elif team == "Enemy":
         target_team = oteam
+        if type(target_team).__name__ != "Team":
+            ### Assume that oteam was not input, for example if Rat was pilled
+            ###   during the shop phase
+            return [],[]
         target_team.move_forward()
     else:
         raise Exception(apet.ability["effect"]["team"])
