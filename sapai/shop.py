@@ -409,6 +409,7 @@ class Shop():
             "turn": self.turn,
             "can": self.can,
             "pack": self.pack,
+            "seed_state": self.seed_state,
         }
         return state_dict
     
@@ -419,7 +420,8 @@ class Shop():
             shop_slots=[ShopSlot.from_state(x) for x in state["shop_slots"]],
             turn=state["turn"],
             can=state["can"],
-            pack=state["pack"])
+            pack=state["pack"],
+            seed_state = state["seed_state"])
     
     
     def __repr__(self):
@@ -558,7 +560,7 @@ class ShopLearn(Shop):
                     temp_slot = ShopSlot(slot_type="levelup",
                                         pack=self.pack,
                                         turn=self.turn, seed_state=self.seed_state)
-                    temp_slot.item = Pet(pet)
+                    temp_slot.item = Pet(pet,seed_state=self.seed_state)
                     new_shop_slots_levelup.append(temp_slot)
                     self.shop_names[pet] = True
         
@@ -666,9 +668,9 @@ class ShopSlot():
                     name = "none"
                 
             if self.slot_type == "pet":
-                self.item = Pet(name)
+                self.item = Pet(name,seed_state=self.seed_state)
             elif self.slot_type == "food":
-                self.item = Food(name)
+                self.item = Food(name,seed_state=self.seed_state)
             elif self.slot_type == "levelup":
                 self.roll_levelup()
             
@@ -790,6 +792,9 @@ class ShopSlot():
         cost = state["cost"]
         frozen = state["frozen"]
         seed_state = state["seed_state"]
+        obj.rs = np.random.RandomState()
+        if seed_state != None:
+            obj.rs.set_state(state["item"]["seed_state"])
         return cls(obj=obj, 
                    slot_type=slot_type,
                    frozen=frozen,

@@ -22,6 +22,7 @@ class Pet():
         self.rs = np.random.RandomState()
         if self.seed_state != None:
             self.rs.set_state(self.seed_state)
+      
         self.eaten = False
         self.shop = shop
         self.team = team
@@ -781,7 +782,6 @@ class Pet():
     @classmethod
     def from_state(cls, state):
         name = state["name"]
-        
         ### Initialize and reset defaults by hand
         pet = cls(name)
         pet.store = None
@@ -798,8 +798,7 @@ class Pet():
         pet.level = state["level"]
         pet.experience = state["experience"]
         pet.seed_state = state["seed_state"]
-        pet.rs = np.random.RandomState().from_state(pet.seed_state)
-        
+        pet.rs = np.random.RandomState().set_state(pet.seed_state)
         return pet
 
 
