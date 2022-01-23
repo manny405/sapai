@@ -2,6 +2,7 @@
 
 #%%
 
+from random import seed
 import numpy as np
 from sapai.data import data
 from sapai.foods import Food
@@ -95,7 +96,12 @@ class Shop():
                  shop_slots=[], 
                  turn=1, 
                  can=0,
-                 pack="StandardPack"):
+                 pack="StandardPack",
+                 seed_state=None):
+        self.rs = np.random.RandomState()
+        self.seed_state = seed_state
+        if seed_state != None:
+            self.rs.set_state(self.seed_state)
         self.turn = turn
         self.pack = pack
         self.tier_avail = 0
@@ -118,10 +124,9 @@ class Shop():
             raise Exception("Pack {} not valid".format(pack))
         
         self.update_shop_rules()
-        
         if len(shop_slots) > 0:
             self.shop_slots = [
-                ShopSlot(x,pack=self.pack,turn=self.turn) for x in shop_slots]
+                ShopSlot(x,pack=self.pack,turn=self.turn,seed_state=self.seed_state) for x in shop_slots]
             
     
     def buy(self, obj):
@@ -181,7 +186,11 @@ class Shop():
         self.check_rules()
         
         for slot in self.shop_slots:
-            slot.roll()    
+            # New RandomState per roll or else every slot will roll the same pet/food
+            slot.rs = np.random.RandomState()
+            slot.rs.set_state(self.seed_state)   
+            slot.roll() 
+            self.seed_state = slot.seed_state
             ### Add health and attack from previously purchased cans
             if slot.frozen == False:
                 if slot.slot_type == "pet":
@@ -258,12 +267,12 @@ class Shop():
         add_pets = self.pslots - len(new_shop_slots_pet)
         for i in range(add_pets):
             new_shop_slots_pet.append(
-                ShopSlot("pet",pack=self.pack,turn=self.turn))
+                ShopSlot("pet",pack=self.pack,turn=self.turn, seed_state=self.seed_state))
         
         add_foods = self.fslots - len(new_shop_slots_food)
         for i in range(add_foods):
             new_shop_slots_food.append(
-                ShopSlot("food",pack=self.pack,turn=self.turn))
+                ShopSlot("food",pack=self.pack,turn=self.turn, seed_state=self.seed_state))
         
         self.shop_slots = new_shop_slots_pet+new_shop_slots_food
         
@@ -321,14 +330,14 @@ class Shop():
                             self.max_slots - len(keep_idx))
             for idx in range(add_slots):
                 self.shop_slots.append(
-                    ShopSlot("pet", turn=self.turn, pack=self.pack))
+                    ShopSlot("pet", turn=self.turn, pack=self.pack, seed_state=self.seed_state))
                 keep_idx.append(len(self.shop_slots)-1)
         if len(fslots) < self.fslots:
             add_slots = min(self.fslots - len(fslots), 
                             self.max_slots - len(keep_idx))
             for idx in range(add_slots):
                 self.shop_slots.append(
-                    ShopSlot("food", turn=self.turn, pack=self.pack))
+                    ShopSlot("food", turn=self.turn, pack=self.pack, seed_state=self.seed_state))
                 keep_idx.append(len(self.shop_slots)-1)
         
         keep_slots = [self.shop_slots[x] for x in keep_idx]
@@ -375,7 +384,7 @@ class Shop():
             ### Max slots already reached so cannot be added
             return
         
-        add_slot = ShopSlot(obj, pack=self.pack, turn=self.turn)
+        add_slot = ShopSlot(obj, pack=self.pack, turn=self.turn, seed_state=self.seed_state)
         pslots = []
         fslots = []
         for iter_idx,slot in enumerate(self.shop_slots):
@@ -400,6 +409,7 @@ class Shop():
             "turn": self.turn,
             "can": self.can,
             "pack": self.pack,
+            "seed_state": self.seed_state,
         }
         return state_dict
     
@@ -410,7 +420,8 @@ class Shop():
             shop_slots=[ShopSlot.from_state(x) for x in state["shop_slots"]],
             turn=state["turn"],
             can=state["can"],
-            pack=state["pack"])
+            pack=state["pack"],
+            seed_state = state["seed_state"])
     
     
     def __repr__(self):
@@ -532,12 +543,12 @@ class ShopLearn(Shop):
         if self.npet_bought < self.pslots:
             for pet in self.avail_pets:
                 new_shop_slots_pet.append(
-                    ShopSlot(pet,pack=self.pack,turn=self.turn))
+                    ShopSlot(pet,pack=self.pack,turn=self.turn, seed_state=self.seed_state))
                 self.shop_names[pet] = True
         if self.nfood_bought < self.fslots:
             for food in self.avail_foods:
                 new_shop_slots_food.append(
-                    ShopSlot(food,pack=self.pack,turn=self.turn))
+                    ShopSlot(food,pack=self.pack,turn=self.turn, seed_state=self.seed_state))
                 self.shop_names[food] = True
         if self.nlevelup_bought < self.nmax_levelup:
             if self.pack == "StandardPack":
@@ -548,8 +559,8 @@ class ShopLearn(Shop):
                 if pet not in self.shop_names:
                     temp_slot = ShopSlot(slot_type="levelup",
                                         pack=self.pack,
-                                        turn=self.turn)
-                    temp_slot.item = Pet(pet)
+                                        turn=self.turn, seed_state=self.seed_state)
+                    temp_slot.item = Pet(pet,seed_state=self.seed_state)
                     new_shop_slots_levelup.append(temp_slot)
                     self.shop_names[pet] = True
         
@@ -577,6 +588,7 @@ class ShopLearn(Shop):
             "turn": self.turn,
             "can": self.can,
             "pack": self.pack,
+            "seed_state":self.seed_state
         }
         return state_dict
     
@@ -587,7 +599,8 @@ class ShopLearn(Shop):
             shop_slots=[ShopSlot.from_state(x) for x in state["shop_slots"]],
             turn=state["turn"],
             can=state["can"],
-            pack=state["pack"])
+            pack=state["pack"],
+            seed_state = state["seed_state"])
                 
 
 
@@ -602,7 +615,13 @@ class ShopSlot():
                  frozen=False,
                  turn=1, 
                  cost=3,
-                 pack="StandardPack"):
+                 pack="StandardPack",
+                 seed_state=None):
+        self.seed_state = seed_state
+        self.rs = np.random.RandomState()
+        if seed_state != None:
+            self.rs.set_state(self.seed_state)
+       
         self.slot_type = slot_type
         self.turn = turn
         self.pack = pack
@@ -649,9 +668,9 @@ class ShopSlot():
                     name = "none"
                 
             if self.slot_type == "pet":
-                self.item = Pet(name)
+                self.item = Pet(name,seed_state=self.seed_state)
             elif self.slot_type == "food":
-                self.item = Food(name)
+                self.item = Food(name,seed_state=self.seed_state)
             elif self.slot_type == "levelup":
                 self.roll_levelup()
             
@@ -711,15 +730,15 @@ class ShopSlot():
             else:
                 raise Exception()
             
-        choice = np.random.choice(avail, 
+        choice = self.rs.choice(avail, 
                                     size=(1,),
                                     replace=True, 
                                     p=prob)[0]
-        
+        self.seed_state = self.rs.get_state()
         if self.slot_type == "pet":
-            self.item = Pet(choice)
+            self.item = Pet(choice, seed_state=self.seed_state)
         elif self.slot_type == "food":
-            self.item = Food(choice)
+            self.item = Food(choice, seed_state=self.seed_state)
             if self.item.name == "food-sleeping-pill":
                 ### Hard-coded for pill because of limitations of data json
                 self.cost = 1
@@ -735,10 +754,11 @@ class ShopSlot():
             avail_pets = pet_tier_lookup_std[levelup_tier]
         else:
             avail_pets = pet_tier_lookup[levelup_tier]
-        pet_choice = np.random.choice(avail_pets, 
+        pet_choice = self.rs.choice(avail_pets, 
                                         size=(1,),
                                         replace=True)[0]
-        self.item = Pet(pet_choice)
+        self.seed_state = self.rs.get_state()
+        self.item = Pet(pet_choice,seed_state=self.seed_state)
         
         
     @property
@@ -750,7 +770,8 @@ class ShopSlot():
             "turn": self.turn,
             "pack": self.pack,
             "cost": self.cost, 
-            "frozen": self.frozen
+            "frozen": self.frozen,
+            "seed_state": self.seed_state
         }
         return state_dict
     
@@ -770,12 +791,17 @@ class ShopSlot():
         pack = state["pack"]
         cost = state["cost"]
         frozen = state["frozen"]
+        seed_state = state["seed_state"]
+        obj.rs = np.random.RandomState()
+        if seed_state != None:
+            obj.rs.set_state(state["item"]["seed_state"])
         return cls(obj=obj, 
                    slot_type=slot_type,
                    frozen=frozen,
                    turn=turn,
                    cost=cost,
-                   pack=pack)
+                   pack=pack,
+                   seed_state=seed_state)
         
 
 def get_shop_rules(turn, pack="StandardPack"):
