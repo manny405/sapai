@@ -9,6 +9,7 @@ from sapai.foods import Food
 from sapai.pets import Pet
 import sapai.foods
 import sapai.pets
+from sapai.rand import MockRandomState
 
 #%%
 
@@ -99,15 +100,13 @@ class Shop():
                  pack="StandardPack",
                  seed_state=None):
         #### Setting up state
-        self.rs = np.random.RandomState()
         self.seed_state = seed_state
-        if seed_state != None:
+        if self.seed_state != None:
+            self.rs = np.random.RandomState()
             self.rs.set_state(self.seed_state)
         else:
-            ### Otherwise, set new random state
-            rand_int = np.random.randint(0, 1e6)
-            self.seed_state = np.random.RandomState(rand_int).get_state()
-            self.rs.set_state(self.seed_state)
+            ### Otherwise, set use 
+            self.rs = MockRandomState()
             
         self.turn = turn
         self.pack = pack
@@ -194,8 +193,9 @@ class Shop():
         
         for slot in self.shop_slots:
             # New RandomState per roll or else every slot will roll the same pet/food
-            slot.rs = np.random.RandomState()
-            slot.rs.set_state(self.seed_state)
+            if type(slot.rs).__name__ != "MockRandomState":
+                slot.rs = np.random.RandomState()
+                slot.rs.set_state(self.seed_state)
             slot.roll() 
             self.seed_state = slot.seed_state
             ### Add health and attack from previously purchased cans
@@ -412,8 +412,11 @@ class Shop():
     def state(self):
         #### Ensure that state can be JSON serialized
         if getattr(self, "rs", False):
-            seed_state = list(self.rs.get_state())
-            seed_state[1] = seed_state[1].tolist()
+            if type(self.rs).__name__ == "MockRandomState":
+                seed_state = None
+            else:
+                seed_state = list(self.rs.get_state())
+                seed_state[1] = seed_state[1].tolist()
         else:
             seed_state = None
         state_dict = {
@@ -601,8 +604,14 @@ class ShopLearn(Shop):
     @property
     def state(self):
         #### Ensure that state can be JSON serialized
-        seed_state = list(self.rs.get_state())
-        seed_state[1] = seed_state[1].tolist()
+        if getattr(self, "rs", False):
+            if type(self.rs).__name__ == "MockRandomState":
+                seed_state = None
+            else:
+                seed_state = list(self.rs.get_state())
+                seed_state[1] = seed_state[1].tolist()
+        else:
+            seed_state = None
         
         state_dict = {
             "type": "ShopLearn",
@@ -645,14 +654,12 @@ class ShopSlot():
                  pack="StandardPack",
                  seed_state=None):
         self.seed_state = seed_state
-        self.rs = np.random.RandomState()
-        if seed_state != None:
+        if self.seed_state != None:
+            self.rs = np.random.RandomState()
             self.rs.set_state(self.seed_state)
         else:
-            ### Otherwise, set new random state
-            rand_int = np.random.randint(0, 1e6)
-            self.seed_state = np.random.RandomState(rand_int).get_state()
-            self.rs.set_state(self.seed_state)
+            ### Otherwise, set use 
+            self.rs = MockRandomState()
        
         self.slot_type = slot_type
         self.turn = turn
@@ -796,8 +803,14 @@ class ShopSlot():
     @property
     def state(self):
         #### Ensure that state can be JSON serialized
-        seed_state = list(self.rs.get_state())
-        seed_state[1] = seed_state[1].tolist()
+        if getattr(self, "rs", False):
+            if type(self.rs).__name__ == "MockRandomState":
+                seed_state = None
+            else:
+                seed_state = list(self.rs.get_state())
+                seed_state[1] = seed_state[1].tolist()
+        else:
+            seed_state = None
         state_dict = {
             "type": "ShopSlot",
             "slot_type": self.slot_type,

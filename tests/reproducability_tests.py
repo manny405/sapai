@@ -19,15 +19,14 @@ from sapai.shop import Shop
 ################################################################################
 ####### Testing battle reproducibility
 ################################################################################
-state = np.random.RandomState(seed = 4).get_state()
-state2 = np.random.RandomState(seed = 4).get_state()
+state = np.random.RandomState(seed=4).get_state()
+state2 = np.random.RandomState(seed=4).get_state()
 
 #### Random result
 winner_list = []
 for i in range(20):
     t0 = Team(["ant","ant", "fish"])
     t1 = Team(["ant","ant","fish"])
-
     b = Battle(t0, t1)
     winner = b.battle()
     # Same state should result in draw
@@ -39,7 +38,6 @@ winner_list = []
 for i in range(20):
     t0 = Team(["ant","ant","fish"],seed_state=state)
     t1 = Team(["ant","ant","fish"],seed_state=state2)
-
     b = Battle(t0, t1)
     winner = b.battle()
     # Same state should result in draw

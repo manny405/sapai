@@ -1,9 +1,10 @@
 
 
 #%%
-from sapai.data import data
 import numpy as np
 
+from sapai.data import data
+from sapai.rand import MockRandomState
 
 #%%
 
@@ -25,14 +26,12 @@ class Food():
         self.shop = shop
         
         self.seed_state = seed_state
-        self.rs = np.random.RandomState()
         if self.seed_state != None:
+            self.rs = np.random.RandomState()
             self.rs.set_state(self.seed_state)
         else:
-            ### Otherwise, set new random state
-            rand_int = np.random.randint(0, 1e6)
-            self.seed_state = np.random.RandomState(rand_int).get_state()
-            self.rs.set_state(self.seed_state)
+            ### Otherwise, set use 
+            self.rs = MockRandomState()
 
         self.attack = 0
         self.health = 0
@@ -98,8 +97,11 @@ class Food():
     def state(self):
         #### Ensure that state can be JSON serialized
         if getattr(self, "rs", False):
-            seed_state = list(self.rs.get_state())
-            seed_state[1] = seed_state[1].tolist()
+            if type(self.rs).__name__ == "MockRandomState":
+                seed_state = None
+            else:
+                seed_state = list(self.rs.get_state())
+                seed_state[1] = seed_state[1].tolist()
         else:
             seed_state = None
         state_dict = {

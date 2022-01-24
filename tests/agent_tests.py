@@ -53,7 +53,7 @@ for temp_action in avail_actions:
 ################################################################################
 ##### Testing simple CombinatorialSearch
 ################################################################################
-%run /Users/ibier/Software/sapai/sapai/agents.py
+# %run /Users/ibier/Software/sapai/sapai/agents.py
 
 turn=1
 player = Player(shop=ShopLearn(turn=turn),

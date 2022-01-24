@@ -6,6 +6,7 @@ import numpy as np
 from sapai.data import data
 from sapai.effects import get_effect_function,SummonPet,SummonRandomPet
 from sapai.tiers import pet_tier_lookup,pet_tier_lookup_std
+from sapai.rand import MockRandomState
 
 #%%
 
@@ -25,14 +26,12 @@ class Pet():
             if not name.startswith("pet-"):
                 name = "pet-{}".format(name)
         self.seed_state = seed_state
-        self.rs = np.random.RandomState()
         if self.seed_state != None:
+            self.rs = np.random.RandomState()
             self.rs.set_state(self.seed_state)
         else:
-            ### Otherwise, set new random state
-            rand_int = np.random.randint(0, 1e6)
-            self.seed_state = np.random.RandomState(rand_int).get_state()
-            self.rs.set_state(self.seed_state)
+            ### Otherwise, set use 
+            self.rs = MockRandomState()
       
         self.eaten = False
         self.shop = shop
@@ -772,8 +771,11 @@ class Pet():
         
         #### Ensure that state can be JSON serialized
         if getattr(self, "rs", False):
-            seed_state = list(self.rs.get_state())
-            seed_state[1] = seed_state[1].tolist()
+            if type(self.rs).__name__ == "MockRandomState":
+                seed_state = None
+            else:
+                seed_state = list(self.rs.get_state())
+                seed_state[1] = seed_state[1].tolist()
         else:
             seed_state = None
         

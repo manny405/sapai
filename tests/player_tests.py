@@ -204,13 +204,38 @@ test = decompress(compress(player))
 
 #%%
 
-%run /Users/ibier/Software/sapai/sapai/player.py
 
-player = Player(pack=pack)
-player.start_turn()
-player.buy_pet(0)
-player.buy_pet(1)
-player.sell(0)
-print(player.action_history)
+################################################################################
+###### Improving speed of Player.from_state
+################################################################################
 
-# %%
+from sapai import Player
+from sapai.shop import ShopLearn
+
+sl = ShopLearn()
+p = Player(shop=sl)
+pstate = p.state
+
+#%%
+
+
+# %run /Users/ibier/Software/sapai/sapai/player.py
+# %load_ext line_profiler
+# %timeit _ = Player.from_state(pstate)
+# ORIGINAL: 26.8 ms ± 788 µs per loop (mean ± std. dev. of 7 runs, 10 loops each) 
+# NEW WITH MockRandomState: 1.15 ms ± 107 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+# MockRandomState is sooooo much better
+# %lprun -f Player.from_state _ = Player.from_state(pstate)
+# %run /Users/ibier/Software/sapai/sapai/shop.py
+# %lprun -f ShopLearn.from_state _ = Player.from_state(pstate)
+# %lprun -f ShopSlot.from_state _ = Player.from_state(pstate)
+# %run /Users/ibier/Software/sapai/sapai/pets.py
+# %lprun -f Pet.from_state _ = Player.from_state(pstate)
+# %timeit _ = Pet()
+# %lprun -f Pet.__init__ _ = Pet()
+
+
+
+
+#%%
+

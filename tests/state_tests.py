@@ -95,12 +95,13 @@ print(state_p)
 ##### Testing compression
 ################################################################################
 
-%run /Users/ibier/Software/sapai/sapai/compress.py
+# %run /Users/ibier/Software/sapai/sapai/compress.py
+from sapai.compress import compress,decompress
 
-test = compress(s)
+test = compress(s,minimal=True)
 test_shop = decompress(test)
 
-test = compress(p)
+test = compress(p,minimal=True)
 test_player = decompress(test)
 print(test_player)
 

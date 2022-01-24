@@ -226,14 +226,23 @@ class CombinatorialSearch():
         return action_list
         
     
-    def search(self, player):
+    def search(self, player, player_state_dict=None):
         ### Initialize internal storage
         self.player = player
         self.player_list = []
-        self.player_state_dict = {}
         self.player_state = self.player.state
         self.current_print_number = 0
         self.print_message("start", self.player)
+
+        ### build_player_list searches shop actions and returns player list
+        ###   In addition, it builds a player_state_dict which can be used for
+        ###   faster lookup of redundant player states
+        if player_state_dict == None:
+            self.player_state_dict = {}
+        else:
+            self.player_state_dict = player_state_dict
+        self.player_list = self.build_player_list(self.player)
+        self.print_message("player_list_done", self.player_list)
         
         ### build_player_list searches shop actions and returns player list
         ###   In addition, it builds a player_state_dict which can be used for
@@ -276,7 +285,7 @@ class CombinatorialSearch():
             player_list = []
 
         player_state = player.state
-        player_state = minimal_state(player)
+        # player_state = minimal_state(player)
         # temp_state["action_history"] = player_state["action_history"]
 
         self.print_message("size", self.player_state_dict)
