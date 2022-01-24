@@ -4,7 +4,7 @@ import os,json,zlib,itertools,torch
 import numpy as np
 from sapai import Player
 from sapai.battle import Battle
-from sapai.compress import compress,decompress
+from sapai.compress import compress,decompress,minimal_state
 
 ### Pets with a random component
 ###   Random component in the future should just be handled in an exact way
@@ -16,43 +16,36 @@ random_pill_pets = {"pet-ant"}
 random_battle_pets = {"pet-mosquito"}
 
 
-class CombinatorialAgent():
+class CombinatorialSearch():
     """
-    The CombinatorialAgent is built to resemble the way that a human player will
-    make decisions. However, the CombinatorialAgent will consider all possible 
-    combinations of decisions in order arrive at the best possible outcome. 
+    CombinatorialSearch is a method to enumerate the entire possible search
+    space for the current shopping phase. The search starts from an initial 
+    player state provided in the arguments. Then all possible next actions 
+    are taken from that player state until the Player's gold is exhausted.
+    Returned is a list of all final possible final player states after the 
+    shopping phase. 
     
-    The limitation of this method is the depth with which decisions are
-    searched and how decisions are ranked. 
+    This algorithm can be parallelized in the sense that after round 1, there 
+    will be a large number of player states. Each of these player states can 
+    then be fed back into the CombinatorialSearch individually to search for
+    their round 2 possibilities. Therefore, parallelization can occur across
+    the possible player states for each given round. This parallelization
+    should take place outside of this Class. 
+    
+    Parallelization within this Class itself would be a bit more difficult and
+    would only be advantageous to improve the search speed when condering a 
+    single team. This would be better for run-time evaluation of models, but 
+    it unnecessary for larger searchers, which are the present focus. Therefore,
+    this will be left until later. 
+    
+    A CombinatorialAgent can be built on top of this to resemble the way that a 
+    human player  will make decisions. However, the CombinatorialAgent will 
+    consider all possible combinations of decisions in order arrive at the 
+    best possible next decisions given the available gold. 
     
     """
-    def __init__(self, 
-                 shop=None, 
-                 team=None, 
-                 lives=10, 
-                 default_gold=10,
-                 gold=10, 
-                 turn=1,
-                 lf_winner=None,
-                 max_turns=1, 
-                 pack="StandardPack",
-                 ranker=None,
-                 ):
-        self.max_turns = max_turns
-        
-        if pack not in ["StandardPack", "ExpansionPack1"]:
-            raise Exception("Pack must be StandardPack or ExpansionPack1")
-        
-        self.player = Player(shop=shop, 
-                             team=team, 
-                             lives=lives, 
-                             default_gold=default_gold,
-                             gold=gold, 
-                             turn=turn,
-                             lf_winner=lf_winner,
-                             pack=pack)
-        self.player_state = self.player.state 
-        self.ranker = ranker
+    def __init__(self, verbose=True):
+        self.verbose = verbose 
         
         ### This stores the player lists for performing all possible actions
         self.player_list = []
@@ -60,6 +53,8 @@ class CombinatorialAgent():
         ### Player dict stores compressed str of all players such that if the
         ###   same player state will never be used twice
         self.player_state_dict = {}
+        
+        self.current_print_number = 0
         
     
     def avail_actions(self, player):
@@ -74,6 +69,7 @@ class CombinatorialAgent():
         action_list += self.avail_buy_combine(player)
         action_list += self.avail_team_combine(player)
         action_list += self.avail_sell(player)
+        action_list += self.avail_sell_buy(player)
         action_list += self.avail_roll(player)
         return action_list
         
@@ -180,6 +176,31 @@ class CombinatorialAgent():
         return action_list
     
     
+    def avail_sell_buy(self, player):
+        """ 
+        Sell buy should only be used if the team is full. This is done so that
+        the search space is not increased unnecessarily. However, a full agent
+        implementation can certainly consider this action at any point in the 
+        game as long as there are pets to sell and buy 
+        """
+        action_list = []
+        gold = player.gold
+        if len(player.team) != 5:
+            return action_list
+        team_idx_list = player.team.get_fidx()
+        shop_idx_list = []
+        for shop_idx,shop_slot in enumerate(player.shop):
+            if shop_slot.slot_type == "pet":
+                if shop_slot.cost <= gold:
+                    shop_idx_list.append(shop_idx)
+        
+        prod = itertools.product(team_idx_list, shop_idx_list)
+        for temp_team_idx,temp_shop_idx in prod:
+            action_list.append((player.sell_buy, temp_team_idx, temp_shop_idx))
+            
+        return action_list
+    
+    
     def avail_team_order(self, player):
         """ Returns all possible orderings for the team """
         action_list = []
@@ -205,29 +226,60 @@ class CombinatorialAgent():
         return action_list
         
     
-    def train(self):
+    def search(self, player):
+        ### Initialize internal storage
+        self.player = player
+        self.player_list = []
+        self.player_state_dict = {}
         self.player_state = self.player.state
+        self.current_print_number = 0
+        self.print_message("start", self.player)
+        
+        ### build_player_list searches shop actions and returns player list
+        ###   In addition, it builds a player_state_dict which can be used for
+        ###   faster lookup of redundant player states
+        self.player_state_dict = {}
         self.player_list = self.build_player_list(self.player)
+        self.print_message("player_list_done", self.player_list)
+        
+        ### Now consider all possible reorderings of team
+        self.player_list,self.player_state_dict = self.search_reordering(
+                                    self.player_list,self.player_state_dict)
+        
         ### End turn for all in player list
         for temp_player in self.player_list:
             temp_player.end_turn()
+        ### NOTE: After end_turn the player_state_dict has not been updated, 
+        ###   therefore, the player_state_dict is no longer reliable and should
+        ###   NOT be used outside of this Class. If the player_state_dict is 
+        ###   required, it should be rebuilt from the player_list itself
+        
+        ### Also, return only the unique team list for convenience
+        self.team_dict = self.get_team_dict(self.player_list)
+        
+        self.print_message("done", (self.player_list, self.team_dict))
+        
+        return self.player_list,self.team_dict
     
     
-    def build_player_list(self, player, player_list=[]):
+    def build_player_list(self, player, player_list=None):
         """
-        Recursive function for building player list for a given turn
+        Recursive function for building player list for a given turn using all
+        actions during the shopping phase
 
         """
         if player.gold <= 0:
             ### If gold is 0, then this is exit condition for the 
             ### recursive function
             return []
+        if player_list == None:
+            player_list = []
 
         player_state = player.state
-        print(player.gold, 
-              [x.pet._attack for x in player.team],
-              len(self.player_state_dict),
-              len(self.player.shop))
+        player_state = minimal_state(player)
+        # temp_state["action_history"] = player_state["action_history"]
+
+        self.print_message("size", self.player_state_dict)
         
         avail_actions = self.avail_actions(player)
         for temp_action in avail_actions:
@@ -250,9 +302,7 @@ class CombinatorialAgent():
             ### Don't need history in order to check for redundancy of the 
             ###   shop state. This means that it does not matter how a Shop
             ###   gets to a state, just that the state is identical to others. 
-            temp_state = temp_player.state
-            temp_state["action_history"] = []
-            cstate = zlib.compress(json.dumps(temp_state).encode())
+            cstate = compress(temp_player,minimal=True)
             # cstate = hash(json.dumps(temp_player.state))
             if cstate not in self.player_state_dict:
                 self.player_state_dict[cstate] = temp_player
@@ -271,6 +321,103 @@ class CombinatorialAgent():
             full_player_list += temp_player_list
         
         return full_player_list
+    
+    
+    def search_reordering(self, player_list, player_state_dict):
+        """
+        Searches over all possible unique reorderings of the teams
+        
+        """
+        additional_player_list = []
+        for player in player_list:
+            player_state = player.state
+            reorder_actions = self.avail_team_order(player)
+            for temp_action in reorder_actions:
+                if temp_action == ():
+                    ### Null action
+                    continue
+                
+                #### Re-initialize identical Player
+                temp_player = Player.from_state(player_state)
+                #### Perform action
+                action_name = str(temp_action[0].__name__).split(".")[-1]
+                action = getattr(temp_player,action_name)
+                action(*temp_action[1:])
+                
+                ### Check if this is unique player state
+                temp_player.team.move_forward()     ### Move team forward so that
+                                                    ### team is index invariant
+
+                ### Don't need history in order to check for redundancy of the 
+                ###   shop state. This means that it does not matter how a Shop
+                ###   gets to a state, just that the state is identical to others. 
+                cstate = compress(temp_player,minimal=True)
+                # cstate = hash(json.dumps(temp_player.state))
+                if cstate not in player_state_dict:
+                    player_state_dict[cstate] = temp_player
+                else:
+                    ### If player state has been seen before, then do not append
+                    ### to the player list.
+                    continue
+                
+                additional_player_list.append(temp_player)
+        
+        player_list += additional_player_list
+        return player_list,player_state_dict
+    
+    
+    def get_team_dict(self, player_list):
+        """
+        Returns dictionary of only the unique teams
+
+        """
+        team_dict = {}
+        for player in player_list:
+            team = player.team
+            ### Move forward to make team index invariant
+            team.move_forward()
+            cteam = compress(team,minimal=True)
+            ### Can just always do like this, don't need to check if it's 
+            ###   already in dictionary because it can just be overwritten
+            team_dict[cteam] = team
+        return team_dict
+    
+    
+    def print_message(self, message_type, info):
+        if self.verbose == False:
+            return 
+        
+        if message_type not in ["start", "size", "player_list_done", "done"]:
+            raise Exception("Unrecognized message type {}".format(message_type))
+        
+        if message_type == "start":
+            print("---------------------------------------------------------")
+            print("STARTING SEARCH WITH INITIAL PLAYER: ")
+            print(info)
+            
+            print("---------------------------------------------------------")
+            print("STARTING TO BUILD PLAYER LIST")
+            
+        elif message_type == "size":
+            temp_size = len(info)
+            if temp_size < (self.current_print_number+100):
+                return
+            print("RUNNING MESSAGE: Current Number of Unique Players is {}"
+                  .format(len(info)))
+            self.current_print_number = temp_size
+        
+        elif message_type == "player_list_done":
+            print("---------------------------------------------------------")
+            print("DONE BUILDING PLAYER LIST")
+            print("NUMBER OF PLAYERS IN PLAYER LIST: {}".format(len(info)))
+            
+            print("BEGINNING TO SEARCH FOR ALL POSSIBLE TEAM ORDERS")
+            
+        elif message_type == "done":
+            print("---------------------------------------------------------")
+            print("DONE WITH CombinatorialSearch")
+            print("NUMBER OF PLAYERS IN PLAYER LIST: {}".format(len(info[0])))
+            print("NUMBER OF UNIQUE TEAMS: {}".format(len(info[1])))
         
 
 class DatabaseLookupRanker():
@@ -307,7 +454,7 @@ class DatabaseLookupRanker():
     
     def run_against_database(self, team):
         #### Add team to database
-        team_key = compress(team)
+        team_key = compress(team, minimal=True)
         if team_key not in self.team_database:
             self.team_database[team_key] = {"team": team, 
                                             "wins": 0,
@@ -488,7 +635,7 @@ class PairwiseBattles():
             results = {}
             for iter_idx,temp_team in enumerate(team_list):
                 temp_frac = frac[iter_idx]
-                results[compress(temp_team)] = temp_frac
+                results[compress(temp_team, minimal=True)] = temp_frac
                 
             print("WRITING OUTPUTS AT: {}".format(self.output))
             torch.save(results, self.output)
@@ -512,6 +659,5 @@ class PairwiseBattles():
                               k=1,
                               m=len(team_list)) 
         return np.array([x for x in zip(idx[0], idx[1])])
-        
         
         

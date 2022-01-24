@@ -9,14 +9,14 @@ This folder contains data that may be helpful for training agents.
 Round 1
 -------
 
-The ``Round_1.pt`` contains a dictionary of all possible 3 pet teams that can be constructed in round 1 of SAP and their relative win-rate against one-another. This file can be loaded into memory using the follow code.
+The ``Round_1.pt`` contains a dictionary of all possible teams that can be constructed in round 1 of SAP and their relative win-rate against one-another. This file can be loaded into memory using the follow code.
 
 .. code-block:: python
     
     >>> import torch
     >>> results = torch.load("Round_1.pt")
-    >>> print(results[list(results.keys())[0]])
-    PUT PRINT STATEMENT HERE
+    >>> print("Number of Possible Teams: {}".format(len(output_dict)))
+    5013
     
 The key of the dictionary is a loss-less compression of the Team. The Team can be rebuilt in memory easily using ``sapai.compress.decompress``. For example, if you would like to examine the best possible teams from Round 1, the following code can be used.  
 

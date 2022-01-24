@@ -251,6 +251,35 @@ class Player():
         return (pet,)
     
     
+    @storeaction
+    def sell_buy(self, team_pet, shop_pet):
+        """ Sell one team pet and replace it with one shop pet """
+        if type(shop_pet) == int:
+            shop_pet = self.shop[shop_pet]
+        if type(team_pet) == int:
+            team_pet = self.team[team_pet]
+            
+        if type(shop_pet).__name__ == "ShopSlot":
+            shop_pet = shop_pet.item
+        if type(team_pet).__name__ == "TeamSlot":
+            team_pet = team_pet._pet
+        
+        if type(shop_pet).__name__ != "Pet":
+            raise Exception("Attempted sell_buy with Shop item {}"
+                            .format(shop_pet))
+        if type(team_pet).__name__ != "Pet":
+            raise Exception("Attempted sell_buy with Team Pet {}"
+                            .format(team_pet))
+            
+        ### Activate sell trigger first
+        self.sell(team_pet)
+        
+        ### Then attempt to buy shop pet
+        self.buy_pet(shop_pet)
+        
+        return(team_pet,shop_pet)
+    
+    
     def freeze(self, obj):
         """ Freeze one pet or food in the shop """
         if type(obj).__name__ == "ShopSlot":
@@ -427,7 +456,10 @@ class Player():
         shop_type = state["shop"]["type"]
         shop_cls = getattr(sapai.shop, shop_type)
         shop = shop_cls.from_state(state["shop"])
-        action_history = state["action_history"]
+        if "action_history" in state:
+            action_history = state["action_history"]
+        else:
+            action_history=[]
         return cls(team=team,
                    shop=shop,
                    lives=state["lives"],

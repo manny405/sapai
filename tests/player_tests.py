@@ -26,76 +26,76 @@ pack = "StandardPack"
 ##############################################
 ##### Buying 3 animals 
 ##############################################
-# player = Player(pack=pack)
-# print(player)
-# player.buy_pet(player.shop[0])
-# player.buy_pet(player.shop[0])
-# player.buy_pet(player.shop[0])
-# print(player)
+player = Player(pack=pack)
+print(player)
+player.buy_pet(player.shop[0])
+player.buy_pet(player.shop[0])
+player.buy_pet(player.shop[0])
+print(player)
 
 ##############################################
 ##### Buying 2 animals and 1 food
 ##############################################
-# player = Player(pack=pack)
-# print(player)
-# player.buy_pet(player.shop[0])
-# player.buy_pet(player.shop[0])
-# player.buy_food(player.shop[-1], 
-#                 player.team[0])
-# player.sell(player.team[0])
-# print(player)
+player = Player(pack=pack)
+print(player)
+player.buy_pet(player.shop[0])
+player.buy_pet(player.shop[0])
+player.buy_food(player.shop[-1], 
+                player.team[0])
+player.sell(player.team[0])
+print(player)
 
 ##############################################
 ##### Checking freeze behavior
 ##############################################
-# player = Player(pack=pack)
-# player.freeze(0)
-# print(player)
-# player.shop.roll()
-# print(player)
+player = Player(pack=pack)
+player.freeze(0)
+print(player)
+player.shop.roll()
+print(player)
 
 
 ##############################################
 #### Checking buy_combine behavior
 ##############################################
-# player = Player(shop=["ant", "fish", "fish", "apple"], 
-#                 team=["fish", "ant"], 
-#                 pack=pack)
-# print(player)
-# player.buy_combine(player.shop[1], player.team[0])
-# print(player)
-# player.buy_combine(player.shop[1], player.team[0])
-# print(player)
+player = Player(shop=["ant", "fish", "fish", "apple"], 
+                team=["fish", "ant"], 
+                pack=pack)
+print(player)
+player.buy_combine(player.shop[1], player.team[0])
+print(player)
+player.buy_combine(player.shop[1], player.team[0])
+print(player)
 
-# player = Player(shop=["ant", "octopus", "octopus", "apple"], 
-#                 team=["octopus", "ant"], 
-#                 pack=pack)
-# print(player)
-# player.buy_combine(player.shop[1], player.team[0])
-# print(player)
-# player.buy_combine(player.shop[1], player.team[0])
-# print(player)
+player = Player(shop=["ant", "octopus", "octopus", "apple"], 
+                team=["octopus", "ant"], 
+                pack=pack)
+print(player)
+player.buy_combine(player.shop[1], player.team[0])
+print(player)
+player.buy_combine(player.shop[1], player.team[0])
+print(player)
 
 ##############################################
 #### Checking combine behavior
 ##############################################
-# player = Player(shop=["ant", "fish", "fish", "apple"], 
-#                 team=["fish", "fish", "fish", "horse"], 
-#                 pack=pack)
-# print(player)
-# player.combine(player.team[0], player.team[1])
-# player.combine(player.team[0], player.team[2])
-# print(player)
+player = Player(shop=["ant", "fish", "fish", "apple"], 
+                team=["fish", "fish", "fish", "horse"], 
+                pack=pack)
+print(player)
+player.combine(player.team[0], player.team[1])
+player.combine(player.team[0], player.team[2])
+print(player)
 
 ##############################################
 #### Checking Cat behavior
 ##############################################
-# player = Player(shop=["ant", "fish", "fish", "pear"], 
-#                 team=["fish", "cat"], 
-#                 pack=pack)
-# print(player)
-# player.buy_food(player.shop[-1],player.team[0])
-# print(player)
+player = Player(shop=["ant", "fish", "fish", "pear"], 
+                team=["fish", "cat"], 
+                pack=pack)
+print(player)
+player.buy_food(player.shop[-1],player.team[0])
+print(player)
 
 ##############################################
 #### Checking start of turn behavior
@@ -107,6 +107,20 @@ player.team[0]._pet.level = 2
 print(player)
 player.start_turn()
 print(player)
+
+#%%
+
+##############################################
+#### Checking sell_buy behavior
+##############################################
+player = Player(shop=["otter", "fish", "fish", "pear"], 
+                team=["pig", "fish", "ant", "beaver", "pig"], 
+                pack=pack)
+print(player)
+player.sell_buy(0,0)
+print(player)
+
+#%%
 
 #%%
 

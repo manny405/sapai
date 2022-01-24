@@ -7,49 +7,62 @@ if os.path.exists("__pycache__"):
     shutil.rmtree("__pycache__")
     
 from sapai.compress import compress,decompress
-from sapai import Team
+from sapai import Team,Player
+from sapai.shop import ShopLearn
 from sapai.battle import Battle
 from sapai.graph import graph_battle
-from sapai.agents import DatabaseLookupRanker,CombinatorialAgent
+from sapai.agents import DatabaseLookupRanker,CombinatorialSearch,PairwiseBattles
 
 #%%
 
-ranker = DatabaseLookupRanker()
+################################################################################
+##### Test default initialization
+################################################################################
+cs = CombinatorialSearch()
+dlr = DatabaseLookupRanker()
+pb = PairwiseBattles()
 
 #%%
 
-agent = CombinatorialAgent(ranker=ranker)
-cstate = compress(agent.player)
-for i in range(100):
-    agent.player = decompress(cstate)
-    agent.train()
-    if i % 10 == 0:
-        print(i)
+################################################################################
+##### Testing CombinatorialSearch methods
+################################################################################
+
+turn=1
+player = Player(team=["ant", "fish", "beaver", "cricket", "horse"],
+                shop=ShopLearn(turn=turn),
+                turn=turn)
+cs = CombinatorialSearch()
+avail_actions = cs.avail_actions(player)
+
+for temp_action in avail_actions:
+    if len(temp_action) == 0:
+        temp_name = "None"
+    else:
+        temp_name = temp_action[0].__name__
         
-# Player.from_state(agent.current_state)
-# %lprun -f ranker.run_database _ = agent.train()
+    if len(temp_action) > 1:
+        temp_inputs = temp_action[1:]
+    else:
+        temp_inputs = []
+        
+    print(temp_name, temp_inputs)
 
 # %%
 
-results = []
-values = []
-total_list = []
-for x in ranker.team_database.values():
-    values.append(x)
-    wins = x["wins"]
-    total = x["total"]
-    frac = wins/total
-    results.append(frac)
-    total_list.append(total)
-    
-max_idx = np.argmax(results)
-max_frac = results[max_idx]
-min_idx = np.argmin(results)
-print(max_frac)
-print(values[max_idx])
-print(len(ranker.team_database))
-print(values[min_idx])
-print(total_list)
-    
-#%%
+################################################################################
+##### Testing simple CombinatorialSearch
+################################################################################
+%run /Users/ibier/Software/sapai/sapai/agents.py
 
+turn=1
+player = Player(shop=ShopLearn(turn=turn),
+                turn=turn)
+player.gold = 6
+cs = CombinatorialSearch()
+player_list,team_dict = cs.search(player)
+
+# %load_ext line_profiler
+# %lprun -f cs.build_player_list cs.search(player)
+
+# %%

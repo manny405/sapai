@@ -212,6 +212,7 @@ class Team():
                     fidx.append(iter_idx)
         return fidx
     
+    
     def get_ahead(self, obj, n=1):
         pet_idx = self.get_idx(obj)
         fidx = []
@@ -241,15 +242,26 @@ class Team():
             if temp_idx > pet_idx:
                 chosen.append(self.team[temp_idx])
         return chosen[0:n]
-        
+    
+    
+    def get_empty(self):
+        empty_idx = []
+        for iter_idx,temp_slot in enumerate(self):
+            if temp_slot.empty:
+                empty_idx.append(iter_idx)
+        return empty_idx
+    
             
     def append(self, obj):
-        obj = TeamSlot(obj,seed_state = self.seed_state)
+        obj = TeamSlot(obj,seed_state=self.seed_state)
         n = len(self)
         if n == len(self.team):
             raise Exception("Attempted to append to a full team")
-        self.team[n] = obj
-        
+        empty_idx = self.get_empty()
+        if len(empty_idx) == 0:
+            raise Exception("This should not be possible")
+        self.team[empty_idx[0]] = obj
+
     
     def check_lvl3(self):
         for slot in self.team:
