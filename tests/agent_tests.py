@@ -58,8 +58,8 @@ for temp_action in avail_actions:
 turn=1
 player = Player(shop=ShopLearn(turn=turn),
                 turn=turn)
-player.gold = 6
-cs = CombinatorialSearch()
+player.gold = 10
+cs = CombinatorialSearch(max_actions=3)
 player_list,team_dict = cs.search(player)
 
 # %load_ext line_profiler

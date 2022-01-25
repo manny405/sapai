@@ -43,9 +43,19 @@ class CombinatorialSearch():
     consider all possible combinations of decisions in order arrive at the 
     best possible next decisions given the available gold. 
     
+    Arguments
+    ---------
+    verbose: bool
+        If True, messages are printed during the search
+    max_actions: int
+        Maximum depth, equal to the number of shop actions, that can be performed
+        during search space enumeration. Using max_actions of 1 would correspond
+        to a greedy search algorithm in conjunction with any Agents. 
+    
     """
-    def __init__(self, verbose=True):
+    def __init__(self, verbose=True, max_actions=-1):
         self.verbose = verbose 
+        self.max_actions = max_actions
         
         ### This stores the player lists for performing all possible actions
         self.player_list = []
@@ -244,13 +254,6 @@ class CombinatorialSearch():
         self.player_list = self.build_player_list(self.player)
         self.print_message("player_list_done", self.player_list)
         
-        ### build_player_list searches shop actions and returns player list
-        ###   In addition, it builds a player_state_dict which can be used for
-        ###   faster lookup of redundant player states
-        self.player_state_dict = {}
-        self.player_list = self.build_player_list(self.player)
-        self.print_message("player_list_done", self.player_list)
-        
         ### Now consider all possible reorderings of team
         self.player_list,self.player_state_dict = self.search_reordering(
                                     self.player_list,self.player_state_dict)
@@ -285,10 +288,11 @@ class CombinatorialSearch():
             player_list = []
 
         player_state = player.state
-        # player_state = minimal_state(player)
-        # temp_state["action_history"] = player_state["action_history"]
-
         self.print_message("size", self.player_state_dict)
+        if self.max_actions > 0:
+            actions_taken = len(player.action_history)
+            if actions_taken >= self.max_actions:
+                return []
         
         avail_actions = self.avail_actions(player)
         for temp_action in avail_actions:
