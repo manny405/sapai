@@ -265,7 +265,7 @@ class Pet():
             return activated,targets,possible
         
         if type(trigger).__name__ != "Pet":
-            raise Exception("Buy food must input food target as triggered")
+            raise Exception("Buy food must input pet that ate as trigger")
         
         ### Check if food has been bought for self is important
         if self.ability["trigger"] == "EatsShopFood":

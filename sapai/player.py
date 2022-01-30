@@ -203,7 +203,7 @@ class Player():
         
         ### After feeding, check for buy_food triggers
         for slot in self.team:
-            slot._pet.buy_food_trigger(food)
+            slot._pet.buy_food_trigger(team_pet)
             
         ### Check if any animals fainted because of pill and if any other
         ### animals fainted because of those animals fainting

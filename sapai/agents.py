@@ -352,6 +352,7 @@ class CombinatorialSearch():
                 
                 #### Re-initialize identical Player
                 temp_player = Player.from_state(player_state)
+                
                 #### Perform action
                 action_name = str(temp_action[0].__name__).split(".")[-1]
                 action = getattr(temp_player,action_name)
@@ -374,6 +375,16 @@ class CombinatorialSearch():
                     continue
                 
                 additional_player_list.append(temp_player)
+                
+                ##### METHOD SHOULD BE USED THAT DOESN'T REQUIRE Player.from_state
+                #####   This would save a lot of time
+                # ### Move team back into place
+                # order_idx = temp_action[1]
+                # reorder_idx = np.argsort(order_idx).tolist()
+                # action(reorder_idx)
+                # ### Delete last two actions to reset player
+                # del(temp_player.action_history[-1])
+                # del(temp_player.action_history[-1])
         
         player_list += additional_player_list
         return player_list,player_state_dict

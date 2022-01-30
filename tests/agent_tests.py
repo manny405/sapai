@@ -62,7 +62,9 @@ player.gold = 10
 cs = CombinatorialSearch(max_actions=3)
 player_list,team_dict = cs.search(player)
 
+# %run /Users/ibier/Software/sapai/sapai/agents.py
 # %load_ext line_profiler
 # %lprun -f cs.build_player_list cs.search(player)
+# %lprun -f cs.search_reordering cs.search(player)
 
 # %%

@@ -97,7 +97,13 @@ def get_teams(pet_idx,teams):
     return fteam,oteam
 
 
-def get_target(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[],get_from=False,
+def get_target(apet,
+               apet_idx,
+               teams,
+               te=None,
+               te_idx=[],
+               fixed_targets=[],
+               get_from=False,
                test_kind=""):
     """
     Returns the targets for a given effect. Targets are returned as a list of 
@@ -600,9 +606,9 @@ def FoodMultiplier(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
 def ModifyStats(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     # print("CALLED ModifyStats")
     # print("----------------")
-    # print(pet_idx)
+    # print(apet)
+    # print(apet_idx)
     # print(teams)
-    # print(fainted_pet)
     # print(te)
     
     if len(fixed_targets) == 0:
