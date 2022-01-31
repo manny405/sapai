@@ -51,7 +51,8 @@ class Player():
                  lf_winner=None,
                  action_history=[],
                  pack="StandardPack",
-                 seed_state=None):
+                 seed_state=None,
+                 wins=0):
         self.shop = shop
         self.team = team
         self.lives = lives
@@ -59,6 +60,7 @@ class Player():
         self.gold = gold
         self.pack = pack
         self.turn = turn
+        self.wins = wins
         
         ### Default Parameters
         self._max_team = 5
@@ -446,6 +448,7 @@ class Player():
             "pack": self.pack,
             "turn": self.turn, 
             "action_history": self.action_history,
+            "wins": self.wins,
         }
         return state_dict
     
@@ -468,13 +471,15 @@ class Player():
                    turn=state["turn"],
                    lf_winner=state["lf_winner"],
                    pack=state["pack"],
-                   action_history=action_history)
+                   action_history=action_history,
+                   wins=state["wins"])
     
     
     def __repr__(self):
         info_str =  "PACK:  {}\n".format(self.pack)
         info_str += "TURN:  {}\n".format(self.turn)
         info_str += "LIVES: {}\n".format(self.lives)
+        info_str += "WINS:  {}\n".format(self.wins)
         info_str += "GOLD:  {}\n".format(self.gold)
         print_str = "--------------\n"
         print_str += "CURRENT INFO: \n--------------\n"+info_str+"\n"
