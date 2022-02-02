@@ -3,6 +3,7 @@
 sapai/**/.DS_Store
 .vscode
 sapai/**/.vscode
+.idea/
 
 
 # Byte-compiled / optimized / DLL files

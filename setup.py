@@ -9,6 +9,6 @@ setup(
       packages=['sapai',
                 ],
       #find_packages(exclude=[]),
-      install_requires=['numpy', 'keras','torch'],
+      install_requires=['numpy', 'keras','torch', 'graphviz'],
       data_files=[],
       )

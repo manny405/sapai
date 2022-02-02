@@ -34,7 +34,13 @@ After navigating to the ``sapai`` directory, installation is completed with the 
 .. code-block:: bash
 
     python setup.py install
-    
+
+Unit tests are located in the ``tests`` directory. Tests can be run with the following command
+
+.. code-block:: bash
+
+    python -m unittest discover -s tests
+
     
 ---------------------------
 Introduction: Code Examples
