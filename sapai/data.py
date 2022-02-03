@@ -13279,8 +13279,8 @@ data = {
           "target": {
             "kind": "PurchaseTarget"
           },
-          "attackAmount": "1",
-          "healthAmount": "2",
+          "attackAmount": 1,
+          "healthAmount": 2,
           "untilEndOfBattle": False
         }
       }

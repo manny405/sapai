@@ -461,11 +461,11 @@ def get_target(apet,
         max_idx = np.where(health_list == max_health)[0]
         all_possible = []
         for temp_idx in max_idx:
-            all_possible.append(fteam[temp_idx].pet)
+            all_possible.append(fteam[fidx[temp_idx]].pet)
         choice = apet.rs.choice(max_idx,(1,),replace=False)[0]
         ### Update internal state of random generator
         apet.seed_state = apet.rs.get_state()
-        ret_pets = [fteam[choice].pet]
+        ret_pets = [fteam[fidx[choice]].pet]
         return ret_pets,all_possible
 
     
@@ -879,7 +879,7 @@ def Swallow(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         possible = [fixed_targets]
         
     if len(target) == 0:
-        return target
+        return target,possible
     output_level = apet.level
     if output_level == 1:
         level_attack = 0
