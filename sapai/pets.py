@@ -854,7 +854,6 @@ def tiger_func(func, te_fainted, *args):
             apet.team.remove(args[3])
             
     ### Run function
-    print(func)
     targets,possible = func(*args)
     
     ### If not in a battle, then tiger doesnt trigger
