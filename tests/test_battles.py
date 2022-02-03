@@ -1,3 +1,4 @@
+#%%
 import unittest
 
 from sapai import *
@@ -54,3 +55,13 @@ class TestBattles(unittest.TestCase):
 
         b = Battle(t0, t1)
         b.battle()
+        
+    
+    def test_whale_without_swallow_target(self):
+        team1 = Team([Pet("fish")])
+        team2 = Team([Pet("whale"), Pet("hedgehog"), Pet("fish"), Pet("rabbit")])
+
+        test_battle = Battle(team1, team2)
+        test_battle.battle()
+
+# %%

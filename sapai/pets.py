@@ -835,7 +835,8 @@ def tiger_func(func, te_fainted, *args):
     apet = args[0]
     if apet.team == None:
         ### Just run function
-        return func(*args)
+        targets,possible = func(*args)
+        return targets,possible
     
     ### If checked on Bee status, then not repeated because this is a status
     ###   and not an ability
