@@ -46,6 +46,7 @@ After new patch updates:
   6. Bat target RandomEnergy -> NonWeakEnemy. Bat does not apply weak randomly. 
       It only applies weak to an enemy that is not already weak. 
   7. Update croc to 8,16,24
+  8. Changed cat trigger from Hurt -> "PurchaseFood"
 
 """
 
@@ -10376,7 +10377,7 @@ data = {
       ],
       "level1Ability": {
         "description": "Food with Health and Attack effects are doubled.",
-        "trigger": "Hurt",
+        "trigger": "PurchaseFood",
         "triggeredBy": {
           "kind": "Self"
         },
@@ -10387,7 +10388,7 @@ data = {
       },
       "level2Ability": {
         "description": "Food with Health and Attack effects are tripled.",
-        "trigger": "Hurt",
+        "trigger": "PurchaseFood",
         "triggeredBy": {
           "kind": "Self"
         },
@@ -10398,7 +10399,7 @@ data = {
       },
       "level3Ability": {
         "description": "Food with Health and Attack effects are quadrupled.",
-        "trigger": "Hurt",
+        "trigger": "PurchaseFood",
         "triggeredBy": {
           "kind": "Self"
         },
@@ -23973,7 +23974,7 @@ data_old = {
       ],
       "level1Ability": {
         "description": "Food with Health and Attack effects are doubled.",
-        "trigger": "Hurt",
+        "trigger": "PurchaseFood",
         "triggeredBy": {
           "kind": "Self"
         },
@@ -23984,7 +23985,7 @@ data_old = {
       },
       "level2Ability": {
         "description": "Food with Health and Attack effects are tripled.",
-        "trigger": "Hurt",
+        "trigger": "PurchaseFood",
         "triggeredBy": {
           "kind": "Self"
         },
@@ -23995,7 +23996,7 @@ data_old = {
       },
       "level3Ability": {
         "description": "Food with Health and Attack effects are quadrupled.",
-        "trigger": "Hurt",
+        "trigger": "PurchaseFood",
         "triggeredBy": {
           "kind": "Self"
         },
