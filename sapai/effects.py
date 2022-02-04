@@ -893,8 +893,8 @@ def Swallow(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     else:
         raise Exception()
     
-    if apet.name != "pet-whale":
-        raise Exception("Swallow only done by whale")
+    if apet.name not in ["pet-whale", "pet-parrot"]:
+        raise Exception("Swallow only done by whale or parrot")
     
     ### Remove target from team and shop this pet as the given level as a 
     ### Summon ability

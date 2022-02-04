@@ -71,4 +71,17 @@ class TestBattles(unittest.TestCase):
         test_battle = Battle(team1, team2)
         test_battle.battle()
 
+    def test_whale_swallow_summon_battle(self):
+        team1 = Team([Pet("whale"), Pet("parrot")])
+        team2 = Team([Pet("fish")])
+
+        player1 = Player(team=team1)
+        player2 = Player(team=team2)
+
+        player1.end_turn()
+        player2.end_turn()
+
+        test_battle = Battle(player1.team, player2.team)
+        test_battle.battle()
+
 # %%
