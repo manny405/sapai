@@ -893,8 +893,8 @@ def Swallow(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     else:
         raise Exception()
     
-    if apet.name != "pet-whale":
-        raise Exception("Swallow only done by whale")
+    # if apet.name != "pet-whale":
+    #     raise Exception("Swallow only done by whale")
     
     ### Remove target from team and shop this pet as the given level as a 
     ### Summon ability
@@ -918,7 +918,7 @@ def Swallow(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         'kind': 'SummonPet',
         'pet': temp_target.name,
         'withAttack': base_attack+level_attack,
-        'withHealth': base_attack+level_health,
+        'withHealth': base_health+level_health,
         'withLevel': output_level,
         'team': 'Friendly'}}
         apet.set_ability(summon_dict)

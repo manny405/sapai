@@ -702,6 +702,9 @@ def battle_phase_attack_after(battle_obj,
     #### Can get the two animals that just previously attacked from the 
     ####   phase_dict
     attack_history = phase_dict["phase_attack"]
+    if len(attack_history) == 0:
+        return phase_dict
+    
     t0_pidx = attack_history[0][1][0]
     t1_pidx = attack_history[0][1][1]
     
@@ -733,6 +736,8 @@ def battle_phase_knockout(battle_obj,
     #### Get knockout list from the end of the phase_attack info and remove
     ####   the knockout list from phase attack
     attack_history = phase_dict["phase_attack"]
+    if len(attack_history) == 0:
+        return phase_dict
     knockout_list = attack_history[-1]
     phase_dict["phase_attack"] = phase_dict["phase_attack"][0:-1]
 
