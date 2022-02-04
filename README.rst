@@ -3,7 +3,7 @@ sapai
 =====
 
 
-|  |license| |test-status|
+|  |license|  |test-status|  |coverage| 
 
 
 ``sapai`` is a Super Auto Pets engine built with reinforcement learning training and other related AI models in mind. You may see more of my published work in machine learning on `ResearchGate <https://www.researchgate.net/publication/347653898_Machine_Learned_Model_for_Solid_Form_Volume_Estimation_Based_on_Packing-Accessible_Surface_and_Molecular_Topological_Fragments>`_ or `ACS <https://pubs.acs.org/doi/full/10.1021/acs.jpca.0c06791>`_.
@@ -183,4 +183,4 @@ Ongoing
 
 .. |license| image:: https://img.shields.io/badge/License-MIT-yellow.svg
 .. |test-status| image:: https://github.com/manny405/sapai/actions/workflows/run_tests.yml/badge.svg
-
+.. |coverage| image:: https://codecov.io/gh/manny405/sapai/branch/main/graph/badge.svg?token=5RDE13SYET
