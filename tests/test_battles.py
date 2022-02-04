@@ -63,15 +63,21 @@ class TestBattles(unittest.TestCase):
 
         test_battle = Battle(team1, team2)
         test_battle.battle()
-
-    
-    def test_multiple_hedgehog(self):
-        team1 = Team([Pet("fish"), Pet("hedgehog")])
-        team2 = Team([Pet("elephant"), Pet("hedgehog")])
+        
+        
+    def test_cat_battle(self):
+        team1 = Team([Pet("fish")])
+        team2 = Team([Pet("cat")])
 
         test_battle = Battle(team1, team2)
         test_battle.battle()
 
+
+    def test_multiple_hedgehog(self):
+        team1 = Team([Pet("fish"), Pet("hedgehog")])
+        team2 = Team([Pet("elephant"), Pet("hedgehog")])
+    
+    
     def test_whale_parrot_swallow(self):
         team1 = Team([Pet("whale"), Pet("parrot")])
         team2 = Team([Pet("fish"), "dragon"])
@@ -84,4 +90,5 @@ class TestBattles(unittest.TestCase):
 
         test_battle = Battle(player1.team, player2.team)
         test_battle.battle()
+        
 # %%
