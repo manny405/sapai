@@ -1,5 +1,6 @@
 
 #%%
+import numpy
 
 from sapai.pets import Pet
 
@@ -294,7 +295,7 @@ class Team():
             self.team[idx] = TeamSlot(obj,seed_state = self.seed_state)
         elif type(obj).__name__ == "TeamSlot":
             self.team[idx] = obj
-        elif type(obj) == str:
+        elif type(obj) == str or type(obj) == numpy.str_:
             self.team[idx] = TeamSlot(obj,seed_state = self.seed_state)
         else:
             raise Exception("Tried setting a team slot with type {}"
@@ -344,7 +345,7 @@ class TeamSlot():
             self._pet = obj.pet
         elif type(obj).__name__ == "NoneType":
             self._pet = Pet(seed_state=self.seed_state)
-        elif type(obj) == str:
+        elif type(obj) == str or type(obj) == numpy.str_:
             self._pet = Pet(obj,seed_state=self.seed_state)
         else:
             raise Exception("Tried initalizing TeamSlot with type {}"
