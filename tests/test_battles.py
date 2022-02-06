@@ -76,6 +76,9 @@ class TestBattles(unittest.TestCase):
     def test_multiple_hedgehog(self):
         team1 = Team([Pet("fish"), Pet("hedgehog")])
         team2 = Team([Pet("elephant"), Pet("hedgehog")])
+
+        test_battle = Battle(team1, team2)
+        test_battle.battle()
     
     
     def test_whale_parrot_swallow(self):
