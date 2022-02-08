@@ -156,6 +156,10 @@ The implementation of battle is efficient. Using IPython magic, this can be test
       ###  6.06 ms ± 49.1 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
       ###  More than 150 battle per second on a single core
       
+      ### On 2021 MPB with M1 Pro Processor:
+      ###  4.32 ms ± 20.8 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+      ###  More than 230 battle per second on a single core
+      
 ^^^^^^^^^^^^
 Battle Graph
 ^^^^^^^^^^^^
