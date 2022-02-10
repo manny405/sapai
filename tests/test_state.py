@@ -46,7 +46,6 @@ class TestState(unittest.TestCase):
 
     def test_shop_state_equality(self):
         expected = Shop()
-        expected.roll()
         actual = Shop.from_state(expected.state)
         self.assertEqual(expected.state, actual.state)
 
