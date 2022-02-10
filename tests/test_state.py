@@ -44,6 +44,11 @@ class TestState(unittest.TestCase):
         compressed = compress(expected, minimal=True)
         actual = decompress(compressed)
 
+    def test_shop_state_equality(self):
+        expected = Shop()
+        actual = Shop.from_state(expected.state)
+        self.assertEqual(expected.state, actual.state)
+
     def test_compress_player(self):
         expected = Player()
         compressed = compress(expected, minimal=True)

@@ -120,7 +120,7 @@ class Food():
         food = cls(name=state["name"])
         food.attack = state["attack"]
         food.health = state["health"]
-        food.eaten = state["eaten"],
+        food.eaten = state["eaten"]
         ### Supply seed_state in state dict should be optional
         if "seed_state" in state:
             if state["seed_state"] != None:
