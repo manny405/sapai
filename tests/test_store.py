@@ -38,3 +38,12 @@ class TestShop(unittest.TestCase):
         expected_end_health = start_health + 1
         self.assertEqual(test_player.team[0].pet.health, expected_end_health)
 
+    def test_empty_shop_from_state(self):
+        pet = Pet("fish")
+        orig_shop = Shop(shop_slots=[pet])
+        orig_shop.buy(pet)
+        self.assertEqual(len(orig_shop.shop_slots), 0)
+
+        copy_shop = Shop.from_state(orig_shop.state)
+        self.assertEqual(len(copy_shop.shop_slots), 0)
+

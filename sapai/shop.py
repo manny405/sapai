@@ -94,7 +94,7 @@ for key,value in data["foods"].items():
 
 class Shop():
     def __init__(self, 
-                 shop_slots=[], 
+                 shop_slots=None,
                  turn=1, 
                  can=0,
                  pack="StandardPack",
@@ -130,7 +130,7 @@ class Shop():
             raise Exception("Pack {} not valid".format(pack))
         
         self.update_shop_rules()
-        if len(shop_slots) > 0:
+        if shop_slots is not None:
             self.shop_slots = [
                 ShopSlot(x,pack=self.pack,turn=self.turn,seed_state=self.seed_state) for x in shop_slots]
             
