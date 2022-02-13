@@ -494,7 +494,7 @@ def get_combined_status(pet1, pet2):
     
     """
     status_tier = {
-        0: ["status-weak", "status-extra-life", "none"],
+        0: ["status-weak", "status-poison-attack", "none"],
         1: ["status-honey-bee"],
         2: ["status-bone-attack"],
         3: ["status-garlic-armor"],
