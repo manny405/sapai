@@ -47,6 +47,7 @@ After new patch updates:
       It only applies weak to an enemy that is not already weak. 
   7. Update croc to 8,16,24
   8. Changed cat trigger from Hurt -> "PurchaseFood"
+  9. Updating values to v0.16 for whale, swan, monkey, snail, and duck
 
 """
 
@@ -1001,7 +1002,7 @@ data = {
       },
       "tier": 1,
       "baseAttack": 1,
-      "baseHealth": 2,
+      "baseHealth": 3,
       "packs": [
         "StandardPack"
       ],
@@ -4457,7 +4458,7 @@ data = {
         "unicodeCodePoint": "🦢"
       },
       "tier": 2,
-      "baseAttack": 3,
+      "baseAttack": 1,
       "baseHealth": 3,
       "packs": [
         "StandardPack",
@@ -6682,7 +6683,7 @@ data = {
           "target": {
             "kind": "EachFriend"
           },
-          "attackAmount": 2,
+          "attackAmount": 1,
           "healthAmount": 1,
           "untilEndOfBattle": False
         }
@@ -6698,7 +6699,7 @@ data = {
           "target": {
             "kind": "EachFriend"
           },
-          "attackAmount": 4,
+          "attackAmount": 2,
           "healthAmount": 2,
           "untilEndOfBattle": False
         }
@@ -6714,7 +6715,7 @@ data = {
           "target": {
             "kind": "EachFriend"
           },
-          "attackAmount": 6,
+          "attackAmount": 3,
           "healthAmount": 3,
           "untilEndOfBattle": False
         }
@@ -7140,8 +7141,8 @@ data = {
         "unicodeCodePoint": "🐋"
       },
       "tier": 4,
-      "baseAttack": 2,
-      "baseHealth": 6,
+      "baseAttack": 3,
+      "baseHealth": 8,
       "packs": [
         "StandardPack"
       ],
@@ -8210,7 +8211,7 @@ data = {
             "kind": "RightMostFriend"
           },
           "attackAmount": 2,
-          "healthAmount": 2,
+          "healthAmount": 3,
           "untilEndOfBattle": False
         }
       },
@@ -8226,7 +8227,7 @@ data = {
             "kind": "RightMostFriend"
           },
           "attackAmount": 4,
-          "healthAmount": 4,
+          "healthAmount": 6,
           "untilEndOfBattle": False
         }
       },
@@ -8242,7 +8243,7 @@ data = {
             "kind": "RightMostFriend"
           },
           "attackAmount": 6,
-          "healthAmount": 6,
+          "healthAmount": 9,
           "untilEndOfBattle": False
         }
       },
