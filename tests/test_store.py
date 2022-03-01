@@ -47,3 +47,6 @@ class TestShop(unittest.TestCase):
         copy_shop = Shop.from_state(orig_shop.state)
         self.assertEqual(len(copy_shop.shop_slots), 0)
 
+    def test_combine_scorpions(self):
+        player = Player(team=["scorpion", "scorpion"])
+        player.combine(0, 1)
