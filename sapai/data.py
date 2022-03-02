@@ -13614,3 +13614,59 @@ data = {
   }
 }
 # %%
+
+
+################################################################################
+#### Creating empty fields for pets and foods
+################################################################################
+
+def get_fields(d):
+    """
+    Recursive function to get all possible fields for the input dict
+
+    """
+    key_list = []
+    for key,value in d.items():
+        temp_key_list = [key]
+
+        if type(value) == dict:
+            temp_key_list.append(get_fields(value))
+
+        key_list.append(temp_key_list)
+
+    return key_list
+
+def add_dummy_fields(fields, d):
+    if d == "none":
+        ### Sometimes there are dict or int datatype collisions in the give
+        ### json information. This should probably be corrected.
+        return
+
+    if type(fields[0]) == str:
+        if len(fields) == 1:
+            ### Break recursion condition
+            d[fields[0]] = "none"
+            return
+        if type(fields[1]) == list:
+            if fields[0] not in d:
+                d[fields[0]] = {}
+
+            for temp_fields in fields[1:]:
+                add_dummy_fields(temp_fields, d[fields[0]])
+    else:
+        for temp_list in fields:
+            add_dummy_fields(temp_list, d)
+
+dummy_pet = {}
+for temp_pet,value in data["pets"].items():
+    temp_all_fields = get_fields(value)
+    add_dummy_fields(temp_all_fields, dummy_pet)
+data["pets"]["pet-none"] = dummy_pet
+
+dummy_foods = {}
+for temp_pet,value in data["foods"].items():
+    temp_all_fields = get_fields(value)
+    add_dummy_fields(temp_all_fields, dummy_foods)
+data["foods"]["food-none"] = dummy_foods
+
+# %%
