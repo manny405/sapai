@@ -139,7 +139,7 @@ def get_target(apet,
             raise Exception("Target not found")
     else:
         target = effect["target"]
-        
+
     if get_from:
         if "from" not in effect:
             raise Exception("from not found in effect")
@@ -165,7 +165,7 @@ def get_target(apet,
         oteam = teams[0]
     else:
         raise Exception("That's impossible")
-    
+
     ### Get possible indices for each team
     fidx = []
     for iter_idx,temp_slot in enumerate(fteam):
@@ -283,7 +283,8 @@ def get_target(apet,
     elif kind == "EachFriend":
         ret_pets = []
         for temp_idx in fidx:
-            ret_pets.append(fteam[temp_idx].pet)
+            if temp_idx != apet_idx[1]:
+                ret_pets.append(fteam[temp_idx].pet)
         return ret_pets,[ret_pets]
     
     elif kind == "EachShopAnimal":
