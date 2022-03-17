@@ -295,3 +295,16 @@ class TestPetTriggers(unittest.TestCase):
             trigger = decompress(cteam)
             activated_bool, targets, possible = pet.knockout_trigger(trigger)
             self.assertTrue(activated_bool)
+
+    def test_dragon_ability(self):
+        player = Player(shop=Shop(["ant"]), team=Team([Pet("fish"), Pet("dragon")]))
+        self.assertEqual(player.team[0].attack, 2)
+        self.assertEqual(player.team[0].health, 3)
+        self.assertEqual(player.team[1].attack, 6)
+        self.assertEqual(player.team[1].health, 8)
+
+        player.buy_pet(0)
+        self.assertEqual(player.team[0].attack, 3)
+        self.assertEqual(player.team[0].health, 4)
+        self.assertEqual(player.team[1].attack, 6)
+        self.assertEqual(player.team[1].health, 8)
