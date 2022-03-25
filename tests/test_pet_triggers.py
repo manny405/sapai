@@ -308,3 +308,11 @@ class TestPetTriggers(unittest.TestCase):
         self.assertEqual(player.team[0].health, 4)
         self.assertEqual(player.team[1].attack, 6)
         self.assertEqual(player.team[1].health, 8)
+    
+    def test_shop_hurt(self):
+        player = Player(shop=Shop(["sleeping-pill"]), team=Team(["hedgehog", "gorilla", "camel", "blowfish", "peacock"]))
+        player.buy_food(0, 0)
+
+        self.assertEqual(player.team[1].pet.status, "status-coconut-shield")
+        self.assertGreater(player.team[3].pet.attack, Pet("blowfish").attack)
+        self.assertGreater(player.team[4].pet.attack, Pet("peacock").attack)

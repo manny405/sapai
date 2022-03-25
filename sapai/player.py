@@ -225,6 +225,10 @@ class Player():
             if len(fainted_list) == 0:
                 break
         
+        for slot in self.team:
+            if slot.pet._hurt:
+                activated,targets,possible = slot.pet.hurt_trigger(Team())
+
         return (food,team_pet)
     
     
