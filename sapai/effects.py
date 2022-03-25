@@ -543,6 +543,17 @@ def DealDamage(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         else:
             raise Exception()
     for target_pet in target:
+        if target_pet.status == "status-melon-armor":
+            health_amount = max(0, health_amount - 20)
+            target_pet.status = "none"
+        elif target_pet.status == "status-garlic-armor":
+            health_amount = max(1, health_amount - 2)
+        elif target_pet.status == "status-coconut-shield":
+            health_amount = 0
+            target_pet.status = "none"
+        elif target_pet.status == "status-weak":
+            health_amount += 3
+    
         target_pet.hurt(health_amount)
     return target,possible
 
