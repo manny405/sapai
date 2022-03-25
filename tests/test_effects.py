@@ -85,3 +85,25 @@ class TestEffects(unittest.TestCase):
         self.assertEqual(t[0].level, 3)
         self.assertEqual(t[0].attack, 18)
         self.assertEqual(t[0].health, 18)
+    
+    def test_multiple_cats(self):
+        player = Player(shop=Shop(["pear"]), team=Team([Pet("cat")]))
+        player.buy_food(0, 0)
+
+        # should add +4/+4
+        self.assertEqual(player.team[0].attack, 8)
+        self.assertEqual(player.team[0].health, 9)
+
+        player = Player(shop=Shop(["pear"]), team=Team([Pet("cat"), Pet("cat")]))
+        player.buy_food(0, 0)
+
+        # should add +6/+6
+        self.assertEqual(player.team[0].attack, 10)
+        self.assertEqual(player.team[0].health, 11)
+
+        player = Player(shop=Shop(["pear"]), team=Team([Pet("cat"), Pet("cat"), Pet("cat")]))
+        player.buy_food(0, 0)
+
+        # should add +8/+8
+        self.assertEqual(player.team[0].attack, 12)
+        self.assertEqual(player.team[0].health, 13)

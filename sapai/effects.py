@@ -594,11 +594,8 @@ def FoodMultiplier(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     food_list = [te]
     for food in food_list:
         ### Multiplier is not strict multiplier of current value, but additive
-        ###   multiplier of base attack and health
-        if food.attack == food.base_attack:
-            ### If first time that additive multiplier applied, then account
-            ###   for an extra x that already exists 
-            mult = mult - 1
+        ###   multiplier of base attack and health        
+        mult = mult - 1
         food.attack += food.base_attack*mult
         food.health += food.base_health*mult
     return food_list,[food_list]
