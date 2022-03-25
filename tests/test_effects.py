@@ -71,3 +71,17 @@ class TestEffects(unittest.TestCase):
             if slot.empty:
                 continue
             slot.pet.faint_trigger(slot.pet, [0, t.index(slot)])
+
+    def test_eagle_stats(self):
+        # seed for Snake 6/6
+        state = np.random.RandomState(seed=4).get_state()
+
+        pet = Pet("eagle", seed_state=state)
+        pet.level = 3
+        t = Team([pet], battle=True)
+        t[0].pet.faint_trigger(t[0].pet, [0, t.index(t[0])])
+
+        # should spawn Snake Lvl3 18/18 since Eagle was lvl 3
+        self.assertEqual(t[0].level, 3)
+        self.assertEqual(t[0].attack, 18)
+        self.assertEqual(t[0].health, 18)

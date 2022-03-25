@@ -861,6 +861,9 @@ def SummonRandomPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         shealth = data["pets"][spet.name]["baseHealth"]
     if "level" in apet.ability["effect"]:
         spet.level = apet.ability["effect"]["level"]
+    if "statsModifier" in apet.ability["effect"]:
+        sattack *= apet.ability["effect"]["statsModifier"]
+        shealth *= apet.ability["effect"]["statsModifier"]
         
     spet._attack = sattack
     spet._health = shealth

@@ -9412,7 +9412,8 @@ data = {
         "effect": {
           "kind": "SummonRandomPet",
           "tier": 6,
-          "level": 1
+          "level": 1,
+          "statsModifier": 1
         }
       },
       "level2Ability": {
@@ -9424,7 +9425,8 @@ data = {
         "effect": {
           "kind": "SummonRandomPet",
           "tier": 6,
-          "level": 2
+          "level": 2,
+          "statsModifier": 2
         }
       },
       "level3Ability": {
@@ -9436,7 +9438,8 @@ data = {
         "effect": {
           "kind": "SummonRandomPet",
           "tier": 6,
-          "level": 3
+          "level": 3,
+          "statsModifier": 3
         }
       },
       "probabilities": [
