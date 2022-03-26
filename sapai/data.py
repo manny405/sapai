@@ -3720,14 +3720,14 @@ data = {
         "unicodeCodePoint": "🦚"
       },
       "tier": 2,
-      "baseAttack": 1,
+      "baseAttack": 2,
       "baseHealth": 5,
       "packs": [
         "StandardPack",
         "ExpansionPack1"
       ],
       "level1Ability": {
-        "description": "Hurt: Gain 2 Attack.",
+        "description": "Hurt: Gain 50% more Attack. Works 1 time(s) per turn.",
         "trigger": "Hurt",
         "triggeredBy": {
           "kind": "Self"
@@ -3737,12 +3737,15 @@ data = {
           "target": {
             "kind": "Self"
           },
-          "attackAmount": 2,
+          "amount": {
+            "attackPercent": 50
+          },
+          "maxTriggers": 1,
           "untilEndOfBattle": False
         }
       },
       "level2Ability": {
-        "description": "Hurt: Gain 4 Attack.",
+        "description": "Hurt: Gain 50% more Attack. Works 2 time(s) per turn.",
         "trigger": "Hurt",
         "triggeredBy": {
           "kind": "Self"
@@ -3752,12 +3755,15 @@ data = {
           "target": {
             "kind": "Self"
           },
-          "attackAmount": 4,
+          "amount": {
+            "attackPercent": 50
+          },
+          "maxTriggers": 2,
           "untilEndOfBattle": False
         }
       },
       "level3Ability": {
-        "description": "Hurt: Gain 6 Attack.",
+        "description": "Hurt: Gain 50% more Attack. Works 3 time(s) per turn.",
         "trigger": "Hurt",
         "triggeredBy": {
           "kind": "Self"
@@ -3767,7 +3773,10 @@ data = {
           "target": {
             "kind": "Self"
           },
-          "attackAmount": 6,
+          "amount": {
+            "attackPercent": 50
+          },
+          "maxTriggers": 3,
           "untilEndOfBattle": False
         }
       },

@@ -632,6 +632,12 @@ def ModifyStats(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         attack_amount = apet.ability["effect"]["attackAmount"]
     if "healthAmount" in apet.ability["effect"]:
         health_amount = apet.ability["effect"]["healthAmount"]
+    if "amount" in apet.ability["effect"]:
+        if type(apet.ability["effect"]["amount"]) == dict:
+            if "attackPercent" in apet.ability["effect"]["amount"]:
+                attack_amount = int(apet.attack*apet.ability["effect"]["amount"]["attackPercent"]*0.01)
+            else:
+                raise Exception()
     for target_pet in target:
         target_pet._attack += attack_amount
         target_pet._health += health_amount

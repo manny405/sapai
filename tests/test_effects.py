@@ -180,3 +180,10 @@ class TestEffects(unittest.TestCase):
 
         attack_phase = get_attack(fish, t3[0].pet)
         self.assertEqual(attack_phase[1], 9) # 6/8 + 3
+
+    def test_peacock(self):
+        peacock = Pet("peacock")
+        peacock._hurt = True
+        t = Team([peacock])
+        peacock.hurt_trigger(Team())
+        self.assertEqual(peacock.attack, 3)
