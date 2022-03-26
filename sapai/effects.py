@@ -3,6 +3,8 @@ import sys,inspect
 import itertools
 import numpy as np
 
+from sapai import pets
+import sapai
 from sapai.data import data
 from sapai.tiers import pet_tier_lookup,pet_tier_lookup_std
 from sapai.foods import Food
@@ -587,13 +589,13 @@ def Evolve(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         target = fixed_targets
         possible = [fixed_targets]
     fteam,oteam = get_teams(apet_idx, teams)
-    target = [apet]
-    spet = apet.ability["effect"]["into"]
-    fteam.remove(apet)
+    spet = pets.Pet(target[0].ability["effect"]["into"])
+    try:
+        fteam.remove(target[0])
+    except Exception:
+        # tiger behind, just does nothing
+        return target,possible
     fteam[apet_idx[1]] = spet
-    kind = spet.ability["effect"]["kind"]
-    func = get_effect_function(kind)
-    target = func(apet_idx,teams,te=spet)
     return target,possible
 
 

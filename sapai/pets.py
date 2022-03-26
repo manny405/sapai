@@ -543,7 +543,7 @@ class Pet():
         
         Pets: 
             ["mosquito", "bat", "whale", "dolphin", "skunk", "crocodile", 
-            "leopard"]
+            "leopard", "caterpillar lvl3"]
         
         """
         activated = False

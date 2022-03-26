@@ -226,6 +226,9 @@ class TestPetTriggers(unittest.TestCase):
                           "leopard"]
 
         test_pet_list = [Pet(x, shop=Shop(), team=test_team.copy(), player=Player()) for x in test_pet_names]
+        caterpillar = Pet("caterpillar", shop=Shop(), team=test_team.copy(), player=Player())
+        caterpillar.level = 3
+        test_pet_list.append(caterpillar)
         self.print_pet_list(test_pet_list)
 
         for pet in test_pet_list:

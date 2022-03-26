@@ -5156,13 +5156,16 @@ data = {
       },
       "level3Ability": {
         "description": "Start of battle: Evolve into a Butterfly, then copy stats of the strongest friend.",
-        "trigger": "StartOfTurn",
+        "trigger": "StartOfBattle",
         "triggeredBy": {
           "kind": "Player"
         },
         "effect": {
           "kind": "Evolve",
-          "into": "pet-butterfly"
+          "into": "pet-butterfly",
+          "target": {
+            "kind": "Self"
+          }
         }
       },
       "probabilities": [
