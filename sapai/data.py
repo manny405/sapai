@@ -3740,9 +3740,9 @@ data = {
           "amount": {
             "attackPercent": 50
           },
-          "maxTriggers": 1,
           "untilEndOfBattle": False
-        }
+        },
+        "maxTriggers": 1
       },
       "level2Ability": {
         "description": "Hurt: Gain 50% more Attack. Works 2 time(s) per turn.",
@@ -3758,9 +3758,9 @@ data = {
           "amount": {
             "attackPercent": 50
           },
-          "maxTriggers": 2,
           "untilEndOfBattle": False
-        }
+        },
+        "maxTriggers": 2
       },
       "level3Ability": {
         "description": "Hurt: Gain 50% more Attack. Works 3 time(s) per turn.",
@@ -3776,9 +3776,9 @@ data = {
           "amount": {
             "attackPercent": 50
           },
-          "maxTriggers": 3,
           "untilEndOfBattle": False
-        }
+        },
+        "maxTriggers": 3
       },
       "probabilities": [
         {

@@ -187,3 +187,7 @@ class TestEffects(unittest.TestCase):
         t = Team([peacock])
         peacock.hurt_trigger(Team())
         self.assertEqual(peacock.attack, 3)
+        # same turn, therefore should not activate again:
+        peacock._hurt = True
+        peacock.hurt_trigger(Team())
+        self.assertEqual(peacock.attack, 3)
