@@ -191,3 +191,10 @@ class TestEffects(unittest.TestCase):
         peacock._hurt = True
         peacock.hurt_trigger(Team())
         self.assertEqual(peacock.attack, 3)
+
+    def test_hatching_chick_level_3(self):
+        hc = Pet("hatching-chick")
+        hc.level = 3
+        t = Team(["dragon", hc])
+        hc.sot_trigger(t)
+        self.assertEqual(t[0].pet.experience, 1)

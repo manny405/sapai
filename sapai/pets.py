@@ -164,7 +164,7 @@ class Pet():
         Apply pet's start of turn ability
         
         Pets: 
-            ["dromedary", "swan", "caterpillar", "squirrel"]
+            ["dromedary", "swan", "caterpillar", "squirrel", "hatching-chick lvl3"]
         """
         ### Reset ability_counter for goat at sot_trigger
         self.ability_counter = 0

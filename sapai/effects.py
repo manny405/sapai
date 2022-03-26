@@ -567,7 +567,7 @@ def GainExperience(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         target = fixed_targets
         possible = [fixed_targets]
     for target_pet in target:
-        amount = target_pet.ability["effect"]["amount"]
+        amount = apet.ability["effect"]["amount"]
         level_up = target_pet.gain_experience(amount=amount)
         if level_up:
             target_pet.levelup_trigger(target_pet)
