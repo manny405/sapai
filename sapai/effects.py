@@ -543,6 +543,17 @@ def DealDamage(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         else:
             raise Exception()
     for target_pet in target:
+        if target_pet.status == "status-melon-armor":
+            health_amount = max(0, health_amount - 20)
+            target_pet.status = "none"
+        elif target_pet.status == "status-garlic-armor":
+            health_amount = max(1, health_amount - 2)
+        elif target_pet.status == "status-coconut-shield":
+            health_amount = 0
+            target_pet.status = "none"
+        elif target_pet.status == "status-weak":
+            health_amount += 3
+    
         target_pet.hurt(health_amount)
     return target,possible
 
@@ -594,11 +605,8 @@ def FoodMultiplier(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     food_list = [te]
     for food in food_list:
         ### Multiplier is not strict multiplier of current value, but additive
-        ###   multiplier of base attack and health
-        if food.attack == food.base_attack:
-            ### If first time that additive multiplier applied, then account
-            ###   for an extra x that already exists 
-            mult = mult - 1
+        ###   multiplier of base attack and health        
+        mult = mult - 1
         food.attack += food.base_attack*mult
         food.health += food.base_health*mult
     return food_list,[food_list]
@@ -861,6 +869,9 @@ def SummonRandomPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         shealth = data["pets"][spet.name]["baseHealth"]
     if "level" in apet.ability["effect"]:
         spet.level = apet.ability["effect"]["level"]
+    if "statsModifier" in apet.ability["effect"]:
+        sattack *= apet.ability["effect"]["statsModifier"]
+        shealth *= apet.ability["effect"]["statsModifier"]
         
     spet._attack = sattack
     spet._health = shealth
