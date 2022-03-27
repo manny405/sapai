@@ -306,7 +306,31 @@ class Player():
         self.shop.roll()
         self.gold -= 1
         return ()
-    
+
+    @staticmethod
+    def combine_pet_stats(pet_to_keep, pet_to_be_merged):
+        """ Pet 1 is the pet that is kept"""
+        c_attack = max(pet_to_keep._attack, pet_to_be_merged._attack) + 1
+        c_until_end_of_battle_attack = max(pet_to_keep._until_end_of_battle_attack_buff,
+                                           pet_to_be_merged._until_end_of_battle_attack_buff)
+        c_health = max(pet_to_keep._health, pet_to_be_merged._health) + 1
+        c_until_end_of_battle_health = max(pet_to_keep._until_end_of_battle_health_buff,
+                                           pet_to_be_merged._until_end_of_battle_health_buff)
+        cstatus = get_combined_status(pet_to_keep, pet_to_be_merged)
+
+        pet_to_keep._attack = c_attack
+        pet_to_keep._health = c_health
+        pet_to_keep._until_end_of_battle_attack_buff = c_until_end_of_battle_attack
+        pet_to_keep._until_end_of_battle_health_buff = c_until_end_of_battle_health
+        pet_to_keep.status = cstatus
+        levelup = pet_to_keep.gain_experience()
+
+        # Check for levelup triggers if appropriate
+        if levelup:
+            # Activate the ability of the previous level
+            pet_to_keep.level -= 1
+            pet_to_keep.levelup_trigger(pet_to_keep)
+            pet_to_keep.level += 1
     
     @storeaction
     def buy_combine(self, shop_pet, team_pet):
@@ -343,29 +367,14 @@ class Player():
         self.gold -= cost
         self.shop.buy(shop_pet)
         
-        ### Perform combine
-        cattack = max(shop_pet.attack, team_pet.attack)+1
-        chealth = max(shop_pet.health, team_pet.health)+1
-        cstatus = team_pet.status
-        team_pet._attack = cattack
-        team_pet._health = chealth
-        team_pet.status = cstatus
-        levelup = team_pet.gain_experience()
-        
-        ### Check for levelup triggers if appropriate
-        if levelup:
-            ### Activate the ability of the previous level
-            team_pet.level -= 1
-            team_pet.levelup_trigger(team_pet)
-            team_pet.level += 1
+        Player.combine_pet_stats(team_pet, shop_pet)
             
         ### Check for buy_pet triggers
         for slot in self.team:
             slot._pet.buy_friend_trigger(team_pet)
             
         return shop_pet,team_pet
-    
-    
+
     @storeaction
     def combine(self, pet1, pet2):
         """ Combine two pets on the team together """
@@ -389,22 +398,8 @@ class Player():
         if pet1.name != pet2.name:
             raise Exception("Attempted combine for pets {} and {}"
                             .format(pet1.name, pet2.name))
-        
-        ### Perform combine
-        cattack = max(pet1.attack, pet2.attack)+1
-        chealth = max(pet1.health, pet2.health)+1
-        cstatus = get_combined_status(pet1,pet2)
-        pet1._attack = cattack
-        pet1._health = chealth
-        pet1.status = cstatus
-        levelup = pet1.gain_experience()
-        
-        ### Check for levelup triggers if appropriate
-        if levelup:
-            ### Activate the ability of the previous level
-            pet1.level -= 1
-            pet1.levelup_trigger(pet1)
-            pet1.level += 1
+
+        Player.combine_pet_stats(pet1, pet2)
         
         ### Remove pet2 from team
         idx = self.team.index(pet2)
