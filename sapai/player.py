@@ -296,6 +296,18 @@ class Player():
         shop_slot = self.shop.shop_slots[shop_idx]
         shop_slot.freeze()
         return (shop_slot,)
+    
+    
+    def unfreeze(self, obj):
+        """ Unfreeze one pet or food in the shop """
+        if type(obj).__name__ == "ShopSlot":
+            obj = obj.item
+            shop_idx = self.shop.index(obj)
+        elif type(obj) == int:
+            shop_idx = obj
+        shop_slot = self.shop.shop_slots[shop_idx]
+        shop_slot.unfreeze()
+        return (shop_slot,)
         
     
     @storeaction
