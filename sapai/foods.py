@@ -37,6 +37,7 @@ class Food():
         self.health = 0
         self.base_attack = 0
         self.base_health = 0
+        self.apply_until_end_of_battle = False
         self.status = "none"
         self.effect = "none"
         self.fd = {}
@@ -58,6 +59,8 @@ class Food():
             self.base_health = fd["effect"]["healthAmount"]
         if "status" in fd["effect"]:
             self.status = fd["effect"]["status"]
+        if "untilEndOfBattle" in fd["effect"] and fd["effect"]["untilEndOfBattle"] is True:
+            self.apply_until_end_of_battle = True
     
     
     def apply(self, pet=None):
@@ -70,9 +73,13 @@ class Food():
         if self.name == "food-canned-food":
             self.shop.can += self.attack
             return
-            
-        pet.attack += self.attack
-        pet.health += self.health
+
+        if self.apply_until_end_of_battle:
+            pet._until_end_of_battle_attack_buff += self.attack
+            pet._until_end_of_battle_health_buff += self.health
+        else:
+            pet._attack += self.attack
+            pet._health += self.health
 
         if self.effect == "ModifyStats":
             ### Done
@@ -110,6 +117,7 @@ class Food():
             "eaten": self.eaten,
             "attack": self.attack,
             "health": self.health,
+            "apply_until_end_of_battle": self.apply_until_end_of_battle,
             "seed_state": seed_state
         }
         return state_dict
@@ -121,6 +129,7 @@ class Food():
         food.attack = state["attack"]
         food.health = state["health"]
         food.eaten = state["eaten"]
+        food.apply_until_end_of_battle = state["apply_until_end_of_battle"]
         ### Supply seed_state in state dict should be optional
         if "seed_state" in state:
             if state["seed_state"] != None:

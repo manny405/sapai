@@ -50,3 +50,16 @@ class TestShop(unittest.TestCase):
     def test_combine_scorpions(self):
         player = Player(team=["scorpion", "scorpion"])
         player.combine(0, 1)
+
+    def test_cupcake(self):
+        player = Player(shop=Shop(["cupcake"]), team=Team([Pet("fish")]))
+
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].attack, 5)
+        self.assertEqual(player.team[0].health, 6)
+
+        player.end_turn()
+        player.start_turn()
+
+        self.assertEqual(player.team[0].attack, 2)
+        self.assertEqual(player.team[0].health, 3)

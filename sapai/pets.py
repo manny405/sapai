@@ -53,6 +53,10 @@ class Pet():
         ### Overall stats that should be brought into a battle
         self._attack = fd["baseAttack"]
         self._health = fd["baseHealth"]
+
+        # For tracking buffs that only last until the end of battle
+        self._until_end_of_battle_attack_buff = 0
+        self._until_end_of_battle_health_buff = 0
         self._hurt = False
         self.status = "none"
         if "status" in self.fd:
@@ -81,12 +85,16 @@ class Pet():
     
     @property
     def attack(self):
-        return self._attack
+        if self._attack == "none":
+            return self._attack
+        return min(self._attack + self._until_end_of_battle_attack_buff, 50)
     
     
     @property
     def health(self):
-        return self._health
+        if self._health == "none":
+            return self._health
+        return min(self._health + self._until_end_of_battle_health_buff, 50)
     
     
     def hurt(self,value):
@@ -111,8 +119,12 @@ class Pet():
     
     def eat(self, food):
         """ Returns bool of whether pet levelups"""
-        self._attack += food.attack
-        self._health += food.health
+        if food.apply_until_end_of_battle:
+            self._until_end_of_battle_attack_buff += food.attack
+            self._until_end_of_battle_health_buff += food.health
+        else:
+            self._attack += food.attack
+            self._health += food.health
         if food.status != "none":
             self.status = food.status
         if food.name == "food-chocolate":
@@ -123,8 +135,8 @@ class Pet():
                 
                 
     def init_battle(self):
-        self.fhealth = int(self._health)
-        self.fattack = int(self._attack)
+        self.fhealth = int(self.health)
+        self.fattack = int(self.attack)
         
     
     def combine(self, pet):
@@ -166,6 +178,11 @@ class Pet():
         Pets: 
             ["dromedary", "swan", "caterpillar", "squirrel"]
         """
+
+        # Reset temporary attack and health buffs
+        self._until_end_of_battle_attack_buff = 0
+        self._until_end_of_battle_health_buff = 0
+
         ### Reset ability_counter for goat at sot_trigger
         self.ability_counter = 0
         
@@ -746,7 +763,7 @@ class Pet():
     def __repr__(self):
         return "< {} {}-{} {} {}-{} >".format(
             self.name, 
-            self._attack, self._health, 
+            self.attack, self.health,
             self.status, 
             self.level, self.experience)
         
@@ -791,6 +808,8 @@ class Pet():
             "override_ability_dict": self.override_ability_dict,
             "attack": self._attack,
             "health": self._health,
+            "until_end_of_battle_attack_buff": self._until_end_of_battle_attack_buff,
+            "until_end_of_battle_health_buff": self._until_end_of_battle_health_buff,
             "status": self.status,
             "level": self.level,
             "experience": self.experience,
@@ -815,6 +834,8 @@ class Pet():
         pet.override_ability_dict = state["override_ability_dict"]
         pet._attack = state["attack"]
         pet._health = state["health"]
+        pet._until_end_of_battle_attack_buff = state["until_end_of_battle_attack_buff"]
+        pet._until_end_of_battle_health_buff = state["until_end_of_battle_health_buff"]
         pet.status = state["status"]
         pet.level = state["level"]
         pet.experience = state["experience"]
