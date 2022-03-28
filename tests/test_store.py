@@ -83,3 +83,17 @@ class TestShop(unittest.TestCase):
         player.buy_food(0, 0)
         self.assertEqual(player.team[0].attack, 3)
         self.assertEqual(player.team[0].health, 3)
+
+    def test_shop_levelup_from_combine(self):
+        player = Player(shop=Shop(["fish","fish"]),team=Team([Pet("fish")]))
+        player.buy_combine(1,0)
+        player.buy_combine(0,0)
+        self.assertEqual(len(player.shop),1)
+
+    def test_shop_levelup_from_ability(self):
+        pet = Pet("caterpillar")
+        pet.level = 2
+        pet.experience = 2
+        player = Player(shop=Shop([]), team=Team([pet]))
+        pet.sot_trigger()
+        self.assertEqual(len(player.shop),1)

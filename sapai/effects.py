@@ -571,6 +571,9 @@ def GainExperience(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         level_up = target_pet.gain_experience(amount=amount)
         if level_up:
             target_pet.levelup_trigger(target_pet)
+            player = apet.player
+            if player != None:
+                apet.player.shop.levelup()
     return target,possible
 
 
