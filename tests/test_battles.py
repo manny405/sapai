@@ -103,7 +103,7 @@ class TestBattles(unittest.TestCase):
         t2 = Team(["dolphin", "dragon"])
         b = Battle(t, t2)
         r = b.battle()
-        print(b.battle_history) # caterpillar evolves first, dolphin snipes butterfly, 1v2 loss
+        # print(b.battle_history) # caterpillar evolves first, dolphin snipes butterfly, 1v2 loss
         self.assertEqual(r, 1)
 
     def test_caterpillar_order_low_attack(self):
@@ -115,8 +115,25 @@ class TestBattles(unittest.TestCase):
         t2 = Team(["dolphin", "dragon"])
         b = Battle(t, t2)
         r = b.battle()
-        print(b.battle_history) # dolphin hits caterpillar, caterpillar evolves, copies dragon, win
+        # print(b.battle_history) # dolphin hits caterpillar, caterpillar evolves, copies dragon, win
         self.assertEqual(r, 0)
+    
+    def test_dodo(self):
+        dodo = Pet("dodo")
+        dodo.level = 3
+        dodo._attack = 10
+        team1 = Team([Pet("leopard"), dodo])
+
+        fish = Pet("fish")
+        fish._attack = 5
+        fish._health = 20
+        team2 = Team([fish])
+
+        test_battle = Battle(team1, team2)
+        result = test_battle.battle()
+
+        # dodo adds enough attack for leopard to kill fish
+        self.assertEqual(result, 0)
 
         
 # %%
