@@ -44,7 +44,13 @@ class Food():
         self.name = name
         if name not in data["foods"]:
             raise Exception("Food {} not found".format(name))
-        fd = data["foods"][name]["ability"]
+        
+        self.cost = 3
+        item = data["foods"][name]
+        if "cost" in item:
+            self.cost = item["cost"]
+        
+        fd = item["ability"]
         self.fd = fd
         
         self.attack = 0
@@ -58,7 +64,7 @@ class Food():
             self.base_health = fd["effect"]["healthAmount"]
         if "status" in fd["effect"]:
             self.status = fd["effect"]["status"]
-    
+
     
     def apply(self, pet=None):
         """

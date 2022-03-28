@@ -50,3 +50,16 @@ class TestShop(unittest.TestCase):
     def test_combine_scorpions(self):
         player = Player(team=["scorpion", "scorpion"])
         player.combine(0, 1)
+    
+    def test_squirrel(self):
+        player = Player(team=Team([Pet("squirrel")]))
+        player.start_turn()
+        self.assertEqual(player.shop[3].cost,2)
+
+        player.roll()
+        self.assertEqual(player.shop[3].cost,3)
+
+    def test_pill_1gold(self):
+        player = Player(shop=Shop(["sleeping-pill"]), team=Team(["fish"]))
+        player.buy_food(0, 0)
+        self.assertEqual(player.gold, 9)
