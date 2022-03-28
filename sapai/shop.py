@@ -684,7 +684,9 @@ class ShopSlot():
                 self.turn = obj.turn
                 self.pack = obj.pack
                 self.frozen = obj.frozen
-                self.cost = obj.item.cost
+                self.cost = obj.cost
+                if self.slot_type == "food":
+                    self.cost = obj.item.cost
                 self.item = obj.item.copy()
         else:
             if type(obj) == str:
