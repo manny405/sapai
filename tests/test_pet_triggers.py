@@ -382,11 +382,37 @@ class TestPetTriggers(unittest.TestCase):
     def test_fish_combine(self):
         fish = Pet("fish")
         fish.experience = 1
-        fish.levelup_trigger()
-        player = Player(shop=Shop(["fish"]), team=Team([Pet("fish"), Pet("beaver"), Pet("beaver")]))
+        player = Player(shop=Shop(["fish"]), team=Team([fish, Pet("beaver"), Pet("beaver")]))
         player.buy_combine(0, 0)
-        self.assertEqual(player.team[0].pet.experience, 2)
+        self.assertEqual(player.team[0].pet.level, 2)
         self.assertEqual(player.team[1].attack, 3)
         self.assertEqual(player.team[1].health, 3)
         self.assertEqual(player.team[2].attack, 3)
         self.assertEqual(player.team[2].health, 3)
+
+    def test_otter(self):
+        player = Player(shop=Shop(["otter"]), team=Team([Pet("beaver")]))
+        player.buy_pet(0)
+        self.assertEqual(player.team[0].attack, 3)
+        self.assertEqual(player.team[0].health, 3)
+        self.assertEqual(player.team[1].attack, 1)
+        self.assertEqual(player.team[1].health, 2)
+
+    def test_buy_otter_on_empty_team(self):
+        player = Player(shop=Shop(["otter"]))
+        player.buy_pet(0)
+        self.assertEqual(player.team[0].attack, 1)
+        self.assertEqual(player.team[0].health, 2)
+
+    def test_buy_otter_on_level_up(self):
+        otter = Pet("otter")
+        otter.experience = 1
+        player = Player(shop=Shop(["otter"]), team=Team([otter, Pet("beaver")]))
+        player.buy_combine(0, 0)
+        self.assertEqual(player.team[1].attack, 4)
+        self.assertEqual(player.team[1].health, 4)
+
+    def test_pig(self):
+        player = Player(team=Team([Pet("pig")]))
+        player.sell(0)
+        self.assertEqual(player.gold, 12)
