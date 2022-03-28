@@ -93,5 +93,30 @@ class TestBattles(unittest.TestCase):
 
         test_battle = Battle(player1.team, player2.team)
         test_battle.battle()
+
+    def test_caterpillar_order_high_attack(self):
+        cp = Pet("caterpillar")
+        cp.level = 3
+        cp._attack = 5 # 1 more than dolphin
+        cp._health = 7
+        t = Team([cp, "dragon"])
+        t2 = Team(["dolphin", "dragon"])
+        b = Battle(t, t2)
+        r = b.battle()
+        print(b.battle_history) # caterpillar evolves first, dolphin snipes butterfly, 1v2 loss
+        self.assertEqual(r, 1)
+
+    def test_caterpillar_order_low_attack(self):
+        cp = Pet("caterpillar")
+        cp.level = 3
+        cp._attack = 1
+        cp._health = 7
+        t = Team([cp, "dragon"])
+        t2 = Team(["dolphin", "dragon"])
+        b = Battle(t, t2)
+        r = b.battle()
+        print(b.battle_history) # dolphin hits caterpillar, caterpillar evolves, copies dragon, win
+        self.assertEqual(r, 0)
+
         
 # %%

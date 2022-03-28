@@ -3720,14 +3720,14 @@ data = {
         "unicodeCodePoint": "🦚"
       },
       "tier": 2,
-      "baseAttack": 1,
+      "baseAttack": 2,
       "baseHealth": 5,
       "packs": [
         "StandardPack",
         "ExpansionPack1"
       ],
       "level1Ability": {
-        "description": "Hurt: Gain 2 Attack.",
+        "description": "Hurt: Gain 50% more Attack. Works 1 time(s) per turn.",
         "trigger": "Hurt",
         "triggeredBy": {
           "kind": "Self"
@@ -3737,12 +3737,15 @@ data = {
           "target": {
             "kind": "Self"
           },
-          "attackAmount": 2,
+          "amount": {
+            "attackPercent": 50
+          },
           "untilEndOfBattle": False
-        }
+        },
+        "maxTriggers": 1
       },
       "level2Ability": {
-        "description": "Hurt: Gain 4 Attack.",
+        "description": "Hurt: Gain 50% more Attack. Works 2 time(s) per turn.",
         "trigger": "Hurt",
         "triggeredBy": {
           "kind": "Self"
@@ -3752,12 +3755,15 @@ data = {
           "target": {
             "kind": "Self"
           },
-          "attackAmount": 4,
+          "amount": {
+            "attackPercent": 50
+          },
           "untilEndOfBattle": False
-        }
+        },
+        "maxTriggers": 2
       },
       "level3Ability": {
-        "description": "Hurt: Gain 6 Attack.",
+        "description": "Hurt: Gain 50% more Attack. Works 3 time(s) per turn.",
         "trigger": "Hurt",
         "triggeredBy": {
           "kind": "Self"
@@ -3767,9 +3773,12 @@ data = {
           "target": {
             "kind": "Self"
           },
-          "attackAmount": 6,
+          "amount": {
+            "attackPercent": 50
+          },
           "untilEndOfBattle": False
-        }
+        },
+        "maxTriggers": 3
       },
       "probabilities": [
         {
@@ -5147,13 +5156,16 @@ data = {
       },
       "level3Ability": {
         "description": "Start of battle: Evolve into a Butterfly, then copy stats of the strongest friend.",
-        "trigger": "StartOfTurn",
+        "trigger": "StartOfBattle",
         "triggeredBy": {
           "kind": "Player"
         },
         "effect": {
           "kind": "Evolve",
-          "into": "pet-butterfly"
+          "into": "pet-butterfly",
+          "target": {
+            "kind": "Self"
+          }
         }
       },
       "probabilities": [

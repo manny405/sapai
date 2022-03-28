@@ -3,6 +3,8 @@ import sys,inspect
 import itertools
 import numpy as np
 
+from sapai import pets
+import sapai
 from sapai.data import data
 from sapai.tiers import pet_tier_lookup,pet_tier_lookup_std
 from sapai.foods import Food
@@ -565,7 +567,7 @@ def GainExperience(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         target = fixed_targets
         possible = [fixed_targets]
     for target_pet in target:
-        amount = target_pet.ability["effect"]["amount"]
+        amount = apet.ability["effect"]["amount"]
         level_up = target_pet.gain_experience(amount=amount)
         if level_up:
             target_pet.levelup_trigger(target_pet)
@@ -587,13 +589,13 @@ def Evolve(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         target = fixed_targets
         possible = [fixed_targets]
     fteam,oteam = get_teams(apet_idx, teams)
-    target = [apet]
-    spet = apet.ability["effect"]["into"]
-    fteam.remove(apet)
+    spet = pets.Pet(target[0].ability["effect"]["into"])
+    try:
+        fteam.remove(target[0])
+    except Exception:
+        # tiger behind, just does nothing
+        return target,possible
     fteam[apet_idx[1]] = spet
-    kind = spet.ability["effect"]["kind"]
-    func = get_effect_function(kind)
-    target = func(apet_idx,teams,te=spet)
     return target,possible
 
 
@@ -632,6 +634,12 @@ def ModifyStats(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         attack_amount = apet.ability["effect"]["attackAmount"]
     if "healthAmount" in apet.ability["effect"]:
         health_amount = apet.ability["effect"]["healthAmount"]
+    if "amount" in apet.ability["effect"]:
+        if type(apet.ability["effect"]["amount"]) == dict:
+            if "attackPercent" in apet.ability["effect"]["amount"]:
+                attack_amount = int(apet.attack*apet.ability["effect"]["amount"]["attackPercent"]*0.01)
+            else:
+                raise Exception()
     for target_pet in target:
         if "untilEndOfBattle" in apet.ability["effect"] and apet.ability["effect"]["untilEndOfBattle"] is True:
             target_pet._until_end_of_battle_attack_buff += attack_amount

@@ -23,7 +23,7 @@ class TestPetTriggers(unittest.TestCase):
             else:
                 effect_target_kind_list.append("NONE")
 
-        str_fmt = "{:3s}{:15s}{:15s}{:15s}{:20s}{:20s}\n"
+        str_fmt = "{:3s}{:20s}{:15s}{:15s}{:20s}{:20s}\n"
         print_str = str_fmt.format("N", "Pet", "Trigger", "TriggerBy", "EffectKind", "EffectTarget")
         print_str += "-------------------------------------------------------------------------------\n"
         for iter_idx in range(len(pet_list)):
@@ -40,6 +40,9 @@ class TestPetTriggers(unittest.TestCase):
     def test_start_of_turn_triggers(self):
         test_pet_names = ["dromedary", "swan", "caterpillar", "squirrel"]
         test_pet_list = [Pet(x, shop=Shop(), team=Team(), player=Player()) for x in test_pet_names]
+        caterpillar = Pet("hatching-chick", shop=Shop(), team=Team(), player=Player())
+        caterpillar.level = 3
+        test_pet_list.append(caterpillar)
         self.print_pet_list(test_pet_list)
 
         for pet in test_pet_list:
@@ -226,6 +229,9 @@ class TestPetTriggers(unittest.TestCase):
                           "leopard"]
 
         test_pet_list = [Pet(x, shop=Shop(), team=test_team.copy(), player=Player()) for x in test_pet_names]
+        caterpillar = Pet("caterpillar", shop=Shop(), team=test_team.copy(), player=Player())
+        caterpillar.level = 3
+        test_pet_list.append(caterpillar)
         self.print_pet_list(test_pet_list)
 
         for pet in test_pet_list:

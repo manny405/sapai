@@ -462,6 +462,29 @@ def check_summon_triggers(phase_list,
                               tempa,tempt,tempp)
     
     return len(targets)
+    
+def check_self_summoned_triggers(teams,
+                                 pet_priority,
+                                 phase_dict):
+    """
+    Currently only butterfly
+    
+    """
+    
+    phase_list = phase_dict["phase_start"]
+    pp = pet_priority
+    for team_idx,pet_idx in pp:
+        p = teams[team_idx][pet_idx].pet
+        if p.health <= 0:
+            continue
+        if p.ability["trigger"] != "Summoned":
+            continue
+        if p.ability["triggeredBy"]["kind"] != "Self":
+            continue
+
+        func = get_effect_function(p)
+        target = func(p,[0,pet_idx],teams,te=p) 
+        append_phase_list(phase_list,p,team_idx,pet_idx,True,target, [target])
 
 
 def check_honey(phase_list,p,team_idx,pet_idx,teams):
@@ -495,6 +518,10 @@ def battle_phase_start(battle_obj,
         fteam,oteam = get_teams([team_idx,pet_idx],teams)
         activated,targets,possible = p.sob_trigger(oteam)
         append_phase_list(phase_list,p,team_idx,pet_idx,activated,targets,possible)
+    
+    check_self_summoned_triggers(teams,
+                                 pet_priority,
+                                 phase_dict)
     
     return phase_list
 
