@@ -118,5 +118,13 @@ class TestBattles(unittest.TestCase):
         print(b.battle_history) # dolphin hits caterpillar, caterpillar evolves, copies dragon, win
         self.assertEqual(r, 0)
 
+    def test_ant_in_battle(self):
+        team1 = Team([Pet("ant"), Pet("fish")])
+        team2 = Team([Pet("camel")])
+
+        test_battle = Battle(team1, team2)
+        result = test_battle.battle()
+        self.assertEqual(result, 0)
+
         
 # %%

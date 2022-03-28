@@ -349,4 +349,44 @@ class TestPetTriggers(unittest.TestCase):
         self.assertEqual(player.team[0].attack, 4)
         self.assertEqual(player.team[0].health, 5)
 
+    def test_ant_pill_in_shop(self):
+        player = Player(shop=Shop(["sleeping-pill"]), team=Team([Pet("ant"), Pet("beaver")]))
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[1].attack, 4)
+        self.assertEqual(player.team[1].health, 3)
 
+    def test_beaver_sell(self):
+        player = Player(team=Team([Pet("beaver"), Pet("fish"), Pet("fish")]))
+        player.sell(0)
+        self.assertEqual(player.team[1].health, 4)
+        self.assertEqual(player.team[2].health, 4)
+
+    def test_beaver_sell_only_one_other_pet_on_team(self):
+        player = Player(team=Team([Pet("fish"), Pet("beaver")]))
+        player.sell(1)
+        self.assertEqual(player.team[0].health, 4)
+
+    def test_cricket_pill_in_shop(self):
+        player = Player(shop=Shop(["sleeping-pill"]), team=Team([Pet("cricket")]))
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].pet.name, "pet-zombie-cricket")
+        self.assertEqual(player.team[0].attack, 1)
+        self.assertEqual(player.team[0].health, 1)
+
+    def test_sell_multiple_ducks(self):
+        player = Player(shop=Shop(["beaver"]), team=Team([Pet("duck"), Pet("duck")]))
+        player.sell(0)
+        player.sell(1)
+        self.assertEqual(player.shop.pets[0].health, 4)
+
+    def test_fish_combine(self):
+        fish = Pet("fish")
+        fish.experience = 1
+        fish.levelup_trigger()
+        player = Player(shop=Shop(["fish"]), team=Team([Pet("fish"), Pet("beaver"), Pet("beaver")]))
+        player.buy_combine(0, 0)
+        self.assertEqual(player.team[0].pet.experience, 2)
+        self.assertEqual(player.team[1].attack, 3)
+        self.assertEqual(player.team[1].health, 3)
+        self.assertEqual(player.team[2].attack, 3)
+        self.assertEqual(player.team[2].health, 3)
