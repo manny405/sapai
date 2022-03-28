@@ -63,3 +63,23 @@ class TestShop(unittest.TestCase):
         player = Player(shop=Shop(["sleeping-pill"]), team=Team(["fish"]))
         player.buy_food(0, 0)
         self.assertEqual(player.gold, 9)
+
+    def test_cupcake(self):
+        player = Player(shop=Shop(["cupcake"]), team=Team([Pet("fish")]))
+
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].attack, 5)
+        self.assertEqual(player.team[0].health, 6)
+
+        player.end_turn()
+        player.start_turn()
+
+        self.assertEqual(player.team[0].attack, 2)
+        self.assertEqual(player.team[0].health, 3)
+
+    def test_apple(self):
+        player = Player(shop=Shop(["apple"]), team=Team([Pet("beaver")]))
+
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].attack, 3)
+        self.assertEqual(player.team[0].health, 3)

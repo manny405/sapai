@@ -135,5 +135,39 @@ class TestBattles(unittest.TestCase):
         # dodo adds enough attack for leopard to kill fish
         self.assertEqual(result, 0)
 
-        
+    def test_ant_in_battle(self):
+        team1 = Team([Pet("ant"), Pet("fish")])
+        team2 = Team([Pet("camel")])
+
+        test_battle = Battle(team1, team2)
+        result = test_battle.battle()
+        self.assertEqual(result, 0)
+
+    def test_horse_in_battle(self):
+        team1 = Team([Pet("cricket"), Pet("horse")])
+        team2 = Team([Pet("camel")])
+
+        test_battle = Battle(team1, team2)
+        result = test_battle.battle()
+        self.assertEqual(result, 2)
+
+    def test_horse_with_bee_in_battle(self):
+        cricket = Pet("cricket")
+        cricket.status = "status-honey-bee"
+        team1 = Team([cricket, Pet("horse")])
+        fish = Pet("fish")
+        fish._health = 5
+        team2 = Team([fish, Pet("beaver")])
+
+        test_battle = Battle(team1, team2)
+        result = test_battle.battle()
+        self.assertEqual(result, 2)
+
+    def test_mosquito_in_battle(self):
+        team1 = Team([Pet("mosquito")])
+        team2 = Team([Pet("pig")])
+
+        test_battle = Battle(team1, team2)
+        result = test_battle.battle()
+        self.assertEqual(result, 0)
 # %%
