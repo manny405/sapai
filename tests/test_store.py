@@ -50,6 +50,19 @@ class TestShop(unittest.TestCase):
     def test_combine_scorpions(self):
         player = Player(team=["scorpion", "scorpion"])
         player.combine(0, 1)
+    
+    def test_squirrel(self):
+        player = Player(team=Team([Pet("squirrel")]))
+        player.start_turn()
+        self.assertEqual(player.shop[3].cost,2)
+
+        player.roll()
+        self.assertEqual(player.shop[3].cost,3)
+
+    def test_pill_1gold(self):
+        player = Player(shop=Shop(["sleeping-pill"]), team=Team(["fish"]))
+        player.buy_food(0, 0)
+        self.assertEqual(player.gold, 9)
 
     def test_cupcake(self):
         player = Player(shop=Shop(["cupcake"]), team=Team([Pet("fish")]))
@@ -70,3 +83,17 @@ class TestShop(unittest.TestCase):
         player.buy_food(0, 0)
         self.assertEqual(player.team[0].attack, 3)
         self.assertEqual(player.team[0].health, 3)
+
+    def test_shop_levelup_from_combine(self):
+        player = Player(shop=Shop(["fish","fish"]),team=Team([Pet("fish")]))
+        player.buy_combine(1,0)
+        player.buy_combine(0,0)
+        self.assertEqual(len(player.shop),1)
+
+    def test_shop_levelup_from_ability(self):
+        pet = Pet("caterpillar")
+        pet.level = 2
+        pet.experience = 2
+        player = Player(shop=Shop([]), team=Team([pet]))
+        pet.sot_trigger()
+        self.assertEqual(len(player.shop),1)

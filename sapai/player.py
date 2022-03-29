@@ -202,6 +202,7 @@ class Player():
         ### Check for levelup triggers if appropriate
         if levelup:
             team_pet.levelup_trigger(team_pet)
+            self.shop.levelup()
         
         ### After feeding, check for buy_food triggers
         for slot in self.team:
@@ -296,6 +297,18 @@ class Player():
         shop_slot = self.shop.shop_slots[shop_idx]
         shop_slot.freeze()
         return (shop_slot,)
+    
+    
+    def unfreeze(self, obj):
+        """ Unfreeze one pet or food in the shop """
+        if type(obj).__name__ == "ShopSlot":
+            obj = obj.item
+            shop_idx = self.shop.index(obj)
+        elif type(obj) == int:
+            shop_idx = obj
+        shop_slot = self.shop.shop_slots[shop_idx]
+        shop_slot.unfreeze()
+        return (shop_slot,)
         
     
     @storeaction
@@ -331,6 +344,8 @@ class Player():
             pet_to_keep.level -= 1
             pet_to_keep.levelup_trigger(pet_to_keep)
             pet_to_keep.level += 1
+        
+        return levelup
     
     @storeaction
     def buy_combine(self, shop_pet, team_pet):
@@ -367,7 +382,9 @@ class Player():
         self.gold -= cost
         self.shop.buy(shop_pet)
         
-        Player.combine_pet_stats(team_pet, shop_pet)
+        levelup = Player.combine_pet_stats(team_pet, shop_pet)
+        if levelup:
+            self.shop.levelup()
             
         ### Check for buy_pet triggers
         for slot in self.team:
@@ -399,7 +416,9 @@ class Player():
             raise Exception("Attempted combine for pets {} and {}"
                             .format(pet1.name, pet2.name))
 
-        Player.combine_pet_stats(pet1, pet2)
+        levelup = Player.combine_pet_stats(pet1, pet2)
+        if levelup:
+            self.shop.levelup()
         
         ### Remove pet2 from team
         idx = self.team.index(pet2)

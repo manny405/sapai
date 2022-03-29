@@ -571,6 +571,9 @@ def GainExperience(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
         level_up = target_pet.gain_experience(amount=amount)
         if level_up:
             target_pet.levelup_trigger(target_pet)
+            player = apet.player
+            if player != None:
+                apet.player.shop.levelup()
     return target,possible
 
 
@@ -979,16 +982,16 @@ def TransferStats(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     copy_attack = effect["copyAttack"]
     copy_health = effect["copyHealth"]
     percentage = 1
-    if "percentage" in effect["to"]:
-        percentage = effect["to"]["percentage"]*0.01
-    from_self = effect["from"]["kind"] == True
+    if "percentage" in effect:
+        percentage = effect["percentage"]*0.01
+    from_self = effect["from"]["kind"] == "Self"
     
     for entry in target:
         if from_self:
             #### dodo is only from_self and it is additive, not copy, unlike
             #### what the database says
             if copy_attack:
-                entry.attack += max(int(apet.attack*percentage),1)
+                entry._attack += max(int(apet.attack*percentage),1)
             if copy_health:
                 raise Exception("This should not be possible")
         else:

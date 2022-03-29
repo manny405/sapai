@@ -27,6 +27,11 @@ class TestPlayer(unittest.TestCase):
         player.freeze(0)
         player.shop.roll()
 
+    def test_unfreeze(self):
+        player = Player(pack=self.pack)
+        player.unfreeze(0)
+        player.shop.roll()
+
     def test_buy_combine_behavior(self):
         player = Player(shop=["ant", "fish", "fish", "apple"],
                         team=["fish", "ant"],

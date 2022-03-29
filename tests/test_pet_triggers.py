@@ -323,6 +323,20 @@ class TestPetTriggers(unittest.TestCase):
         self.assertGreater(player.team[3].pet.attack, Pet("blowfish").attack)
         self.assertGreater(player.team[4].pet.attack, Pet("peacock").attack)
 
+    def test_dodo(self):
+        dodo = Pet("dodo")
+        dodo._attack = 11
+        fish = Pet("fish")
+        t = Team([fish, dodo])
+        dodo.sob_trigger(Team())
+        self.assertEqual(fish.attack, Pet("fish").attack + int(dodo.attack * dodo.ability["effect"]["percentage"]*0.01))
+    
+    def test_crab(self):
+        dragon = Pet("dragon")
+        player = Player(shop=Shop(["crab"]), team=Team([dragon]))
+        player.buy_pet(0)
+        self.assertEqual(player.team[1].pet.health, dragon.health)
+
     def test_horse(self):
         player = Player(shop=Shop(["fish"]), team=Team([Pet("horse")]))
 

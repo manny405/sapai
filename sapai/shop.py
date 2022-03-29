@@ -203,7 +203,8 @@ class Shop():
                 if slot.slot_type == "pet":
                     slot.item._attack += self.can
                     slot.item._health += self.can
-        
+                if slot.slot_type == "food":
+                    slot.cost = slot.item.cost
         for team_slot in team:
             team_slot._pet.shop_ability(shop=self,trigger="roll")
 
@@ -677,12 +678,15 @@ class ShopSlot():
             elif type(obj).__name__ == "Food":
                 self.slot_type = "food"
                 self.item = obj
+                self.cost = obj.cost
             elif type(obj).__name__ == "ShopSlot":
                 self.slot_type = obj.slot_type
                 self.turn = obj.turn
                 self.pack = obj.pack
                 self.frozen = obj.frozen
                 self.cost = obj.cost
+                if self.slot_type == "food":
+                    self.cost = obj.item.cost
                 self.item = obj.item.copy()
         else:
             if type(obj) == str:
@@ -710,6 +714,7 @@ class ShopSlot():
                 self.item = Pet(name,seed_state=self.seed_state)
             elif self.slot_type == "food":
                 self.item = Food(name,seed_state=self.seed_state)
+                self.cost = self.item.cost
             elif self.slot_type == "levelup":
                 self.roll_levelup()
             
@@ -778,9 +783,6 @@ class ShopSlot():
             self.item = Pet(choice, seed_state=self.seed_state)
         elif self.slot_type == "food":
             self.item = Food(choice, seed_state=self.seed_state)
-            if self.item.name == "food-sleeping-pill":
-                ### Hard-coded for pill because of limitations of data json
-                self.cost = 1
         else:
             raise Exception()
         
