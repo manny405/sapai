@@ -252,7 +252,7 @@ class Player():
             hurt_list = []
             for _,pet_idx in pp:
                 p = self.team[pet_idx].pet
-                if p._hurt > 0:
+                while p._hurt > 0:
                     hurt_list.append(pet_idx)
                     activated,targets,possible = p.hurt_trigger(Team())
 

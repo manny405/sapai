@@ -594,7 +594,7 @@ def battle_phase_hurt_and_faint(battle_obj,
         for team_idx,pet_idx in pp:
             fteam,oteam = get_teams([team_idx,pet_idx],teams)
             p = fteam[pet_idx].pet
-            if p._hurt > 0:
+            while p._hurt > 0:
                 hurt_list.append([team_idx,pet_idx])
                 activated,targets,possible = p.hurt_trigger(oteam)
                 append_phase_list(phase_list,
