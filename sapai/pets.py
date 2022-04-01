@@ -4,7 +4,7 @@
 from random import seed
 import numpy as np
 from sapai.data import data
-from sapai.effects import get_effect_function,SummonPet,SummonRandomPet
+from sapai.effects import get_effect_function,RespawnPet,SummonPet,SummonRandomPet
 from sapai.tiers import pet_tier_lookup,pet_tier_lookup_std
 from sapai.rand import MockRandomState
 
@@ -57,7 +57,7 @@ class Pet():
         # For tracking buffs that only last until the end of battle
         self._until_end_of_battle_attack_buff = 0
         self._until_end_of_battle_health_buff = 0
-        self._hurt = False
+        self._hurt = 0
         self.status = "none"
         if "status" in self.fd:
             self.status = self.fd["status"]
@@ -99,7 +99,7 @@ class Pet():
     
     def hurt(self,value):
         self._health -= value
-        self._hurt = True
+        self._hurt += 1
     
     @property
     def ability(self):
@@ -542,7 +542,7 @@ class Pet():
         else:
             teams = [self.team]
         
-        if func in [SummonPet,SummonRandomPet]:
+        if func in [RespawnPet,SummonPet,SummonRandomPet]:
             ### API for SummonPet is slightly different
             targets,possible = tiger_func(
                 func,True,self,[0,pet_idx],teams,trigger,te_idx)
@@ -682,7 +682,12 @@ class Pet():
         """
         activated = False
         targets = []
-        possible = []
+        possible = []        
+        if self._hurt == 0:
+            raise Exception("Called hurt trigger on pet that was not hurt")
+        else:
+            self._hurt -= 1
+
         if self.ability["trigger"] != "Hurt":
             return activated,targets,possible
         
@@ -697,13 +702,6 @@ class Pet():
         ### Cannot call if health is less than zero because fainted
         if self._health <= 0:
             return activated,targets,possible
-        
-        if self._hurt == False:
-            raise Exception("Called hurt trigger on pet that was not hurt")
-        else:
-            ### Since hurt trigger has now been called, the hurt bool should
-            ###   be reset
-            self._hurt = False
             
         if "maxTriggers" in self.ability:
             if self.ability_counter >= self.ability["maxTriggers"]:
@@ -758,7 +756,7 @@ class Pet():
         
         activated = True
         return activated,targets,possible
-    
+
         
     def __repr__(self):
         return "< {} {}-{} {} {}-{} >".format(
@@ -863,6 +861,11 @@ def tiger_func(func, te_fainted, *args):
     ###   and not an ability
     if "pet" in apet.ability["effect"]:
         if apet.ability["effect"]["pet"] == "pet-bee":
+            targets,possible = func(*args)
+            return targets,possible
+    ### Mushroom
+    if "kind" in apet.ability["effect"]:
+        if apet.ability["effect"]["kind"] == "RespawnPet":
             targets,possible = func(*args)
             return targets,possible
     

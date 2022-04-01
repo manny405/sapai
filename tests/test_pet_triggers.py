@@ -1,4 +1,6 @@
 import unittest
+import numpy as np
+from torch import seed
 
 from sapai import *
 from sapai.compress import compress,decompress
@@ -430,3 +432,62 @@ class TestPetTriggers(unittest.TestCase):
         player = Player(team=Team([Pet("pig")]))
         player.sell(0)
         self.assertEqual(player.gold, 12)
+    
+    def test_cricket_pill_in_shop_with_turkey(self):
+        player = Player(shop=Shop(["sleeping-pill"]), team=Team([Pet("cricket"), Pet("turkey")]))
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].attack, 4)
+        self.assertEqual(player.team[0].health, 4)
+
+    def test_sheep_pill_in_shop_with_turkey(self):
+        player = Player(shop=Shop(["sleeping-pill"]), team=Team([Pet("sheep"), Pet("turkey")]))
+        player.buy_food(0, 0)
+        print(player.team)
+        self.assertEqual(player.team[0].attack, 5)
+        self.assertEqual(player.team[0].health, 5)
+        self.assertEqual(player.team[1].attack, 5)
+        self.assertEqual(player.team[1].health, 5)
+
+    def test_cricket_pill_in_shop_with_horse(self):
+        player = Player(shop=Shop(["sleeping-pill"]), team=Team([Pet("cricket"), Pet("horse")]))
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].attack, 2)
+    
+    def test_faint_hurt_summon_trigger_priority(self):
+        # force ant to hit spider summon, since spider summons before ant triggers
+        state = np.random.RandomState(seed=3).get_state()
+        # force same spider summon just to be sure
+        state2 = np.random.RandomState(seed=1).get_state()
+
+        horse = Pet("horse")
+        horse._health = 3 # survive hedgehog
+        ant = Pet("ant", seed_state=state)
+        spider = Pet("spider", seed_state=state2)
+        spider._attack = 3 # more than ant
+        player = Player(shop=["sleeping-pill"], team=Team(["peacock", ant, spider, "hedgehog", horse]))
+        player.buy_food(0, 3)
+        self.assertEqual(player.team[2].attack, 5) # base 2 + horse + ant
+        self.assertEqual(player.team[2].health, 3) # base 2 + ant
+    
+    def test_mushroom_scorpion_in_shop(self):
+        scorpion = Pet("scorpion")
+        scorpion.status = "status-extra-life"
+        player = Player(shop=["sleeping-pill"], team=[scorpion])
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].pet.status, "status-poison-attack")
+    
+    def test_honey_in_shop(self):
+        fish = Pet("fish")
+        fish.status = "status-honey-bee"
+        player = Player(shop=["sleeping-pill"], team=[fish])
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].pet.name, "pet-bee")
+    
+    def test_mushroom_deer_in_shop(self):
+        deer = Pet("deer")
+        deer.status = "status-extra-life"
+        player = Player(shop=["sleeping-pill"], team=[deer])
+        player.buy_food(0, 0)
+        # deer should be in front of bus
+        self.assertEqual(player.team[0].pet.name, "pet-deer")
+        self.assertEqual(player.team[1].pet.name, "pet-bus")

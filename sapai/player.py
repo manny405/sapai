@@ -1,5 +1,8 @@
 
 import numpy as np
+from sapai import data
+from sapai.battle import Battle
+from sapai.effects import RespawnPet, SummonPet, SummonRandomPet, get_effect_function
 
 import sapai.shop
 from sapai.shop import Shop
@@ -210,27 +213,83 @@ class Player():
             
         ### Check if any animals fainted because of pill and if any other
         ### animals fainted because of those animals fainting
+        pp = Battle.update_pet_priority(self.team, Team()) # no enemy team in shop
+        status_list = []
         while True:
+            ### Get a list of fainted pets
             fainted_list = []
-            for slot in self.team:
-                if slot.empty:
+            for _,pet_idx in pp:
+                p = self.team[pet_idx].pet
+                if p.name == "pet-none":
                     continue
-                if slot.health <= 0:
-                    fainted_list.append(slot._pet)
-            for fainted_pet in fainted_list:
-                fainted_pet_idx = self.team.index(fainted_pet)+1
-                for slot in self.team:
-                    slot._pet.faint_trigger(fainted_pet, [0,fainted_pet_idx])
+                if p.health <= 0:
+                    fainted_list.append(pet_idx)
+                    if p.status != "none":
+                        status_list.append([p,pet_idx])
+
+            ### check every fainted pet
+            faint_targets_list = []
+            for pet_idx in fainted_list:
+                fainted_pet = self.team[pet_idx].pet
+                ### check for all pets that trigger off this fainted pet (including self)
+                for _,te_pet_idx in pp:
+                    other_pet = self.team[te_pet_idx].pet
+                    te_idx = [0,te_pet_idx]
+                    activated,targets,possible = other_pet.faint_trigger(fainted_pet,te_idx)
+                    if activated:
+                        faint_targets_list.append([fainted_pet,te_pet_idx,activated,targets,possible])
+
+                ### If no trigger was activated, then the pet was never removed.
+                ###   Check to see if it should be removed now. 
                 if self.team.check_friend(fainted_pet):
                     self.team.remove(fainted_pet)
-            if len(fainted_list) == 0:
+
+            ### If pet was summoned, then need to check for summon triggers
+            for fainted_pet,pet_idx,activated,targets,possible in faint_targets_list:                
+                self.check_summon_triggers(fainted_pet,pet_idx,activated,targets,possible)
+
+            ### if pet was hurt, then need to check for hurt triggers
+            hurt_list = []
+            for _,pet_idx in pp:
+                p = self.team[pet_idx].pet
+                if p._hurt > 0:
+                    hurt_list.append(pet_idx)
+                    activated,targets,possible = p.hurt_trigger(Team())
+
+            pp = Battle.update_pet_priority(self.team, Team())
+
+            ### if nothing happend, stop the loop
+            if len(fainted_list) == 0 and len(hurt_list) == 0:
                 break
-        
-        for slot in self.team:
-            if slot.pet._hurt:
-                activated,targets,possible = slot.pet.hurt_trigger(Team())
+
+        ### Check for status triggers on pet
+        for p,pet_idx in status_list:
+            self.check_status_triggers(p,pet_idx)
 
         return (food,team_pet)
+
+
+    def check_summon_triggers(self,fainted_pet,pet_idx,activated,targets,possible):
+        if activated == False:
+            return                
+        func = get_effect_function(fainted_pet)
+        if func not in [RespawnPet,SummonPet,SummonRandomPet]:
+            return                        
+        for temp_te in targets:
+            for temp_slot in self.team:
+                temp_pet = temp_slot.pet
+                temp_pet.friend_summoned_trigger(temp_te)
+
+    
+    def check_status_triggers(self,fainted_pet,pet_idx):
+        if fainted_pet.status not in ["status-honey-bee", "status-extra-life"]:
+            return 
+        
+        ability = data["statuses"][fainted_pet.status]["ability"]
+        fainted_pet.set_ability(ability)
+        te_idx = [0,pet_idx]
+        activated,targets,possible = fainted_pet.faint_trigger(fainted_pet, te_idx)
+        self.check_summon_triggers(fainted_pet,pet_idx,activated,targets,possible)
     
     
     @storeaction
