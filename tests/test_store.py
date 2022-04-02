@@ -132,3 +132,41 @@ class TestShop(unittest.TestCase):
         self.assertEqual(player.team[1].health, 3) # 2 + seal
         self.assertEqual(player.team[2].attack, 3) # 1 + seal + ladybug
         self.assertEqual(player.team[2].health, 5) # 3 + seal + ladybug
+
+    def test_chicken(self):
+        state = np.random.RandomState(seed=1).get_state()
+        player = Player(shop=Shop(["fish", "fish"], seed_state=state), team=["chicken"])
+        player.buy_pet(0)
+        self.assertEqual(player.shop[0].item.attack, 3)
+        self.assertEqual(player.shop[0].item.health, 4)
+
+        ### check result after 1 roll
+        player.roll()
+        self.assertEqual(player.shop[0].item.attack, 3) # beaver 2/2
+        self.assertEqual(player.shop[0].item.health, 3)
+
+        ### check result in a new turn
+        player.end_turn()
+        player.start_turn()
+        self.assertEqual(player.shop[0].item.attack, 2) # duck 1/3
+        self.assertEqual(player.shop[0].item.health, 4)
+
+    def test_canned_food(self):
+        state = np.random.RandomState(seed=1).get_state()
+        player = Player(shop=Shop(["fish", "canned-food"], seed_state=state), team=["fish"])
+        player.buy_food(1)
+
+        ### check immediate result
+        self.assertEqual(player.shop[0].item.attack, 4)
+        self.assertEqual(player.shop[0].item.health, 4)
+
+        ### check result after 1 roll
+        player.roll()
+        self.assertEqual(player.shop[0].item.attack, 4) # beaver 2/2
+        self.assertEqual(player.shop[0].item.health, 3)
+
+        ### check result in a new turn
+        player.end_turn()
+        player.start_turn()
+        self.assertEqual(player.shop[0].item.attack, 3) # duck 1/3
+        self.assertEqual(player.shop[0].item.health, 4)

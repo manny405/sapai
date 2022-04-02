@@ -96,7 +96,8 @@ class Shop():
     def __init__(self, 
                  shop_slots=None,
                  turn=1, 
-                 can=0,
+                 shop_attack=0,
+                 shop_health=0,
                  pack="StandardPack",
                  seed_state=None):
         #### Setting up state
@@ -118,7 +119,8 @@ class Shop():
         self.fslots = 0
         self.pslots = 0
         self.max_slots = 7
-        self.can = can                  ### Keep track of can stats
+        self.shop_attack = shop_attack  ### Keep track of can/chicken stats
+        self.shop_health = shop_health  ### Keep track of can/chicken stats
         
         if pack == "StandardPack":
             self.turn_prob_pets = turn_prob_pets_std
@@ -201,8 +203,8 @@ class Shop():
             ### Add health and attack from previously purchased cans
             if slot.frozen == False:
                 if slot.slot_type == "pet":
-                    slot.item._attack += self.can
-                    slot.item._health += self.can
+                    slot.item._attack += self.shop_attack
+                    slot.item._health += self.shop_health
                 if slot.slot_type == "food":
                     slot.cost = slot.item.cost
         for team_slot in team:
@@ -424,7 +426,8 @@ class Shop():
             "type": "Shop",
             "shop_slots": [x.state for x in self.shop_slots],
             "turn": self.turn,
-            "can": self.can,
+            "shop_attack": self.shop_attack,
+            "shop_health": self.shop_health,
             "pack": self.pack,
             "seed_state": seed_state,
         }
@@ -441,7 +444,8 @@ class Shop():
         return cls(
             shop_slots=[ShopSlot.from_state(x) for x in state["shop_slots"]],
             turn=state["turn"],
-            can=state["can"],
+            shop_attack=state["shop_attack"],
+            shop_health=state["shop_health"],
             pack=state["pack"],
             seed_state=seed_state)
     
@@ -618,7 +622,8 @@ class ShopLearn(Shop):
             "type": "ShopLearn",
             "shop_slots": [x.state for x in self.shop_slots],
             "turn": self.turn,
-            "can": self.can,
+            "shop_attack": self.shop_attack,
+            "shop_health": self.shop_health,
             "pack": self.pack,
             "seed_state": seed_state
         }
@@ -635,7 +640,8 @@ class ShopLearn(Shop):
         return cls(
             shop_slots=[ShopSlot.from_state(x) for x in state["shop_slots"]],
             turn=state["turn"],
-            can=state["can"],
+            shop_attack=state["shop_attack"],
+            shop_health=state["shop_health"],
             pack=state["pack"],
             seed_state=seed_state)
                 
