@@ -2,7 +2,7 @@
 import numpy as np
 from sapai import data
 from sapai.battle import Battle
-from sapai.effects import RespawnPet, SummonPet, SummonRandomPet, get_effect_function
+from sapai.effects import RespawnPet, SummonPet, SummonRandomPet, get_effect_function, get_target
 
 import sapai.shop
 from sapai.shop import Shop
@@ -158,30 +158,35 @@ class Player():
     
     
     @storeaction
-    def buy_food(self, food, team_pet):
-        """ Buy and feed one food from the shop to a pet """
+    def buy_food(self, food, team_pet=None):
+        """ 
+        Buy and feed one food from the shop
+        
+        team_pet is either the purchase target or empty for food effect target
+
+        """
         if type(food) == int:
             food = self.shop[food]
             if food.slot_type != "food":
-                raise Exception("Shop slot not food")
-        if type(team_pet) == int:
-            team_pet = self.team[team_pet]
-            
+                raise Exception("Shop slot not food")            
         if type(food).__name__ == "ShopSlot":
-            food = food.item
-            
+            food = food.item            
         if type(food).__name__ != "Food":
             raise Exception("Attempted to buy_food using object {}".format(food))
         
-        if type(team_pet).__name__ == "TeamSlot":
-            team_pet = team_pet._pet
-            
-        if not self.team.check_friend(team_pet):
-            raise Exception("Attempted to buy food for Pet not on team {}"
-                            .format(team_pet))
-        
-        if type(team_pet).__name__ != "Pet":
-            raise Exception("Attempted to buy_pet using object {}".format(team_pet))
+        if team_pet is None:
+            targets, _ = get_target(food, [0, None], [self.team])
+        else:
+            if type(team_pet) == int:
+                team_pet = self.team[team_pet]            
+            if type(team_pet).__name__ == "TeamSlot":
+                team_pet = team_pet._pet                
+            if not self.team.check_friend(team_pet):
+                raise Exception("Attempted to buy food for Pet not on team {}"
+                                .format(team_pet))            
+            if type(team_pet).__name__ != "Pet":
+                raise Exception("Attempted to buy_pet using object {}".format(team_pet))
+            targets = [team_pet]
         
         shop_idx = self.shop.index(food)
         shop_slot = self.shop.shop_slots[shop_idx]
@@ -199,17 +204,21 @@ class Player():
         
         ### Make all updates 
         self.gold -= cost
-        levelup = team_pet.eat(food)
         self.shop.buy(food)
-        
-        ### Check for levelup triggers if appropriate
-        if levelup:
-            team_pet.levelup_trigger(team_pet)
-            self.shop.levelup()
-        
+        for pet in targets:
+            levelup = pet.eat(food)
+            ### Check for levelup triggers if appropriate
+            if levelup:
+                pet.levelup_trigger(pet)
+                self.shop.levelup()
+
+            ### After feeding, check for eats_shop_food triggers
+            for slot in self.team:
+                slot._pet.eats_shop_food_trigger(pet)
+
         ### After feeding, check for buy_food triggers
         for slot in self.team:
-            slot._pet.buy_food_trigger(team_pet)
+            slot._pet.buy_food_trigger()
             
         ### Check if any animals fainted because of pill and if any other
         ### animals fainted because of those animals fainting
@@ -266,7 +275,7 @@ class Player():
         for p,pet_idx in status_list:
             self.check_status_triggers(p,pet_idx)
 
-        return (food,team_pet)
+        return (food,targets)
 
 
     def check_summon_triggers(self,fainted_pet,pet_idx,activated,targets,possible):

@@ -265,29 +265,49 @@ class Pet():
         return activated,targets,possible
     
     
-    
-    def buy_food_trigger(self, trigger=None):
+    def eats_shop_food_trigger(self, trigger=None):
         """
-        Apply pet's ability when food is bought
-        
-        Pets: 
-            ["beetle", "ladybug", "tabby-cat", "rabbit", "worm", "seal", 
-             "sauropod"]
-        
-        """
+        Apply pet's ability when food is eaten
+
+        Pets:
+            ["beetle", "tabby-cat", "rabbit", "worm", "seal"]
+
+        """        
         activated = False
         targets = []
         possible = []
-        if self.ability["trigger"] not in ["EatsShopFood", "BuyFood"]:
+        if self.ability["trigger"] != "EatsShopFood":
             return activated,targets,possible
         
         if type(trigger).__name__ != "Pet":
             raise Exception("Buy food must input pet that ate as trigger")
         
         ### Check if food has been bought for self is important
-        if self.ability["trigger"] == "EatsShopFood":
+        if self.ability["triggeredBy"]["kind"] == "Self":
             if trigger != self:
                 return activated,targets,possible
+
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        targets,possible = func(self, [0,pet_idx], [self.team], trigger)
+        
+        activated = True 
+        return activated,targets,possible
+
+
+    def buy_food_trigger(self, trigger=None):
+        """
+        Apply pet's ability when food is bought
+        
+        Pets: 
+            ["ladybug", "sauropod"]
+        
+        """
+        activated = False
+        targets = []
+        possible = []
+        if self.ability["trigger"] != "BuyFood":
+            return activated,targets,possible
 
         func = get_effect_function(self)
         pet_idx = self.team.get_idx(self)

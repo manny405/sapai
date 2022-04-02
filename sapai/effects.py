@@ -113,7 +113,9 @@ def get_target(apet,
     
     Arguments
     ---------
-    pet_idx: list
+    apet: Pet or Food
+        Data to use for ability/effect/etc
+    apet_idx: list
         List of two indices that provide the team index and the pet index 
         that has requested to obtain target pets
     teams: list
@@ -126,8 +128,10 @@ def get_target(apet,
     te: Pet
         Triggering entity
     """
-    p = apet
-    effect = p.ability["effect"]
+    if type(apet).__name__ == "Pet":
+        effect = apet.ability["effect"]
+    elif type(apet).__name__ == "Food":
+        effect = apet.effect
     
     if len(teams) == 1:
         teams = [teams[0], []]
@@ -290,7 +294,7 @@ def get_target(apet,
         return ret_pets,[ret_pets]
     
     elif kind == "EachShopAnimal":
-        shop = p.shop
+        shop = apet.shop
         if shop == None:
             return [],[]
         else:

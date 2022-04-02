@@ -75,10 +75,32 @@ class TestPetTriggers(unittest.TestCase):
             activated_bool, targets, possible = pet.sell_trigger(pet.team[0].pet)
             self.assertEqual(activated_bool, test_bool_list[iter_idx])
 
+    def test_eats_shop_food_triggers_self(self):
+        test_team = Team([Pet("dragon"), Pet("cat")])
+        test_pet_names = ["beetle", "tabby-cat", "rabbit", "worm", "seal"]
+
+        test_pet_list = [Pet(x, shop=Shop(), team=test_team.copy(), player=Player()) for x in test_pet_names]
+        self.print_pet_list(test_pet_list)
+
+        # Buy food for self
+        for pet in test_pet_list:
+            activated_bool, targets, possible = pet.eats_shop_food_trigger(pet)
+            self.assertTrue(activated_bool)
+
+    def test_eats_shop_food_triggers_other(self):
+        test_team = Team([Pet("dragon"), Pet("cat")])
+        test_pet_names = ["beetle", "tabby-cat", "rabbit", "worm", "seal"]
+        test_pet_list = [Pet(x, shop=Shop(), team=test_team.copy(), player=Player()) for x in test_pet_names]
+
+        # Buy food for other
+        test_bool_list = [False, False, True, False, False]
+        for iter_idx, pet in enumerate(test_pet_list):
+            activated_bool, targets, possible = pet.eats_shop_food_trigger(pet.team[0].pet)
+            self.assertEqual(activated_bool, test_bool_list[iter_idx])
+
     def test_buy_food_triggers_self(self):
         test_team = Team([Pet("dragon"), Pet("cat")])
-        test_pet_names = ["beetle", "ladybug", "tabby-cat", "rabbit", "worm", "seal",
-                          "sauropod"]
+        test_pet_names = ["ladybug", "sauropod"]
 
         test_pet_list = [Pet(x, shop=Shop(), team=test_team.copy(), player=Player()) for x in test_pet_names]
         self.print_pet_list(test_pet_list)
@@ -90,12 +112,11 @@ class TestPetTriggers(unittest.TestCase):
 
     def test_buy_food_triggers_other(self):
         test_team = Team([Pet("dragon"), Pet("cat")])
-        test_pet_names = ["beetle", "ladybug", "tabby-cat", "rabbit", "worm", "seal",
-                          "sauropod"]
+        test_pet_names = ["ladybug", "sauropod"]
         test_pet_list = [Pet(x, shop=Shop(), team=test_team.copy(), player=Player()) for x in test_pet_names]
 
         # Buy food for other
-        test_bool_list = [False, True, False, True, False, False, True]
+        test_bool_list = [True, True]
         for iter_idx, pet in enumerate(test_pet_list):
             activated_bool, targets, possible = pet.buy_food_trigger(pet.team[0].pet)
             self.assertEqual(activated_bool, test_bool_list[iter_idx])

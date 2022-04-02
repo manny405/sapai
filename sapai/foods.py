@@ -56,7 +56,7 @@ class Food():
         
         self.attack = 0
         self.health = 0
-        self.effect = fd["effect"]["kind"]
+        self.effect = fd["effect"]
         if "attackAmount" in fd["effect"]:
             self.attack = fd["effect"]["attackAmount"]
             self.base_attack = fd["effect"]["attackAmount"]
@@ -87,10 +87,10 @@ class Food():
             pet._attack += self.attack
             pet._health += self.health
 
-        if self.effect == "ModifyStats":
+        if self.effect["kind"] == "ModifyStats":
             ### Done
             return pet
-        elif self.effect == "ApplyStatus":
+        elif self.effect["kind"] == "ApplyStatus":
             pet.status = self.status
             
     

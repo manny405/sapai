@@ -6364,7 +6364,7 @@ data = {
       ],
       "level1Ability": {
         "description": "Pet eats shop food: Give it +1 Health",
-        "trigger": "BuyFood",
+        "trigger": "EatsShopFood",
         "triggeredBy": {
           "kind": "EachFriend"
         },
@@ -6379,7 +6379,7 @@ data = {
       },
       "level2Ability": {
         "description": "Pet eats shop food: Give it +2 Health",
-        "trigger": "BuyFood",
+        "trigger": "EatsShopFood",
         "triggeredBy": {
           "kind": "EachFriend"
         },
@@ -6394,7 +6394,7 @@ data = {
       },
       "level3Ability": {
         "description": "Pet eats shop food: Give it +3 Health",
-        "trigger": "BuyFood",
+        "trigger": "EatsShopFood",
         "triggeredBy": {
           "kind": "EachFriend"
         },
