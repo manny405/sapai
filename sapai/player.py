@@ -247,10 +247,10 @@ class Player():
                 ### check for all pets that trigger off this fainted pet (including self)
                 for _,te_pet_idx in pp:
                     other_pet = self.team[te_pet_idx].pet
-                    te_idx = [0,te_pet_idx]
+                    te_idx = [0,pet_idx]
                     activated,targets,possible = other_pet.faint_trigger(fainted_pet,te_idx)
                     if activated:
-                        faint_targets_list.append([fainted_pet,te_pet_idx,activated,targets,possible])
+                        faint_targets_list.append([fainted_pet,pet_idx,activated,targets,possible])
 
                 ### If no trigger was activated, then the pet was never removed.
                 ###   Check to see if it should be removed now. 

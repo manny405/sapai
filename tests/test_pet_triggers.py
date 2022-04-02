@@ -512,3 +512,10 @@ class TestPetTriggers(unittest.TestCase):
         # deer should be in front of bus
         self.assertEqual(player.team[0].pet.name, "pet-deer")
         self.assertEqual(player.team[1].pet.name, "pet-bus")
+
+    def test_zombie_fly_location(self):
+        player = Player(shop=["sleeping-pill"], team=["fish", "fish", "fish", "fish", "fly"])
+        player.buy_food(0, 0)
+        print(player.team)
+        self.assertEqual(player.team[0].pet.name, "pet-zombie-fly") # zombie fly spawned in front of fly, not on fainted target location
+
