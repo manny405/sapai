@@ -589,7 +589,7 @@ def get_combined_status(pet1, pet2):
         2: ["status-bone-attack"],
         3: ["status-garlic-armor"],
         4: ["status-splash-attack"],
-        5: ["status-melon-armor", "status-steak-attack", "status-extra-life"],
+        5: ["status-coconut-shield", "status-melon-armor", "status-steak-attack", "status-extra-life"],
     }
     
     status_lookup = {}
