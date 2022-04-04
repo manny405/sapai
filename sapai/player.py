@@ -88,6 +88,10 @@ class Player():
             slot._pet.player = self
             slot._pet.shop = self.shop
         
+        for slot in self.shop:
+            slot.item.player = self
+            slot.item.shop = self.shop
+        
         ### This stores the history of actions taken by the given player
         if len(action_history) == 0:
             self.action_history = []

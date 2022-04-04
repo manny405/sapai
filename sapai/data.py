@@ -9104,7 +9104,7 @@ data = {
           "kind": "ModifyStats",
           "target": {
             "kind": "EachShopAnimal",
-            "includingFuture": False
+            "includingFuture": True
           },
           "attackAmount": 1,
           "healthAmount": 1,
@@ -9121,7 +9121,7 @@ data = {
           "kind": "ModifyStats",
           "target": {
             "kind": "EachShopAnimal",
-            "includingFuture": False
+            "includingFuture": True
           },
           "attackAmount": 2,
           "healthAmount": 2,
@@ -9138,7 +9138,7 @@ data = {
           "kind": "ModifyStats",
           "target": {
             "kind": "EachShopAnimal",
-            "includingFuture": False
+            "includingFuture": True
           },
           "attackAmount": 3,
           "healthAmount": 3,

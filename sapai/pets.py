@@ -125,12 +125,17 @@ class Pet():
         else:
             self._attack += food.attack
             self._health += food.health
+
         if food.status != "none":
             self.status = food.status
+
         if food.name == "food-chocolate":
             return self.gain_experience()
         elif food.name == "food-sleeping-pill":
             self._health = -1000
+        elif food.name == "food-canned-food":
+            food.shop.shop_attack += food.attack
+            food.shop.shop_health += food.health
         return False
                 
                 

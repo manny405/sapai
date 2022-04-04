@@ -67,31 +67,6 @@ class Food():
             self.status = fd["effect"]["status"]
         if "untilEndOfBattle" in fd["effect"] and fd["effect"]["untilEndOfBattle"] is True:
             self.apply_until_end_of_battle = True
-    
-    
-    def apply(self, pet=None):
-        """
-        Serve the food object to the input pet 
-        """
-        if self.eaten == True:
-            raise Exception("This should not be possible")
-        
-        if self.name == "food-canned-food":
-            self.shop.can += self.attack
-            return
-
-        if self.apply_until_end_of_battle:
-            pet._until_end_of_battle_attack_buff += self.attack
-            pet._until_end_of_battle_health_buff += self.health
-        else:
-            pet._attack += self.attack
-            pet._health += self.health
-
-        if self.effect["kind"] == "ModifyStats":
-            ### Done
-            return pet
-        elif self.effect["kind"] == "ApplyStatus":
-            pet.status = self.status
             
     
     def copy(self):
