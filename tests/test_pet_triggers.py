@@ -1,4 +1,6 @@
 import unittest
+import numpy as np
+from torch import seed
 
 from sapai import *
 from sapai.compress import compress,decompress
@@ -73,10 +75,32 @@ class TestPetTriggers(unittest.TestCase):
             activated_bool, targets, possible = pet.sell_trigger(pet.team[0].pet)
             self.assertEqual(activated_bool, test_bool_list[iter_idx])
 
+    def test_eats_shop_food_triggers_self(self):
+        test_team = Team([Pet("dragon"), Pet("cat")])
+        test_pet_names = ["beetle", "tabby-cat", "rabbit", "worm", "seal"]
+
+        test_pet_list = [Pet(x, shop=Shop(), team=test_team.copy(), player=Player()) for x in test_pet_names]
+        self.print_pet_list(test_pet_list)
+
+        # Buy food for self
+        for pet in test_pet_list:
+            activated_bool, targets, possible = pet.eats_shop_food_trigger(pet)
+            self.assertTrue(activated_bool)
+
+    def test_eats_shop_food_triggers_other(self):
+        test_team = Team([Pet("dragon"), Pet("cat")])
+        test_pet_names = ["beetle", "tabby-cat", "rabbit", "worm", "seal"]
+        test_pet_list = [Pet(x, shop=Shop(), team=test_team.copy(), player=Player()) for x in test_pet_names]
+
+        # Buy food for other
+        test_bool_list = [False, False, True, False, False]
+        for iter_idx, pet in enumerate(test_pet_list):
+            activated_bool, targets, possible = pet.eats_shop_food_trigger(pet.team[0].pet)
+            self.assertEqual(activated_bool, test_bool_list[iter_idx])
+
     def test_buy_food_triggers_self(self):
         test_team = Team([Pet("dragon"), Pet("cat")])
-        test_pet_names = ["beetle", "ladybug", "tabby-cat", "rabbit", "worm", "seal",
-                          "sauropod"]
+        test_pet_names = ["ladybug", "sauropod"]
 
         test_pet_list = [Pet(x, shop=Shop(), team=test_team.copy(), player=Player()) for x in test_pet_names]
         self.print_pet_list(test_pet_list)
@@ -88,12 +112,11 @@ class TestPetTriggers(unittest.TestCase):
 
     def test_buy_food_triggers_other(self):
         test_team = Team([Pet("dragon"), Pet("cat")])
-        test_pet_names = ["beetle", "ladybug", "tabby-cat", "rabbit", "worm", "seal",
-                          "sauropod"]
+        test_pet_names = ["ladybug", "sauropod"]
         test_pet_list = [Pet(x, shop=Shop(), team=test_team.copy(), player=Player()) for x in test_pet_names]
 
         # Buy food for other
-        test_bool_list = [False, True, False, True, False, False, True]
+        test_bool_list = [True, True]
         for iter_idx, pet in enumerate(test_pet_list):
             activated_bool, targets, possible = pet.buy_food_trigger(pet.team[0].pet)
             self.assertEqual(activated_bool, test_bool_list[iter_idx])
@@ -430,3 +453,62 @@ class TestPetTriggers(unittest.TestCase):
         player = Player(team=Team([Pet("pig")]))
         player.sell(0)
         self.assertEqual(player.gold, 12)
+    
+    def test_cricket_pill_in_shop_with_turkey(self):
+        player = Player(shop=Shop(["sleeping-pill"]), team=Team([Pet("cricket"), Pet("turkey")]))
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].attack, 4)
+        self.assertEqual(player.team[0].health, 4)
+
+    def test_sheep_pill_in_shop_with_turkey(self):
+        player = Player(shop=Shop(["sleeping-pill"]), team=Team([Pet("sheep"), Pet("turkey")]))
+        player.buy_food(0, 0)
+        print(player.team)
+        self.assertEqual(player.team[0].attack, 5)
+        self.assertEqual(player.team[0].health, 5)
+        self.assertEqual(player.team[1].attack, 5)
+        self.assertEqual(player.team[1].health, 5)
+
+    def test_cricket_pill_in_shop_with_horse(self):
+        player = Player(shop=Shop(["sleeping-pill"]), team=Team([Pet("cricket"), Pet("horse")]))
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].attack, 2)
+    
+    def test_faint_hurt_summon_trigger_priority(self):
+        # force ant to hit spider summon, since spider summons before ant triggers
+        state = np.random.RandomState(seed=3).get_state()
+        # force same spider summon just to be sure
+        state2 = np.random.RandomState(seed=1).get_state()
+
+        horse = Pet("horse")
+        horse._health = 3 # survive hedgehog
+        ant = Pet("ant", seed_state=state)
+        spider = Pet("spider", seed_state=state2)
+        spider._attack = 3 # more than ant
+        player = Player(shop=["sleeping-pill"], team=Team(["peacock", ant, spider, "hedgehog", horse]))
+        player.buy_food(0, 3)
+        self.assertEqual(player.team[2].attack, 5) # base 2 + horse + ant
+        self.assertEqual(player.team[2].health, 3) # base 2 + ant
+    
+    def test_mushroom_scorpion_in_shop(self):
+        scorpion = Pet("scorpion")
+        scorpion.status = "status-extra-life"
+        player = Player(shop=["sleeping-pill"], team=[scorpion])
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].pet.status, "status-poison-attack")
+    
+    def test_honey_in_shop(self):
+        fish = Pet("fish")
+        fish.status = "status-honey-bee"
+        player = Player(shop=["sleeping-pill"], team=[fish])
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].pet.name, "pet-bee")
+    
+    def test_mushroom_deer_in_shop(self):
+        deer = Pet("deer")
+        deer.status = "status-extra-life"
+        player = Player(shop=["sleeping-pill"], team=[deer])
+        player.buy_food(0, 0)
+        # deer should be in front of bus
+        self.assertEqual(player.team[0].pet.name, "pet-deer")
+        self.assertEqual(player.team[1].pet.name, "pet-bus")

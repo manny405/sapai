@@ -97,3 +97,38 @@ class TestShop(unittest.TestCase):
         player = Player(shop=Shop([]), team=Team([pet]))
         pet.sot_trigger()
         self.assertEqual(len(player.shop),1)
+
+    def test_buy_multi_target_food(self):
+        player = Player(shop=["sushi"], team=["seal", "rabbit", "ladybug"])
+        player.buy_food(0)
+        self.assertEqual(player.team[0].attack, 4) # 3 + sushi
+        self.assertEqual(player.team[0].health, 10) # 8 + sushi + rabbit
+        self.assertEqual(player.team[1].attack, 5) # 3 + sushi + seal
+        self.assertEqual(player.team[1].health, 5) # 2 + sushi + seal + rabbit
+        self.assertEqual(player.team[2].attack, 4) # 1 + sushi + seal + ladybug
+        self.assertEqual(player.team[2].health, 7) # 3 + sushi + seal + rabbit + ladybug
+
+    def test_buy_multi_target_food_empty_team(self):
+        player = Player(shop=["sushi"], team=[])
+        player.buy_food(0)
+
+    def test_buy_chocolate(self):
+        player = Player(shop=["chocolate"], team=["seal", "rabbit", "ladybug"])
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].pet.experience, 1)
+        self.assertEqual(player.team[0].attack, 3) # 3
+        self.assertEqual(player.team[0].health, 9) # 8 + rabbit
+        self.assertEqual(player.team[1].attack, 4) # 3 + seal
+        self.assertEqual(player.team[1].health, 3) # 2 + seal
+        self.assertEqual(player.team[2].attack, 3) # 1 + seal + ladybug
+        self.assertEqual(player.team[2].health, 5) # 3 + seal + ladybug
+
+    def test_buy_apple(self):
+        player = Player(shop=["apple"], team=["seal", "rabbit", "ladybug"])
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].attack, 4) # 3 + apple
+        self.assertEqual(player.team[0].health, 10) # 8 + apple + rabbit
+        self.assertEqual(player.team[1].attack, 4) # 3 + seal
+        self.assertEqual(player.team[1].health, 3) # 2 + seal
+        self.assertEqual(player.team[2].attack, 3) # 1 + seal + ladybug
+        self.assertEqual(player.team[2].health, 5) # 3 + seal + ladybug

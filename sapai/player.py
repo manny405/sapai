@@ -1,5 +1,8 @@
 
 import numpy as np
+from sapai import data
+from sapai.battle import Battle
+from sapai.effects import RespawnPet, SummonPet, SummonRandomPet, get_effect_function, get_target
 
 import sapai.shop
 from sapai.shop import Shop
@@ -155,30 +158,35 @@ class Player():
     
     
     @storeaction
-    def buy_food(self, food, team_pet):
-        """ Buy and feed one food from the shop to a pet """
+    def buy_food(self, food, team_pet=None):
+        """ 
+        Buy and feed one food from the shop
+        
+        team_pet is either the purchase target or empty for food effect target
+
+        """
         if type(food) == int:
             food = self.shop[food]
             if food.slot_type != "food":
-                raise Exception("Shop slot not food")
-        if type(team_pet) == int:
-            team_pet = self.team[team_pet]
-            
+                raise Exception("Shop slot not food")            
         if type(food).__name__ == "ShopSlot":
-            food = food.item
-            
+            food = food.item            
         if type(food).__name__ != "Food":
             raise Exception("Attempted to buy_food using object {}".format(food))
         
-        if type(team_pet).__name__ == "TeamSlot":
-            team_pet = team_pet._pet
-            
-        if not self.team.check_friend(team_pet):
-            raise Exception("Attempted to buy food for Pet not on team {}"
-                            .format(team_pet))
-        
-        if type(team_pet).__name__ != "Pet":
-            raise Exception("Attempted to buy_pet using object {}".format(team_pet))
+        if team_pet is None:
+            targets, _ = get_target(food, [0, None], [self.team])
+        else:
+            if type(team_pet) == int:
+                team_pet = self.team[team_pet]            
+            if type(team_pet).__name__ == "TeamSlot":
+                team_pet = team_pet._pet                
+            if not self.team.check_friend(team_pet):
+                raise Exception("Attempted to buy food for Pet not on team {}"
+                                .format(team_pet))            
+            if type(team_pet).__name__ != "Pet":
+                raise Exception("Attempted to buy_pet using object {}".format(team_pet))
+            targets = [team_pet]
         
         shop_idx = self.shop.index(food)
         shop_slot = self.shop.shop_slots[shop_idx]
@@ -196,41 +204,101 @@ class Player():
         
         ### Make all updates 
         self.gold -= cost
-        levelup = team_pet.eat(food)
         self.shop.buy(food)
-        
-        ### Check for levelup triggers if appropriate
-        if levelup:
-            team_pet.levelup_trigger(team_pet)
-            self.shop.levelup()
-        
+        for pet in targets:
+            levelup = pet.eat(food)
+            ### Check for levelup triggers if appropriate
+            if levelup:
+                pet.levelup_trigger(pet)
+                self.shop.levelup()
+
+            ### After feeding, check for eats_shop_food triggers
+            for slot in self.team:
+                slot._pet.eats_shop_food_trigger(pet)
+
         ### After feeding, check for buy_food triggers
         for slot in self.team:
-            slot._pet.buy_food_trigger(team_pet)
+            slot._pet.buy_food_trigger()
             
         ### Check if any animals fainted because of pill and if any other
         ### animals fainted because of those animals fainting
+        pp = Battle.update_pet_priority(self.team, Team()) # no enemy team in shop
+        status_list = []
         while True:
+            ### Get a list of fainted pets
             fainted_list = []
-            for slot in self.team:
-                if slot.empty:
+            for _,pet_idx in pp:
+                p = self.team[pet_idx].pet
+                if p.name == "pet-none":
                     continue
-                if slot.health <= 0:
-                    fainted_list.append(slot._pet)
-            for fainted_pet in fainted_list:
-                fainted_pet_idx = self.team.index(fainted_pet)+1
-                for slot in self.team:
-                    slot._pet.faint_trigger(fainted_pet, [0,fainted_pet_idx])
+                if p.health <= 0:
+                    fainted_list.append(pet_idx)
+                    if p.status != "none":
+                        status_list.append([p,pet_idx])
+
+            ### check every fainted pet
+            faint_targets_list = []
+            for pet_idx in fainted_list:
+                fainted_pet = self.team[pet_idx].pet
+                ### check for all pets that trigger off this fainted pet (including self)
+                for _,te_pet_idx in pp:
+                    other_pet = self.team[te_pet_idx].pet
+                    te_idx = [0,te_pet_idx]
+                    activated,targets,possible = other_pet.faint_trigger(fainted_pet,te_idx)
+                    if activated:
+                        faint_targets_list.append([fainted_pet,te_pet_idx,activated,targets,possible])
+
+                ### If no trigger was activated, then the pet was never removed.
+                ###   Check to see if it should be removed now. 
                 if self.team.check_friend(fainted_pet):
                     self.team.remove(fainted_pet)
-            if len(fainted_list) == 0:
-                break
-        
-        for slot in self.team:
-            if slot.pet._hurt:
-                activated,targets,possible = slot.pet.hurt_trigger(Team())
 
-        return (food,team_pet)
+            ### If pet was summoned, then need to check for summon triggers
+            for fainted_pet,pet_idx,activated,targets,possible in faint_targets_list:                
+                self.check_summon_triggers(fainted_pet,pet_idx,activated,targets,possible)
+
+            ### if pet was hurt, then need to check for hurt triggers
+            hurt_list = []
+            for _,pet_idx in pp:
+                p = self.team[pet_idx].pet
+                while p._hurt > 0:
+                    hurt_list.append(pet_idx)
+                    activated,targets,possible = p.hurt_trigger(Team())
+
+            pp = Battle.update_pet_priority(self.team, Team())
+
+            ### if nothing happend, stop the loop
+            if len(fainted_list) == 0 and len(hurt_list) == 0:
+                break
+
+        ### Check for status triggers on pet
+        for p,pet_idx in status_list:
+            self.check_status_triggers(p,pet_idx)
+
+        return (food,targets)
+
+
+    def check_summon_triggers(self,fainted_pet,pet_idx,activated,targets,possible):
+        if activated == False:
+            return                
+        func = get_effect_function(fainted_pet)
+        if func not in [RespawnPet,SummonPet,SummonRandomPet]:
+            return                        
+        for temp_te in targets:
+            for temp_slot in self.team:
+                temp_pet = temp_slot.pet
+                temp_pet.friend_summoned_trigger(temp_te)
+
+    
+    def check_status_triggers(self,fainted_pet,pet_idx):
+        if fainted_pet.status not in ["status-honey-bee", "status-extra-life"]:
+            return 
+        
+        ability = data["statuses"][fainted_pet.status]["ability"]
+        fainted_pet.set_ability(ability)
+        te_idx = [0,pet_idx]
+        activated,targets,possible = fainted_pet.faint_trigger(fainted_pet, te_idx)
+        self.check_summon_triggers(fainted_pet,pet_idx,activated,targets,possible)
     
     
     @storeaction

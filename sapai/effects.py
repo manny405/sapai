@@ -113,7 +113,9 @@ def get_target(apet,
     
     Arguments
     ---------
-    pet_idx: list
+    apet: Pet or Food
+        Data to use for ability/effect/etc
+    apet_idx: list
         List of two indices that provide the team index and the pet index 
         that has requested to obtain target pets
     teams: list
@@ -126,8 +128,10 @@ def get_target(apet,
     te: Pet
         Triggering entity
     """
-    p = apet
-    effect = p.ability["effect"]
+    if type(apet).__name__ == "Pet":
+        effect = apet.ability["effect"]
+    elif type(apet).__name__ == "Food":
+        effect = apet.effect
     
     if len(teams) == 1:
         teams = [teams[0], []]
@@ -290,7 +294,7 @@ def get_target(apet,
         return ret_pets,[ret_pets]
     
     elif kind == "EachShopAnimal":
-        shop = p.shop
+        shop = apet.shop
         if shop == None:
             return [],[]
         else:
@@ -743,6 +747,59 @@ def RepeatAbility(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     te.level = original_level
     return targets,possible
 
+def RespawnPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
+    """
+    Only for Mushroom food at the moment
+
+    """
+    if len(te_idx) == 0:
+        raise Exception(
+            "Indices of triggering entity must be provided as te_idx")
+    
+    fteam,_ = get_teams(apet_idx,teams)
+    spet_name = apet.name
+    
+    if len(fixed_targets) > 0:
+        raise Exception("Not implemented")
+    
+    target_team = fteam
+    #### First, determine how many pets should be infront
+    nahead = len(fteam.get_ahead(te_idx[1],n=5))
+    npets = len(fteam)
+    ### Then move team as far backward as possible
+    fteam.move_backward()
+    ### Move nahead pets forward which should be infront of the triggering pet
+    end_idx = (5-npets)+nahead
+    fteam.move_forward(start_idx=0, end_idx=end_idx)
+    
+    target = []
+    ### Check for furthest back open position
+    empty_idx = []
+    for iter_idx,temp_slot in enumerate(target_team):
+        if temp_slot.empty:
+            empty_idx.append(iter_idx)
+    if len(empty_idx) == 0:
+        ### Can safely return, cannot summon
+        return target,[target]
+            
+    target_slot_idx = np.max(empty_idx)
+    target_team[target_slot_idx] = spet_name
+    spet = target_team[target_slot_idx].pet
+    
+    if "baseAttack" in apet.ability["effect"]:
+        spet._attack = apet.ability["effect"]["baseAttack"]
+    if "baseHealth" in apet.ability["effect"]:
+        spet._health = apet.ability["effect"]["baseHealth"]
+    spet.level = apet.level
+    target.append(spet)
+        
+    ### Move back forward
+    target_team.move_forward()
+    for temp_slot in target_team:
+        ### Make sure team is assigned correctly to all pets
+        temp_slot.pet.team = target_team 
+    
+    return target,[target]
 
 def SummonPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
     """
