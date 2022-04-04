@@ -50,6 +50,15 @@ class TestShop(unittest.TestCase):
     def test_combine_scorpions(self):
         player = Player(team=["scorpion", "scorpion"])
         player.combine(0, 1)
+
+    def test_combine_coconut_shield(self):
+        gorilla = Pet("gorilla")
+        gorilla.status = "status-coconut-shield"
+        gorilla2 = Pet("gorilla")
+        gorilla2.status = "status-melon-armor"
+        player = Player(team=[gorilla, gorilla2])
+        player.combine(1, 0)
+        self.assertEqual(gorilla.status, "status-coconut-shield") # same priority, therefore pet-to-keep keeps its status
     
     def test_squirrel(self):
         player = Player(team=Team([Pet("squirrel")]))
