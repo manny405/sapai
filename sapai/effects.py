@@ -843,7 +843,7 @@ def SummonPet(apet,apet_idx,teams,te=None,te_idx=[],fixed_targets=[]):
             ### Assume that oteam was not input, for example if Rat was pilled
             ###   during the shop phase
             return [],[]
-        target_team.move_forward()
+        target_team.move_backward()
     else:
         raise Exception(apet.ability["effect"]["team"])
     
