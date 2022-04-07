@@ -377,5 +377,17 @@ class TestBattles(unittest.TestCase):
         b = Battle(Team([hb1]), Team([c1]))
         r = b.battle()
         self.assertEqual(r, 0)
+    
+    def test_rat_summons_at_front(self):
+        team1 = Team(["rat", "blowfish"])
+        fish = Pet("fish")
+        fish._attack = 5
+        big_attack_pet = Pet("beaver")
+        big_attack_pet._attack = 50
+        team2 = Team([fish, big_attack_pet])
+
+        test_battle = Battle(team1, team2)
+        result = test_battle.battle()
+        self.assertEqual(result, 0)
 
 # %%
