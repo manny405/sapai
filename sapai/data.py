@@ -11606,54 +11606,6 @@ data = {
       "tier": "Summoned",
       "baseAttack": 1,
       "baseHealth": 1,
-      "level1Ability": {
-        "description": "Friend ahead attacks: Deal it 1 damage",
-        "trigger": "AfterAttack",
-        "triggeredBy": {
-          "kind": "FriendAhead",
-          "n": 1
-        },
-        "effect": {
-          "kind": "DealDamage",
-          "target": {
-            "kind": "FriendAhead",
-            "n": 1
-          },
-          "amount": 1
-        }
-      },
-      "level2Ability": {
-        "description": "Friend ahead attacks: Deal it 2 damage",
-        "trigger": "AfterAttack",
-        "triggeredBy": {
-          "kind": "FriendAhead",
-          "n": 1
-        },
-        "effect": {
-          "kind": "DealDamage",
-          "target": {
-            "kind": "FriendAhead",
-            "n": 1
-          },
-          "amount": 2
-        }
-      },
-      "level3Ability": {
-        "description": "Friend ahead attacks: Deal it 3 damage",
-        "trigger": "AfterAttack",
-        "triggeredBy": {
-          "kind": "FriendAhead",
-          "n": 1
-        },
-        "effect": {
-          "kind": "DealDamage",
-          "target": {
-            "kind": "FriendAhead",
-            "n": 1
-          },
-          "amount": 3
-        }
-      }
     },
     "pet-chick": {
       "name": "Chick",
