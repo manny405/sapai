@@ -676,7 +676,7 @@ class PairwiseBattles():
     def _get_pair_idx(self, team_list):
         """
         Get the dictionary of pair_dict that have to be made for pair mode
-        esxecution.
+        execution.
         
         """
         idx = np.triu_indices(n=len(team_list),
