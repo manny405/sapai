@@ -36,8 +36,9 @@ jobs:
     runs-on: $matrix.os$
     strategy:
       max-parallel: 5
-      python-version: [3.6, 3.7, 3.8, 3.9, 3.10]
-      os: [ubuntu-18.04, windows-2019, macos-11]
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9, 3.10]
+        os: [ubuntu-18.04, windows-2019, macos-11]
 
     steps:
     - uses: actions/checkout@v2
