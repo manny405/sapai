@@ -33,6 +33,7 @@ jobs:
         if-no-files-found: error
 
   test:
+    needs: build
     runs-on: $matrix.os$
     strategy:
       max-parallel: 5
