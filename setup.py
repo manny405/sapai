@@ -5,7 +5,7 @@ from distutils.core import setup
 
 setup(
       name='sapai',
-      version='0.0',
+      version='0.1.0',
       packages=['sapai',
                 ],
       #find_packages(exclude=[]),
