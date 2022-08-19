@@ -1,13 +1,13 @@
 name: build
 
-on: 
-  push: 
+on:
+  push:
     branches:
       - "*"
-  pull_request: 
-    branches: 
+  pull_request:
+    branches:
       - "*"
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   build:
@@ -38,7 +38,7 @@ jobs:
     strategy:
       max-parallel: 10
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9, 3]
+        python-version: [3.6]
         os: [ubuntu-18.04, windows-2019, macos-11]
 
     steps:
@@ -58,4 +58,3 @@ jobs:
 
     - name: Test library accessibility
       run: python -c "import sapai"
-
