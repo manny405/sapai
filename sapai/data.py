@@ -265,7 +265,7 @@ data = {
         "unicodeCodePoint": "🦫"
       },
       "tier": 1,
-      "baseAttack": 2,
+      "baseAttack": 3,
       "baseHealth": 2,
       "packs": [
         "StandardPack",
@@ -1002,8 +1002,8 @@ data = {
         "unicodeCodePoint": "🦆"
       },
       "tier": 1,
-      "baseAttack": 1,
-      "baseHealth": 3,
+      "baseAttack": 2,
+      "baseHealth": 2,
       "packs": [
         "StandardPack"
       ],
@@ -2448,7 +2448,7 @@ data = {
       },
       "tier": 2,
       "baseAttack": 3,
-      "baseHealth": 3,
+      "baseHealth": 1,
       "packs": [
         "StandardPack"
       ],
@@ -2803,8 +2803,8 @@ data = {
         "unicodeCodePoint": "🐕"
       },
       "tier": 3,
-      "baseAttack": 2,
-      "baseHealth": 2,
+      "baseAttack": 3,
+      "baseHealth": 3,
       "packs": [
         "StandardPack",
         "ExpansionPack1"
@@ -3343,8 +3343,8 @@ data = {
         "unicodeCodePoint": "🦩"
       },
       "tier": 2,
-      "baseAttack": 3,
-      "baseHealth": 1,
+      "baseAttack": 4,
+      "baseHealth": 2,
       "packs": [
         "StandardPack",
         "ExpansionPack1"
@@ -4810,7 +4810,7 @@ data = {
       },
       "tier": 3,
       "baseAttack": 5,
-      "baseHealth": 4,
+      "baseHealth": 3,
       "packs": [
         "StandardPack"
       ],
@@ -5265,7 +5265,7 @@ data = {
       },
       "tier": 3,
       "baseAttack": 2,
-      "baseHealth": 5,
+      "baseHealth": 6,
       "packs": [
         "StandardPack"
       ],
@@ -5567,7 +5567,7 @@ data = {
       },
       "tier": 3,
       "baseAttack": 2,
-      "baseHealth": 5,
+      "baseHealth": 4,
       "packs": [
         "StandardPack"
       ],
@@ -6023,7 +6023,7 @@ data = {
       },
       "tier": 3,
       "baseAttack": 1,
-      "baseHealth": 4,
+      "baseHealth": 3,
       "packs": [
         "StandardPack"
       ],
@@ -6356,7 +6356,7 @@ data = {
         "unicodeCodePoint": "🐇"
       },
       "tier": 3,
-      "baseAttack": 3,
+      "baseAttack": 1,
       "baseHealth": 2,
       "packs": [
         "StandardPack",
@@ -7277,8 +7277,8 @@ data = {
         "unicodeCodePoint": "🦬"
       },
       "tier": 4,
-      "baseAttack": 6,
-      "baseHealth": 6,
+      "baseAttack": 4,
+      "baseHealth": 4,
       "packs": [
         "StandardPack",
         "ExpansionPack1"
@@ -8685,7 +8685,7 @@ data = {
       },
       "tier": 4,
       "baseAttack": 3,
-      "baseHealth": 6,
+      "baseHealth": 5,
       "packs": [
         "StandardPack",
         "ExpansionPack1"
@@ -8821,7 +8821,7 @@ data = {
       },
       "tier": 4,
       "baseAttack": 2,
-      "baseHealth": 2,
+      "baseHealth": 5,
       "packs": [
         "StandardPack",
         "ExpansionPack1"
@@ -8947,8 +8947,8 @@ data = {
         "unicodeCodePoint": "🪱"
       },
       "tier": 4,
-      "baseAttack": 2,
-      "baseHealth": 2,
+      "baseAttack": 3,
+      "baseHealth": 3,
       "packs": [
         "StandardPack",
         "ExpansionPack1"
@@ -9730,8 +9730,8 @@ data = {
         "unicodeCodePoint": "🦜"
       },
       "tier": 4,
-      "baseAttack": 5,
-      "baseHealth": 3,
+      "baseAttack": 4,
+      "baseHealth": 2,
       "packs": [
         "StandardPack"
       ],
