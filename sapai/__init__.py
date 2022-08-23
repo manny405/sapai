@@ -1,5 +1,3 @@
-
-
 from .data import data
 from .pets import Pet
 from .foods import Food

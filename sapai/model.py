@@ -1,6 +1,3 @@
-
-
-
 """
 
 Definition and implementation of the reinforment model that will be used to 
@@ -22,4 +19,3 @@ Notes:
             is zero may be a better approach.
         
 """
-

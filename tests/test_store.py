@@ -5,7 +5,6 @@ from sapai.shop import *
 
 
 class TestShop(unittest.TestCase):
-
     def test_shop_slot_pet(self):
         slot = ShopSlot("pet")
         slot.item = Pet("ant")
@@ -58,15 +57,17 @@ class TestShop(unittest.TestCase):
         gorilla2.status = "status-melon-armor"
         player = Player(team=[gorilla, gorilla2])
         player.combine(1, 0)
-        self.assertEqual(gorilla.status, "status-coconut-shield") # same priority, therefore pet-to-keep keeps its status
-    
+        self.assertEqual(
+            gorilla.status, "status-coconut-shield"
+        )  # same priority, therefore pet-to-keep keeps its status
+
     def test_squirrel(self):
         player = Player(team=Team([Pet("squirrel")]))
         player.start_turn()
-        self.assertEqual(player.shop[3].cost,2)
+        self.assertEqual(player.shop[3].cost, 2)
 
         player.roll()
-        self.assertEqual(player.shop[3].cost,3)
+        self.assertEqual(player.shop[3].cost, 3)
 
     def test_pill_1gold(self):
         player = Player(shop=Shop(["sleeping-pill"]), team=Team(["fish"]))
@@ -94,10 +95,10 @@ class TestShop(unittest.TestCase):
         self.assertEqual(player.team[0].health, 3)
 
     def test_shop_levelup_from_combine(self):
-        player = Player(shop=Shop(["fish","fish"]),team=Team([Pet("fish")]))
-        player.buy_combine(1,0)
-        player.buy_combine(0,0)
-        self.assertEqual(len(player.shop),1)
+        player = Player(shop=Shop(["fish", "fish"]), team=Team([Pet("fish")]))
+        player.buy_combine(1, 0)
+        player.buy_combine(0, 0)
+        self.assertEqual(len(player.shop), 1)
 
     def test_shop_levelup_from_ability(self):
         pet = Pet("caterpillar")
@@ -105,17 +106,19 @@ class TestShop(unittest.TestCase):
         pet.experience = 2
         player = Player(shop=Shop([]), team=Team([pet]))
         pet.sot_trigger()
-        self.assertEqual(len(player.shop),1)
+        self.assertEqual(len(player.shop), 1)
 
     def test_buy_multi_target_food(self):
         player = Player(shop=["sushi"], team=["seal", "rabbit", "ladybug"])
         player.buy_food(0)
-        self.assertEqual(player.team[0].attack, 4) # 3 + sushi
-        self.assertEqual(player.team[0].health, 10) # 8 + sushi + rabbit
-        self.assertEqual(player.team[1].attack, 5) # 3 + sushi + seal
-        self.assertEqual(player.team[1].health, 5) # 2 + sushi + seal + rabbit
-        self.assertEqual(player.team[2].attack, 4) # 1 + sushi + seal + ladybug
-        self.assertEqual(player.team[2].health, 7) # 3 + sushi + seal + rabbit + ladybug
+        self.assertEqual(player.team[0].attack, 4)  # 3 + sushi
+        self.assertEqual(player.team[0].health, 10)  # 8 + sushi + rabbit
+        self.assertEqual(player.team[1].attack, 5)  # 3 + sushi + seal
+        self.assertEqual(player.team[1].health, 5)  # 2 + sushi + seal + rabbit
+        self.assertEqual(player.team[2].attack, 4)  # 1 + sushi + seal + ladybug
+        self.assertEqual(
+            player.team[2].health, 7
+        )  # 3 + sushi + seal + rabbit + ladybug
 
     def test_buy_multi_target_food_empty_team(self):
         player = Player(shop=["sushi"], team=[])
@@ -125,22 +128,22 @@ class TestShop(unittest.TestCase):
         player = Player(shop=["chocolate"], team=["seal", "rabbit", "ladybug"])
         player.buy_food(0, 0)
         self.assertEqual(player.team[0].pet.experience, 1)
-        self.assertEqual(player.team[0].attack, 3) # 3
-        self.assertEqual(player.team[0].health, 9) # 8 + rabbit
-        self.assertEqual(player.team[1].attack, 4) # 3 + seal
-        self.assertEqual(player.team[1].health, 3) # 2 + seal
-        self.assertEqual(player.team[2].attack, 3) # 1 + seal + ladybug
-        self.assertEqual(player.team[2].health, 5) # 3 + seal + ladybug
+        self.assertEqual(player.team[0].attack, 3)  # 3
+        self.assertEqual(player.team[0].health, 9)  # 8 + rabbit
+        self.assertEqual(player.team[1].attack, 4)  # 3 + seal
+        self.assertEqual(player.team[1].health, 3)  # 2 + seal
+        self.assertEqual(player.team[2].attack, 3)  # 1 + seal + ladybug
+        self.assertEqual(player.team[2].health, 5)  # 3 + seal + ladybug
 
     def test_buy_apple(self):
         player = Player(shop=["apple"], team=["seal", "rabbit", "ladybug"])
         player.buy_food(0, 0)
-        self.assertEqual(player.team[0].attack, 4) # 3 + apple
-        self.assertEqual(player.team[0].health, 10) # 8 + apple + rabbit
-        self.assertEqual(player.team[1].attack, 4) # 3 + seal
-        self.assertEqual(player.team[1].health, 3) # 2 + seal
-        self.assertEqual(player.team[2].attack, 3) # 1 + seal + ladybug
-        self.assertEqual(player.team[2].health, 5) # 3 + seal + ladybug
+        self.assertEqual(player.team[0].attack, 4)  # 3 + apple
+        self.assertEqual(player.team[0].health, 10)  # 8 + apple + rabbit
+        self.assertEqual(player.team[1].attack, 4)  # 3 + seal
+        self.assertEqual(player.team[1].health, 3)  # 2 + seal
+        self.assertEqual(player.team[2].attack, 3)  # 1 + seal + ladybug
+        self.assertEqual(player.team[2].health, 5)  # 3 + seal + ladybug
 
     def test_chicken(self):
         state = np.random.RandomState(seed=1).get_state()
@@ -151,18 +154,20 @@ class TestShop(unittest.TestCase):
 
         ### check result after 1 roll
         player.roll()
-        self.assertEqual(player.shop[0].item.attack, 3) # beaver 2/2
+        self.assertEqual(player.shop[0].item.attack, 3)  # beaver 2/2
         self.assertEqual(player.shop[0].item.health, 3)
 
         ### check result in a new turn
         player.end_turn()
         player.start_turn()
-        self.assertEqual(player.shop[0].item.attack, 2) # duck 1/3
+        self.assertEqual(player.shop[0].item.attack, 2)  # duck 1/3
         self.assertEqual(player.shop[0].item.health, 4)
 
     def test_canned_food(self):
         state = np.random.RandomState(seed=1).get_state()
-        player = Player(shop=Shop(["fish", "canned-food"], seed_state=state), team=["fish"])
+        player = Player(
+            shop=Shop(["fish", "canned-food"], seed_state=state), team=["fish"]
+        )
         player.buy_food(1)
 
         ### check immediate result
@@ -171,11 +176,11 @@ class TestShop(unittest.TestCase):
 
         ### check result after 1 roll
         player.roll()
-        self.assertEqual(player.shop[0].item.attack, 4) # beaver 2/2
+        self.assertEqual(player.shop[0].item.attack, 4)  # beaver 2/2
         self.assertEqual(player.shop[0].item.health, 3)
 
         ### check result in a new turn
         player.end_turn()
         player.start_turn()
-        self.assertEqual(player.shop[0].item.attack, 3) # duck 1/3
+        self.assertEqual(player.shop[0].item.attack, 3)  # duck 1/3
         self.assertEqual(player.shop[0].item.health, 4)

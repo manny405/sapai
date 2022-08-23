@@ -2,11 +2,10 @@ import unittest
 import numpy as np
 
 from sapai import *
-from sapai.compress import compress,decompress
+from sapai.compress import compress, decompress
 
 
 class TestSeeds(unittest.TestCase):
-
     def test_battle_reproducibility(self):
         state = np.random.RandomState(seed=4).get_state()
         state2 = np.random.RandomState(seed=4).get_state()

@@ -9,7 +9,6 @@ from sapai.graph import graph_battle
 
 
 class TestBattles(unittest.TestCase):
-
     def test_multi_hurt(self):
         t0 = Team(["badger", "camel", "fish"])
         t0[0].pet._health = 1
@@ -55,16 +54,14 @@ class TestBattles(unittest.TestCase):
 
         b = Battle(t0, t1)
         b.battle()
-        
-    
+
     def test_whale_without_swallow_target(self):
         team1 = Team([Pet("fish")])
         team2 = Team([Pet("whale"), Pet("hedgehog"), Pet("fish"), Pet("rabbit")])
 
         test_battle = Battle(team1, team2)
         test_battle.battle()
-        
-        
+
     def test_cat_battle(self):
         team1 = Team([Pet("fish")])
         team2 = Team([Pet("cat")])
@@ -72,15 +69,13 @@ class TestBattles(unittest.TestCase):
         test_battle = Battle(team1, team2)
         test_battle.battle()
 
-
     def test_multiple_hedgehog(self):
         team1 = Team([Pet("fish"), Pet("hedgehog")])
         team2 = Team([Pet("elephant"), Pet("hedgehog")])
 
         test_battle = Battle(team1, team2)
         test_battle.battle()
-    
-    
+
     def test_whale_parrot_swallow(self):
         team1 = Team([Pet("whale"), Pet("parrot")])
         team2 = Team([Pet("fish"), "dragon"])
@@ -97,7 +92,7 @@ class TestBattles(unittest.TestCase):
     def test_caterpillar_order_high_attack(self):
         cp = Pet("caterpillar")
         cp.level = 3
-        cp._attack = 5 # 1 more than dolphin
+        cp._attack = 5  # 1 more than dolphin
         cp._health = 7
         t = Team([cp, "dragon"])
         t2 = Team(["dolphin", "dragon"])
@@ -117,7 +112,7 @@ class TestBattles(unittest.TestCase):
         r = b.battle()
         # print(b.battle_history) # dolphin hits caterpillar, caterpillar evolves, copies dragon, win
         self.assertEqual(r, 0)
-    
+
     def test_dodo(self):
         dodo = Pet("dodo")
         dodo.level = 3
@@ -176,42 +171,44 @@ class TestBattles(unittest.TestCase):
         b1 = Pet("blowfish")
         b1._attack = 1
         b1._health = 50
-        
+
         b2 = Pet("blowfish")
         b2._attack = 1
         b2._health = 50
-        
+
         b = Battle(Team([b1]), Team([b2]))
         r = b.battle()
-        self.assertTrue("attack 1" not in b.battle_history) # they attack eachother, then keep using hurt_triggers until one of them dies, should never reach a 2nd attack phase
+        self.assertTrue(
+            "attack 1" not in b.battle_history
+        )  # they attack eachother, then keep using hurt_triggers until one of them dies, should never reach a 2nd attack phase
 
     def test_elephant_blowfish(self):
         # blowfish snipes first fish in 'before-attack' phase of elephant, leaving elephant without a target to attack normally
         # then snipes second fish in next turn's 'before attack'
         state = np.random.RandomState(seed=1).get_state()
-        
+
         e1 = Pet("elephant")
         e1._attack = 1
         e1._health = 5
-        
+
         b1 = Pet("blowfish", seed_state=state)
         b1._attack = 1
         b1._health = 5
-        
+
         f1 = Pet("fish")
         f1._attack = 50
         f1._health = 1
         f1.status = "status-splash-attack"
-        
+
         f2 = Pet("fish")
         f2._attack = 50
         f2._health = 1
         f2.status = "status-splash-attack"
-        
+
         b = Battle(Team([e1, b1]), Team([f1, f2]))
         r = b.battle()
         self.assertEqual(r, 0)
-    
+
     def test_hedgehog_blowfish_camel_hurt_team(self):
         # standard hedgehog blowfish camel teams facing off against eachother
         # lots of hurt triggers going off within one turn
@@ -251,7 +248,7 @@ class TestBattles(unittest.TestCase):
         b = Battle(Team([hh1, hh2, c1, bf1]), Team([hh3, hh4, c2, bf2]))
         r = b.battle()
         self.assertEqual(r, 2)
-    
+
     def test_hedgehog_vs_honey(self):
         hh1 = Pet("hedgehog")
         hh2 = Pet("hedgehog")
@@ -266,7 +263,7 @@ class TestBattles(unittest.TestCase):
         # ability triggers always go before status triggers
         # fish wins since honey bee spawns at the end of the turn, after all faint triggers are completed
         self.assertEqual(r, 1)
-    
+
     def test_hedgehog_vs_mushroom(self):
         hh1 = Pet("hedgehog")
         hh2 = Pet("hedgehog")
@@ -282,13 +279,13 @@ class TestBattles(unittest.TestCase):
         # fish wins since mushroom spawns at the end of the turn, after all faint triggers are completed
         self.assertEqual(r, 1)
 
-    def test_mushroom_scorpion(self):        
+    def test_mushroom_scorpion(self):
         scorpion = Pet("scorpion")
         scorpion.status = "status-extra-life"
         b = Battle(Team([scorpion]), Team(["dragon"]))
         r = b.battle()
-        self.assertEqual(r, 2) # draw since scorpion respawns with poison.
-    
+        self.assertEqual(r, 2)  # draw since scorpion respawns with poison.
+
     def test_badger_draws(self):
         # normal 1v1
         b1 = Pet("badger")
@@ -377,7 +374,7 @@ class TestBattles(unittest.TestCase):
         b = Battle(Team([hb1]), Team([c1]))
         r = b.battle()
         self.assertEqual(r, 0)
-    
+
     def test_rat_summons_at_front(self):
         team1 = Team(["rat", "blowfish"])
         fish = Pet("fish")
@@ -389,5 +386,6 @@ class TestBattles(unittest.TestCase):
         test_battle = Battle(team1, team2)
         result = test_battle.battle()
         self.assertEqual(result, 0)
+
 
 # %%

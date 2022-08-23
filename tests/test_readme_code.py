@@ -4,7 +4,6 @@ from sapai import *
 
 
 class TestReadMeCode(unittest.TestCase):
-
     def test_pet_creation(self):
         pet = Pet("ant")
         pet._attack += 3

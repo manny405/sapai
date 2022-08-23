@@ -7,7 +7,6 @@ from sapai.compress import *
 
 # TODO : In most tests, assert states are equal once `__eq__` is implemented for classes
 class TestState(unittest.TestCase):
-
     def test_pet_level_state(self):
         expected_level = 3
         p = Pet("ant")
@@ -53,6 +52,3 @@ class TestState(unittest.TestCase):
         expected = Player()
         compressed = compress(expected, minimal=True)
         actual = decompress(compressed)
-
-
-

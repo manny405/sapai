@@ -1,5 +1,3 @@
-
-
 #%%
 import numpy as np
 
@@ -8,29 +6,26 @@ from sapai.rand import MockRandomState
 
 #%%
 
-class Food():
-    def __init__(self, 
-                 name="food-none", 
-                 shop=None, 
-                 team=[],
-                 seed_state = None):
+
+class Food:
+    def __init__(self, name="food-none", shop=None, team=[], seed_state=None):
         """
         Food class definition the types of interactions that food undergoes
-        
+
         """
         if len(name) != 0:
             if not name.startswith("food-"):
                 name = "food-{}".format(name)
-            
+
         self.eaten = False
         self.shop = shop
-        
+
         self.seed_state = seed_state
         if self.seed_state != None:
             self.rs = np.random.RandomState()
             self.rs.set_state(self.seed_state)
         else:
-            ### Otherwise, set use 
+            ### Otherwise, set use
             self.rs = MockRandomState()
 
         self.attack = 0
@@ -41,19 +36,19 @@ class Food():
         self.status = "none"
         self.effect = "none"
         self.fd = {}
-            
+
         self.name = name
         if name not in data["foods"]:
             raise Exception("Food {} not found".format(name))
-        
+
         self.cost = 3
         item = data["foods"][name]
         if "cost" in item:
             self.cost = item["cost"]
-        
+
         fd = item["ability"]
         self.fd = fd
-        
+
         self.attack = 0
         self.health = 0
         self.effect = fd["effect"]
@@ -65,22 +60,23 @@ class Food():
             self.base_health = fd["effect"]["healthAmount"]
         if "status" in fd["effect"]:
             self.status = fd["effect"]["status"]
-        if "untilEndOfBattle" in fd["effect"] and fd["effect"]["untilEndOfBattle"] is True:
+        if (
+            "untilEndOfBattle" in fd["effect"]
+            and fd["effect"]["untilEndOfBattle"] is True
+        ):
             self.apply_until_end_of_battle = True
-            
-    
+
     def copy(self):
         copy_food = Food(self.name, self.shop)
-        for key,value in self.__dict__.items():
-            ### Although this approach will copy the internal dictionaries by 
-            ###   reference rather than copy by value, these dictionaries will 
-            ###   never be modified anyways. 
+        for key, value in self.__dict__.items():
+            ### Although this approach will copy the internal dictionaries by
+            ###   reference rather than copy by value, these dictionaries will
+            ###   never be modified anyways.
             ### All integers and strings are copied by value automatically with
             ###   Python, therefore, this achieves the correct behavior
             copy_food.__dict__[key] = value
         return copy_food
-    
-    
+
     @property
     def state(self):
         #### Ensure that state can be JSON serialized
@@ -99,11 +95,10 @@ class Food():
             "attack": self.attack,
             "health": self.health,
             "apply_until_end_of_battle": self.apply_until_end_of_battle,
-            "seed_state": seed_state
+            "seed_state": seed_state,
         }
         return state_dict
 
-    
     @classmethod
     def from_state(cls, state):
         food = cls(name=state["name"])
@@ -118,11 +113,11 @@ class Food():
                 food.rs = np.random.RandomState()
                 food.rs.set_state(state["seed_state"])
         return food
-    
-        
+
     def __repr__(self):
         return "< {} {}-{} {} >".format(
-            self.name, self.attack, self.health, self.status)
+            self.name, self.attack, self.health, self.status
+        )
 
-        
+
 # %%
