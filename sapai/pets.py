@@ -5,6 +5,7 @@ from sapai.data import data
 from sapai.effects import get_effect_function, RespawnPet, SummonPet, SummonRandomPet
 from sapai.tiers import pet_tier_lookup, pet_tier_lookup_std
 from sapai.rand import MockRandomState
+from sapai import status
 
 #%%
 
@@ -83,18 +84,14 @@ class Pet:
     def attack(self):
         if self._attack == "none":
             return self._attack
-        return min(self._attack + self._until_end_of_battle_attack_buff, 50)
+        return min(status.apply_attack_dict[self.status](self._attack + self._until_end_of_battle_attack_buff), 50)
 
     @property
     def health(self):
         if self._health == "none":
             return self._health
         return min(self._health + self._until_end_of_battle_health_buff, 50)
-
-    def hurt(self, value):
-        self._health -= value
-        self._hurt += 1
-
+    
     @property
     def ability(self):
         if self.override_ability:
@@ -103,6 +100,13 @@ class Pet:
             return self.fd["level{}Ability".format(self.level)]
         else:
             return empty_ability
+    
+    def get_damage(self,value):
+        return status.apply_damage_dict[self.status](value)
+
+    def hurt(self, value):
+        self._health -= value
+        self._hurt += 1
 
     def set_ability(self, ability_dict):
         self.override_ability = True
