@@ -14,6 +14,7 @@ from sapai.effects import (
 )
 from sapai import status
 
+
 class Battle:
     """
     Performs a battle.

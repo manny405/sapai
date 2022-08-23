@@ -1,36 +1,42 @@
-
 def apply_(value):
-    return max([value,0])
+    return max([value, 0])
+
 
 def apply_garlic_armor(value):
     if value > 0:
-        return max([value-2,1])
+        return max([value - 2, 1])
     else:
         return 0
 
+
 def apply_melon_armor(value):
-    return max([value-20,0])
+    return max([value - 20, 0])
+
 
 def apply_coconut_shield(value):
     return 0
 
+
 def apply_bone_attack(value):
     if value > 0:
-        return value+5
+        return value + 5
     else:
         return 0
+
 
 def apply_steak_attack(value):
     if value > 0:
-        return value+20
+        return value + 20
     else:
         return 0
 
+
 def apply_weak(value):
     if value > 0:
-        return value+3
+        return value + 3
     else:
         return 0
+
 
 def apply_poison_attack(value):
     if value > 0:
@@ -38,13 +44,16 @@ def apply_poison_attack(value):
     else:
         return 0
 
+
 def apply_splash_attack(value):
     return apply_(value)
 
-def apply_honey_bee(pet,team):
+
+def apply_honey_bee(pet, team):
     raise Exception("Not implemented")
 
-def apply_extra_life(pet,team):
+
+def apply_extra_life(pet, team):
     raise Exception("Not implemented")
 
 
