@@ -26,3 +26,4 @@ jobs:
         uses: wearerequired/lint-action@v2
         with:
           black: true
+          black_args: "sapai/*.py tests/*.py --check"
