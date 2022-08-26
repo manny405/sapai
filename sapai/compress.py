@@ -70,7 +70,7 @@ def minimal_state(obj):
     def minimal_shop_state(state):
         if "seed_state" in state:
             del state["seed_state"]
-        for shopslot_state in state["shop_slots"]:
+        for shopslot_state in state["slots"]:
             if "seed_state" in shopslot_state:
                 del shopslot_state["seed_state"]
             minimal_pet_state(shopslot_state["item"])

@@ -139,7 +139,7 @@ class Player:
             raise Exception("Attempted to buy_pet using object {}".format(pet))
 
         shop_idx = self.shop.index(pet)
-        shop_slot = self.shop.shop_slots[shop_idx]
+        shop_slot = self.shop.slots[shop_idx]
         cost = shop_slot.cost
 
         if cost > self.gold:
@@ -202,7 +202,7 @@ class Player:
             targets = [team_pet]
 
         shop_idx = self.shop.index(food)
-        shop_slot = self.shop.shop_slots[shop_idx]
+        shop_slot = self.shop.slots[shop_idx]
         cost = shop_slot.cost
 
         if cost > self.gold:
@@ -383,7 +383,7 @@ class Player:
             shop_idx = self.shop.index(obj)
         elif type(obj) == int:
             shop_idx = obj
-        shop_slot = self.shop.shop_slots[shop_idx]
+        shop_slot = self.shop.slots[shop_idx]
         shop_slot.freeze()
         return (shop_slot,)
 
@@ -394,7 +394,7 @@ class Player:
             shop_idx = self.shop.index(obj)
         elif type(obj) == int:
             shop_idx = obj
-        shop_slot = self.shop.shop_slots[shop_idx]
+        shop_slot = self.shop.slots[shop_idx]
         shop_slot.unfreeze()
         return (shop_slot,)
 
@@ -463,7 +463,7 @@ class Player:
             )
 
         shop_idx = self.shop.index(shop_pet)
-        shop_slot = self.shop.shop_slots[shop_idx]
+        shop_slot = self.shop.slots[shop_idx]
         cost = shop_slot.cost
 
         if cost > self.gold:

@@ -5,7 +5,7 @@ from sapai.pets import Pet
 from sapai.lists import Slot, SAPList
 
 
-class Team:
+class Team(SAPList):
     """
     Defines a team class.
 
@@ -19,20 +19,18 @@ class Team:
 
     def __init__(
         self,
-        obj_list=[],
+        slots=[],
         battle=False,
         shop=None,
         player=None,
         pack="StandardPack",
         seed_state=None,
     ):
+        super().__init__(slots, 5, slot_class=TeamSlot)
         self._battle = battle
-        self.max_slots = 5
         self.seed_state = seed_state
-        self.team = [
-            TeamSlot(seed_state=self.seed_state) for x in range(self.max_slots)
-        ]
-        for iter_idx, obj in enumerate(obj_list):
+        self.team = [TeamSlot(seed_state=self.seed_state) for x in range(self.nslots)]
+        for iter_idx, obj in enumerate(slots):
             self[iter_idx] = obj
             self[iter_idx]._pet.team = self
         self.player = player
@@ -267,6 +265,9 @@ class Team:
     def battle(self):
         return self._battle
 
+    def __iter__(self):
+        yield from self.team
+
     def __len__(self):
         count = 0
         for temp_slot in self.team:
@@ -319,7 +320,7 @@ class Team:
     def from_state(cls, state):
         team = [TeamSlot.from_state(x) for x in state["team"]]
         return cls(
-            obj_list=team,
+            slots=team,
             battle=state["battle"],
             shop=None,
             player=None,

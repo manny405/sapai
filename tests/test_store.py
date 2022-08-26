@@ -1,3 +1,4 @@
+#%%
 import unittest
 
 from sapai import *
@@ -184,3 +185,6 @@ class TestShop(unittest.TestCase):
         player.start_turn()
         self.assertEqual(player.shop[0].item.attack, 3)  # duck 1/3
         self.assertEqual(player.shop[0].item.health, 4)
+
+
+# %%

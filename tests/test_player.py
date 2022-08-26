@@ -1,3 +1,4 @@
+#%%
 import unittest
 
 from sapai import *
@@ -109,3 +110,6 @@ class TestPlayer(unittest.TestCase):
             pack=self.pack,
         )
         player.buy_food(player.shop[-1], player.team[1])
+
+
+# %%

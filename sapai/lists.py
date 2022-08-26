@@ -29,7 +29,7 @@ class Slot:
     @obj.setter
     def obj(self, obj):
         if obj != None:
-            if type(obj).__name__ == "Slot":
+            if isinstance(obj, type(self)):
                 obj = obj.obj
             if (
                 not hasattr(obj, "state")
@@ -121,9 +121,9 @@ class SAPList:
     @slots.setter
     def slots(self, objs):
         if isinstance(objs, Iterable):
-            self._slots = [Slot(x) for x in objs]
+            self._slots = [self.slot_class(x) for x in objs]
         else:
-            self._slots = [Slot(objs)]
+            self._slots = [self.slot_class(objs)]
         if self.nslots != None:
             self.nslots = self._nslots
 
