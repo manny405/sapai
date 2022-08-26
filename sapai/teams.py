@@ -2,6 +2,7 @@
 import numpy
 
 from sapai.pets import Pet
+from sapai.lists import Slot, SAPList
 
 
 class Team:
@@ -326,7 +327,7 @@ class Team:
         )
 
 
-class TeamSlot:
+class TeamSlot(Slot):
     def __init__(self, obj=None, seed_state=None):
         self.seed_state = seed_state
         if type(obj).__name__ == "Pet":

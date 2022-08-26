@@ -12,7 +12,7 @@ def compress(obj, minimal=False):
     """
     state = getattr(obj, "state", False)
     if not state:
-        raise Exception("No state found for obj {}".format(obj))
+        raise Exception("No state method found for obj {}".format(obj))
     if minimal == True:
         state = minimal_state(obj)
     json_str = json.dumps(state)
@@ -27,9 +27,13 @@ def decompress(compressed_str):
     """
     state_str = zlib.decompress(compressed_str).decode()
     state_dict = json.loads(state_str)
-    obj_type = state_dict["type"]
+    return state2obj(state_dict)
+
+
+def state2obj(state):
+    obj_type = state["type"]
     obj_cls = getattr(sapai, obj_type)
-    obj = obj_cls.from_state(state_dict)
+    obj = obj_cls.from_state(state)
     return obj
 
 

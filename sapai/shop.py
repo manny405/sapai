@@ -2,7 +2,9 @@
 
 from random import seed
 import numpy as np
+
 from sapai.data import data
+from sapai.lists import Slot, SAPList
 from sapai.foods import Food
 from sapai.pets import Pet
 import sapai.foods
