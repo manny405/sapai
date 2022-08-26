@@ -421,5 +421,6 @@ class SAPList:
         Build a SlotList from the given state dictionary
         """
         from sapai.compress import state2obj
+
         slots = [state2obj(x) for x in state["slots"]]
         return cls(slots, nslots=state["nslots"])
