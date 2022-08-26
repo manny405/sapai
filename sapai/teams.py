@@ -332,52 +332,56 @@ class TeamSlot(Slot):
     def __init__(self, obj=None, seed_state=None):
         self.seed_state = seed_state
         if type(obj).__name__ == "Pet":
-            self._pet = obj
+            self.obj = obj
         elif type(obj).__name__ == "TeamSlot":
-            self._pet = obj.pet
+            self.obj = obj.pet
         elif type(obj).__name__ == "NoneType":
-            self._pet = Pet(seed_state=self.seed_state)
+            self.obj = Pet(seed_state=self.seed_state)
         elif type(obj) == str or type(obj) == numpy.str_:
-            self._pet = Pet(obj, seed_state=self.seed_state)
+            self.obj = Pet(obj, seed_state=self.seed_state)
         else:
             raise Exception(
                 "Tried initalizing TeamSlot with type {}".format(type(obj).__name__)
             )
 
     @property
+    def _pet(self):
+        return self._obj
+
+    @property
     def pet(self):
-        return self._pet
+        return self.obj
 
     @property
     def empty(self):
-        return self._pet.name == "pet-none"
+        return self.obj.name == "pet-none"
 
     @property
     def attack(self):
-        return self._pet.attack
+        return self.obj.attack
 
     @property
     def health(self):
-        return self._pet.health
+        return self.obj.health
 
     @property
     def ability(self):
-        return self._pet.ability
+        return self.obj.ability
 
     @property
     def level(self):
-        return self._pet.level
+        return self.obj.level
 
     def __repr__(self):
-        if self._pet.name == "pet-none":
+        if self.obj.name == "pet-none":
             return "< Slot EMPTY >"
         else:
-            pet_repr = str(self._pet)
+            pet_repr = str(self.obj)
             pet_repr = pet_repr[2:-2]
             return "< Slot {} >".format(pet_repr)
 
     def copy(self):
-        return TeamSlot(self._pet.copy(), seed_state=self.seed_state)
+        return TeamSlot(self.obj.copy(), seed_state=self.seed_state)
 
     @property
     def state(self):
@@ -385,7 +389,7 @@ class TeamSlot(Slot):
         ###   seed_state is stored by pets
         state_dict = {
             "type": "TeamSlot",
-            "pet": self._pet.state,
+            "pet": self.obj.state,
         }
         return state_dict
 
