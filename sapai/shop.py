@@ -527,7 +527,7 @@ class ShopLearn(Shop):
         self.nlevelup_bought = 0
         self.shop_names = {}
         super().__init__(*args, **kwargs)
-        self.nslots = int(1e6)
+        self.nslots = len(self.avail_pets) + len(self.avail_foods)
 
     def roll(self):
         ### Reset npet_bought and nfood_bough upon rolling
@@ -579,7 +579,7 @@ class ShopLearn(Shop):
         ### Rebuild ShopLearn to remove all levelup ShopSlots
         self.update_shop_rules()
 
-    def update_shop_rules(self, turn=-1):
+    def update_shop_rules(self, turn=-1, roll_only_empty=True):
         """
         Rebuilds ShopLearn using all Pets and Foods available for the givne turn
 

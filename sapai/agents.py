@@ -1,3 +1,5 @@
+#%%
+
 import os, json, zlib, itertools, torch
 import numpy as np
 from sapai import Player
@@ -90,7 +92,8 @@ class CombinatorialSearch:
         if len(player.team) == 5:
             ### Cannot buy for full team
             return action_list
-        for shop_idx, shop_slot in enumerate(player.shop):
+        for shop_idx in player.shop.filled:
+            shop_slot = player.shop[shop_idx]
             if shop_slot.slot_type == "pet":
                 if shop_slot.cost <= gold:
                     action_list.append((player.buy_pet, shop_idx))
@@ -104,7 +107,8 @@ class CombinatorialSearch:
         gold = player.gold
         if len(player.team) == 0:
             return action_list
-        for shop_idx, shop_slot in enumerate(player.shop):
+        for shop_idx in player.shop.filled:
+            shop_slot = player.shop[shop_idx]
             if shop_slot.slot_type == "food":
                 if shop_slot.cost <= gold:
                     for team_idx, team_slot in enumerate(player.team):
@@ -125,14 +129,15 @@ class CombinatorialSearch:
             team_names[slot.pet.name].append(team_idx)
         if len(player.team) == 0:
             return action_list
-        for shop_idx, shop_slot in enumerate(player.shop):
+        for shop_idx in player.shop.filled:
+            shop_slot = player.shop[shop_idx]
             if shop_slot.slot_type == "pet":
                 ### Can't combine if pet not already on team
-                if shop_slot.item.name not in team_names:
+                if shop_slot.obj.name not in team_names:
                     continue
 
                 if shop_slot.cost <= gold:
-                    for team_idx in team_names[shop_slot.item.name]:
+                    for team_idx in team_names[shop_slot.obj.name]:
                         action_list.append((player.buy_combine, shop_idx, team_idx))
         return action_list
 
@@ -182,7 +187,8 @@ class CombinatorialSearch:
             return action_list
         team_idx_list = player.team.get_fidx()
         shop_idx_list = []
-        for shop_idx, shop_slot in enumerate(player.shop):
+        for shop_idx in player.shop.filled:
+            shop_slot = player.shop[shop_idx]
             if shop_slot.slot_type == "pet":
                 if shop_slot.cost <= gold:
                     shop_idx_list.append(shop_idx)
@@ -667,3 +673,6 @@ class PairwiseBattles:
         """
         idx = np.triu_indices(n=len(team_list), k=1, m=len(team_list))
         return np.array([x for x in zip(idx[0], idx[1])])
+
+
+# %%
