@@ -97,8 +97,8 @@ class Player:
             slot._pet.shop = self.shop
 
         for slot in self.shop:
-            slot.item.player = self
-            slot.item.shop = self.shop
+            slot.obj.player = self
+            slot.obj.shop = self.shop
 
         ### This stores the history of actions taken by the given player
         if len(action_history) == 0:
@@ -133,7 +133,7 @@ class Player:
             pet = self.shop[pet]
 
         if type(pet).__name__ == "ShopSlot":
-            pet = pet.item
+            pet = pet.obj
 
         if type(pet).__name__ != "Pet":
             raise Exception("Attempted to buy_pet using object {}".format(pet))
@@ -182,7 +182,7 @@ class Player:
             if food.slot_type != "food":
                 raise Exception("Shop slot not food")
         if type(food).__name__ == "ShopSlot":
-            food = food.item
+            food = food.obj
         if type(food).__name__ != "Food":
             raise Exception("Attempted to buy_food using object {}".format(food))
 
@@ -359,7 +359,7 @@ class Player:
             team_pet = self.team[team_pet]
 
         if type(shop_pet).__name__ == "ShopSlot":
-            shop_pet = shop_pet.item
+            shop_pet = shop_pet.obj
         if type(team_pet).__name__ == "TeamSlot":
             team_pet = team_pet._pet
 
@@ -379,7 +379,7 @@ class Player:
     def freeze(self, obj):
         """Freeze one pet or food in the shop"""
         if type(obj).__name__ == "ShopSlot":
-            obj = obj.item
+            obj = obj.obj
             shop_idx = self.shop.index(obj)
         elif type(obj) == int:
             shop_idx = obj
@@ -390,7 +390,7 @@ class Player:
     def unfreeze(self, obj):
         """Unfreeze one pet or food in the shop"""
         if type(obj).__name__ == "ShopSlot":
-            obj = obj.item
+            obj = obj.obj
             shop_idx = self.shop.index(obj)
         elif type(obj) == int:
             shop_idx = obj
@@ -447,7 +447,7 @@ class Player:
             team_pet = self.team[team_pet]
 
         if type(shop_pet).__name__ == "ShopSlot":
-            shop_pet = shop_pet.item
+            shop_pet = shop_pet.obj
         if type(team_pet).__name__ == "TeamSlot":
             team_pet = team_pet._pet
 

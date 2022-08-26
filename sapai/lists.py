@@ -1,3 +1,4 @@
+from functools import partial
 from collections.abc import Iterable
 import numpy as np
 
@@ -120,10 +121,25 @@ class SAPList:
 
     @slots.setter
     def slots(self, objs):
-        if isinstance(objs, Iterable):
-            self._slots = [self.slot_class(x) for x in objs]
+        if isinstance(self.slot_class, partial):
+            test_type = self.slot_class.func
         else:
-            self._slots = [self.slot_class(objs)]
+            test_type = self.slot_class
+        if isinstance(objs, Iterable):
+            temp_slots = []
+            for obj in objs:
+                if not isinstance(obj, test_type):
+                    temp_slots.append(self.slot_class(obj))
+                else:
+                    temp_slots.append(obj)
+            self._slots = temp_slots
+        else:
+            temp_slots = []
+            if not isinstance(objs, test_type):
+                temp_slots.append(self.slot_class(objs))
+            else:
+                temp_slots.append(objs)
+            self._slots = temp_slots
         if self.nslots != None:
             self.nslots = self._nslots
 
@@ -144,8 +160,8 @@ class SAPList:
             return
         if not isinstance(length, (int, np.integer)):
             raise Exception(f"SAPList nslots must be int, given {type(length)}")
-        if length < 1:
-            raise Exception(f"SAPList nslots must be greater than 0, given {length}")
+        if length < 0:
+            raise Exception(f"SAPList nslots must be 0 or greater, given {length}")
         self._nslots = int(self._nslots)
         if len(self._slots) < self.nslots:
             [

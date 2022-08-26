@@ -41,6 +41,7 @@ class TestSeeds(unittest.TestCase):
     def test_shop_reproducibility(self):
         state = np.random.RandomState(seed=20).get_state()
         s = Shop(turn=11, seed_state=state)
+        # ref_init_state = s.state
 
         # Setup solution
         shop_check_list = []
@@ -48,7 +49,7 @@ class TestSeeds(unittest.TestCase):
         for i in range(10):
             names = []
             for slot in s:
-                names.append(slot.item.name)
+                names.append(slot.obj.name)
             names = tuple(names)
             shop_check_list.append(names)
             s.roll()
@@ -61,7 +62,7 @@ class TestSeeds(unittest.TestCase):
             for i in range(10):
                 names = []
                 for slot in s:
-                    names.append(slot.item.name)
+                    names.append(slot.obj.name)
                 names = tuple(names)
                 temp_check_list.append(names)
                 s.roll()
@@ -70,12 +71,19 @@ class TestSeeds(unittest.TestCase):
         for i in range(10):
             s = Shop(turn=11, seed_state=state)
             s = decompress(compress(s))
+            # self.assertEqual(s.state, ref_init_state)
             temp_check_list = []
             for i in range(10):
                 names = []
                 for slot in s:
-                    names.append(slot.item.name)
+                    names.append(slot.obj.name)
                 names = tuple(names)
                 temp_check_list.append(names)
                 s.roll()
             self.assertEqual(tuple(temp_check_list), shop_check_list)
+
+
+# from sapai.compress import compress, decompress
+# state = np.random.RandomState(seed=20).get_state()
+# s = Shop(turn=11, seed_state=state)
+# test_s = decompress(compress(s))
