@@ -1,3 +1,4 @@
+#%%
 import unittest
 import numpy as np
 from torch import seed
@@ -164,7 +165,7 @@ class TestPetTriggers(unittest.TestCase):
         self.print_pet_list(test_pet_list)
 
         # Buy friend as self
-        test_bool_list = [True, True, True, False, False, True, False, False]
+        test_bool_list = [True, False, True, False, False, True, False, False]
         for iter_idx, pet in enumerate(test_pet_list):
             activated_bool, targets, possible = pet.buy_friend_trigger(pet)
             if pet.name == "pet-snail":
@@ -395,6 +396,7 @@ class TestPetTriggers(unittest.TestCase):
         test_pet_names = [
             "mosquito",
             "bat",
+            "crab",
             "whale",
             "dolphin",
             "skunk",
@@ -496,13 +498,13 @@ class TestPetTriggers(unittest.TestCase):
     def test_dragon_ability(self):
         player = Player(shop=Shop(["ant"]), team=Team([Pet("fish"), Pet("dragon")]))
         self.assertEqual(player.team[0].attack, 2)
-        self.assertEqual(player.team[0].health, 3)
+        self.assertEqual(player.team[0].health, 2)
         self.assertEqual(player.team[1].attack, 6)
         self.assertEqual(player.team[1].health, 8)
 
         player.buy_pet(0)
         self.assertEqual(player.team[0].attack, 3)
-        self.assertEqual(player.team[0].health, 4)
+        self.assertEqual(player.team[0].health, 3)
         self.assertEqual(player.team[1].attack, 6)
         self.assertEqual(player.team[1].health, 8)
 
@@ -530,23 +532,30 @@ class TestPetTriggers(unittest.TestCase):
         )
 
     def test_crab(self):
-        dragon = Pet("dragon")
-        player = Player(shop=Shop(["crab"]), team=Team([dragon]))
-        player.buy_pet(0)
-        self.assertEqual(player.team[1].pet.health, dragon.health)
+        t = Team(["crab", "dragon"])
+        activated_bool, targets, possible = t[0].obj.sob_trigger(t)
+        self.assertEqual(t[0].health, 4)
+
+        t[0].obj.level = 2
+        activated_bool, targets, possible = t[0].obj.sob_trigger(t)
+        self.assertEqual(t[0].health, 8)
+
+        t[0].obj.level = 3
+        activated_bool, targets, possible = t[0].obj.sob_trigger(t)
+        self.assertEqual(t[0].health, 12)
 
     def test_horse(self):
         player = Player(shop=Shop(["fish"]), team=Team([Pet("horse")]))
 
         player.buy_pet(0)
         self.assertEqual(player.team[1].attack, 3)
-        self.assertEqual(player.team[1].health, 3)
+        self.assertEqual(player.team[1].health, 2)
 
         player.end_turn()
         player.start_turn()
 
         self.assertEqual(player.team[1].attack, 2)
-        self.assertEqual(player.team[1].health, 3)
+        self.assertEqual(player.team[1].health, 2)
 
     def test_cupcake_cat(self):
         player = Player(shop=Shop(["cupcake"]), team=Team([Pet("cat")]))
@@ -566,19 +575,19 @@ class TestPetTriggers(unittest.TestCase):
             shop=Shop(["sleeping-pill"]), team=Team([Pet("ant"), Pet("beaver")])
         )
         player.buy_food(0, 0)
-        self.assertEqual(player.team[1].attack, 4)
+        self.assertEqual(player.team[1].attack, 5)
         self.assertEqual(player.team[1].health, 3)
 
     def test_beaver_sell(self):
         player = Player(team=Team([Pet("beaver"), Pet("fish"), Pet("fish")]))
         player.sell(0)
-        self.assertEqual(player.team[1].health, 4)
-        self.assertEqual(player.team[2].health, 4)
+        self.assertEqual(player.team[1].health, 3)
+        self.assertEqual(player.team[2].health, 3)
 
     def test_beaver_sell_only_one_other_pet_on_team(self):
         player = Player(team=Team([Pet("fish"), Pet("beaver")]))
         player.sell(1)
-        self.assertEqual(player.team[0].health, 4)
+        self.assertEqual(player.team[0].health, 3)
 
     def test_cricket_pill_in_shop(self):
         player = Player(shop=Shop(["sleeping-pill"]), team=Team([Pet("cricket")]))
@@ -601,15 +610,15 @@ class TestPetTriggers(unittest.TestCase):
         )
         player.buy_combine(0, 0)
         self.assertEqual(player.team[0].pet.level, 2)
-        self.assertEqual(player.team[1].attack, 3)
+        self.assertEqual(player.team[1].attack, 4)
         self.assertEqual(player.team[1].health, 3)
-        self.assertEqual(player.team[2].attack, 3)
+        self.assertEqual(player.team[2].attack, 4)
         self.assertEqual(player.team[2].health, 3)
 
     def test_otter(self):
         player = Player(shop=Shop(["otter"]), team=Team([Pet("beaver")]))
         player.buy_pet(0)
-        self.assertEqual(player.team[0].attack, 3)
+        self.assertEqual(player.team[0].attack, 4)
         self.assertEqual(player.team[0].health, 3)
         self.assertEqual(player.team[1].attack, 1)
         self.assertEqual(player.team[1].health, 2)
@@ -622,11 +631,35 @@ class TestPetTriggers(unittest.TestCase):
 
     def test_buy_otter_on_level_up(self):
         otter = Pet("otter")
-        otter.experience = 1
         player = Player(shop=Shop(["otter"]), team=Team([otter, Pet("beaver")]))
         player.buy_combine(0, 0)
         self.assertEqual(player.team[1].attack, 4)
-        self.assertEqual(player.team[1].health, 4)
+        self.assertEqual(player.team[1].health, 3)
+
+        otter = Pet("otter")
+        otter.experience = 1
+        player = Player(
+            shop=Shop(["otter"]), team=Team([otter, Pet("beaver"), Pet("fish")])
+        )
+        player.buy_combine(0, 0)
+        self.assertEqual(player.team[1].attack, 4)
+        self.assertEqual(player.team[1].health, 3)
+        self.assertEqual(player.team[2].attack, 3)
+        self.assertEqual(player.team[2].health, 3)
+
+        otter = Pet("otter")
+        otter.experience = 4
+        player = Player(
+            shop=Shop(["otter"]),
+            team=Team([otter, Pet("beaver"), Pet("fish"), Pet("ant")]),
+        )
+        player.buy_combine(0, 0)
+        self.assertEqual(player.team[1].attack, 4)
+        self.assertEqual(player.team[1].health, 3)
+        self.assertEqual(player.team[2].attack, 3)
+        self.assertEqual(player.team[2].health, 3)
+        self.assertEqual(player.team[3].attack, 3)
+        self.assertEqual(player.team[3].health, 2)
 
     def test_pig(self):
         player = Player(team=Team([Pet("pig")]))
@@ -710,3 +743,102 @@ class TestPetTriggers(unittest.TestCase):
         self.assertEqual(
             player.team[0].pet.name, "pet-zombie-fly"
         )  # zombie fly spawned in front of fly, not on fainted target location
+
+    def test_flamingo(self):
+        t = Team(["flamingo", "dragon", "dragon", "dragon"])
+        t[0].obj.level = 1
+        pet = t[0].obj
+        te_idx = [0, 0]
+        t[0].obj.faint_trigger(pet, te_idx)
+        self.assertEqual(t[1].attack, 6 + 1)
+        self.assertEqual(t[1].health, 8 + 1)
+        self.assertEqual(t[2].attack, 6 + 1)
+        self.assertEqual(t[2].health, 8 + 1)
+        self.assertEqual(t[3].attack, 6)
+        self.assertEqual(t[3].health, 8)
+
+        t = Team(["flamingo", "dragon", "dragon", "dragon"])
+        t[0].obj.level = 2
+        pet = t[0].obj
+        te_idx = [0, 0]
+        t[0].obj.faint_trigger(pet, te_idx)
+        self.assertEqual(t[1].attack, 6 + 2)
+        self.assertEqual(t[1].health, 8 + 2)
+        self.assertEqual(t[2].attack, 6 + 2)
+        self.assertEqual(t[2].health, 8 + 2)
+        self.assertEqual(t[3].attack, 6)
+        self.assertEqual(t[3].health, 8)
+
+        t = Team(["flamingo", "dragon", "dragon", "dragon"])
+        t[0].obj.level = 3
+        pet = t[0].obj
+        te_idx = [0, 0]
+        t[0].obj.faint_trigger(pet, te_idx)
+        self.assertEqual(t[1].attack, 6 + 3)
+        self.assertEqual(t[1].health, 8 + 3)
+        self.assertEqual(t[2].attack, 6 + 3)
+        self.assertEqual(t[2].health, 8 + 3)
+        self.assertEqual(t[3].attack, 6)
+        self.assertEqual(t[3].health, 8)
+
+    def test_peacock(self):
+        t = Team(["peacock"])
+        enemy = Team(["fish"])
+        t[0].obj.level = 1
+        t[0].obj.hurt(1)
+        t[0].obj.hurt_trigger(enemy)
+        self.assertEqual(t[0].attack, 6)
+
+        t = Team(["peacock"])
+        enemy = Team(["fish"])
+        t[0].obj.level = 2
+        t[0].obj.hurt(1)
+        t[0].obj.hurt_trigger(enemy)
+        self.assertEqual(t[0].attack, 10)
+
+        t = Team(["peacock"])
+        enemy = Team(["fish"])
+        t[0].obj.level = 3
+        t[0].obj.hurt(1)
+        t[0].obj.hurt_trigger(enemy)
+        self.assertEqual(t[0].attack, 14)
+
+    def test_badger(self):
+        t = Team(["badger", "dragon"])
+        pet = t[0].obj
+        ally = t[1].obj
+        other_team = Team(["fish"])
+        enemy = other_team[0].obj
+        t[0].obj.level = 1
+        t[0].obj.hurt(3)
+        t[0].obj.faint_trigger(t[0].obj, [0, 0], other_team)
+        self.assertEqual(pet.health, 0)
+        self.assertEqual(ally.health, 8 - 2)
+        self.assertEqual(enemy.health, 2 - 2)
+
+        t = Team(["badger", "dragon"])
+        pet = t[0].obj
+        ally = t[1].obj
+        other_team = Team(["fish"])
+        enemy = other_team[0].obj
+        t[0].obj.level = 2
+        t[0].obj.hurt(3)
+        t[0].obj.faint_trigger(t[0].obj, [0, 0], other_team)
+        self.assertEqual(pet.health, 0)
+        self.assertEqual(ally.health, 8 - 5)
+        self.assertEqual(enemy.health, 2 - 5)
+
+        t = Team(["badger", "dragon"])
+        pet = t[0].obj
+        ally = t[1].obj
+        other_team = Team(["fish"])
+        enemy = other_team[0].obj
+        t[0].obj.level = 3
+        t[0].obj.hurt(3)
+        t[0].obj.faint_trigger(t[0].obj, [0, 0], other_team)
+        self.assertEqual(pet.health, 0)
+        self.assertEqual(ally.health, 8 - 7)
+        self.assertEqual(enemy.health, 2 - 7)
+
+
+# %%

@@ -29,7 +29,7 @@ class Team(SAPList):
         super().__init__(slots, 5, slot_class=TeamSlot)
         self._battle = battle
         self.seed_state = seed_state
-        self.team = [TeamSlot(seed_state=self.seed_state) for x in range(self.nslots)]
+        self.slots = [TeamSlot(seed_state=self.seed_state) for x in range(self.nslots)]
         for iter_idx, obj in enumerate(slots):
             self[iter_idx] = obj
             self[iter_idx]._pet.team = self
@@ -121,40 +121,40 @@ class Team(SAPList):
 
     def remove(self, obj):
         if type(obj) == int:
-            self.team[obj] = TeamSlot(seed_state=self.seed_state)
+            self.slots[obj] = TeamSlot(seed_state=self.seed_state)
         elif type(obj).__name__ == "TeamSlot":
             found = False
-            for iter_idx, temp_slot in enumerate(self.team):
+            for iter_idx, temp_slot in enumerate(self.slots):
                 if temp_slot == obj:
                     found_idx = iter_idx
                     found = True
             if not found:
                 raise Exception("Remove {} not found".format(obj))
-            self.team[found_idx] = TeamSlot(seed_state=self.seed_state)
+            self.slots[found_idx] = TeamSlot(seed_state=self.seed_state)
         elif type(obj).__name__ == "Pet":
             found = False
-            for iter_idx, temp_slot in enumerate(self.team):
+            for iter_idx, temp_slot in enumerate(self.slots):
                 temp_pet = temp_slot.pet
                 if temp_pet == obj:
                     found_idx = iter_idx
                     found = True
             if not found:
                 raise Exception("Remove {} not found".format(obj))
-            self.team[found_idx] = TeamSlot(seed_state=self.seed_state)
+            self.slots[found_idx] = TeamSlot(seed_state=self.seed_state)
         else:
             raise Exception("Object of type {} not recognized".format(type(obj)))
 
     def check_friend(self, obj):
         if type(obj).__name__ == "TeamSlot":
             found = False
-            for iter_idx, temp_slot in enumerate(self.team):
+            for iter_idx, temp_slot in enumerate(self.slots):
                 if temp_slot == obj:
                     found_idx = iter_idx
                     found = True
             return found
         elif type(obj).__name__ == "Pet":
             found = False
-            for iter_idx, temp_slot in enumerate(self.team):
+            for iter_idx, temp_slot in enumerate(self.slots):
                 temp_pet = temp_slot.pet
                 if temp_pet == obj:
                     found_idx = iter_idx
@@ -166,7 +166,7 @@ class Team(SAPList):
     def get_idx(self, obj):
         if type(obj).__name__ == "TeamSlot":
             found = False
-            for iter_idx, temp_slot in enumerate(self.team):
+            for iter_idx, temp_slot in enumerate(self.slots):
                 if temp_slot == obj:
                     found_idx = iter_idx
                     found = True
@@ -175,7 +175,7 @@ class Team(SAPList):
             return found_idx
         elif type(obj).__name__ == "Pet":
             found = False
-            for iter_idx, temp_slot in enumerate(self.team):
+            for iter_idx, temp_slot in enumerate(self.slots):
                 temp_pet = temp_slot.pet
                 if temp_pet == obj:
                     found_idx = iter_idx
@@ -233,7 +233,7 @@ class Team(SAPList):
         chosen = []
         for temp_idx in fidx:
             if temp_idx > pet_idx:
-                chosen.append(self.team[temp_idx])
+                chosen.append(self.slots[temp_idx])
         return chosen[0:n]
 
     def get_empty(self):
@@ -246,15 +246,15 @@ class Team(SAPList):
     def append(self, obj):
         obj = TeamSlot(obj, seed_state=self.seed_state)
         n = len(self)
-        if n == len(self.team):
+        if n == len(self.slots):
             raise Exception("Attempted to append to a full team")
         empty_idx = self.get_empty()
         if len(empty_idx) == 0:
             raise Exception("This should not be possible")
-        self.team[empty_idx[0]] = obj
+        self.slots[empty_idx[0]] = obj
 
     def check_lvl3(self):
-        for slot in self.team:
+        for slot in self.slots:
             if slot.empty:
                 continue
             if slot.pet.level == 3:
@@ -266,25 +266,25 @@ class Team(SAPList):
         return self._battle
 
     def __iter__(self):
-        yield from self.team
+        yield from self.slots
 
     def __len__(self):
         count = 0
-        for temp_slot in self.team:
+        for temp_slot in self.slots:
             if not temp_slot.empty:
                 count += 1
         return count
 
     def __getitem__(self, idx):
-        return self.team[idx]
+        return self.slots[idx]
 
     def __setitem__(self, idx, obj):
         if type(obj).__name__ == "Pet":
-            self.team[idx] = TeamSlot(obj, seed_state=self.seed_state)
+            self.slots[idx] = TeamSlot(obj, seed_state=self.seed_state)
         elif type(obj).__name__ == "TeamSlot":
-            self.team[idx] = obj
+            self.slots[idx] = obj
         elif type(obj) == str or type(obj) == numpy.str_:
-            self.team[idx] = TeamSlot(obj, seed_state=self.seed_state)
+            self.slots[idx] = TeamSlot(obj, seed_state=self.seed_state)
         else:
             raise Exception(
                 "Tried setting a team slot with type {}".format(type(obj).__name__)
@@ -292,7 +292,7 @@ class Team(SAPList):
 
     def __repr__(self):
         repr_str = ""
-        for iter_idx, slot in enumerate(self.team):
+        for iter_idx, slot in enumerate(self.slots):
             repr_str += "{}: {} \n    ".format(iter_idx, slot)
         return repr_str
 
@@ -311,7 +311,7 @@ class Team(SAPList):
         state_dict = {
             "type": "Team",
             "battle": self.battle,
-            "team": [x.state for x in self.team],
+            "team": [x.state for x in self.slots],
             "pack": self.pack,
         }
         return state_dict

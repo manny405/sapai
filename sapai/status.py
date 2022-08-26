@@ -19,7 +19,7 @@ def apply_coconut_shield(value):
 
 def apply_bone_attack(value):
     if value > 0:
-        return value + 5
+        return value + 4
     else:
         return 0
 

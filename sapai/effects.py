@@ -1074,9 +1074,9 @@ def TransferStats(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
             ###   that have this ability
             temp_from = temp_from[0][0]
             if copy_attack:
-                apet._attack = temp_from.attack
+                apet._attack = int(temp_from.attack * percentage)
             if copy_health:
-                apet._health = temp_from.health
+                apet._health = int(temp_from.health * percentage)
 
     return target, possible
 

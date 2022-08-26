@@ -6,6 +6,7 @@ import numpy as np
 from sapai import *
 from sapai.battle import Battle
 from sapai.graph import graph_battle
+from sapai.compress import *
 
 
 class TestBattles(unittest.TestCase):
@@ -144,7 +145,8 @@ class TestBattles(unittest.TestCase):
 
         test_battle = Battle(team1, team2)
         result = test_battle.battle()
-        self.assertEqual(result, 2)
+        self.assertEqual(test_battle.t0.empty, [0, 1, 2, 3, 4])
+        self.assertEqual(test_battle.t1[0].health, 1)
 
     def test_horse_with_bee_in_battle(self):
         cricket = Pet("cricket")
@@ -386,6 +388,16 @@ class TestBattles(unittest.TestCase):
         test_battle = Battle(team1, team2)
         result = test_battle.battle()
         self.assertEqual(result, 0)
+
+    def test_peacock(self):
+        ### Check that peacock attack is correct after battle
+
+        ### Check peacock attack after elephant for all three levels
+
+        ### Check peacock after headgehog on both teams
+
+        ### Implement later with others
+        pass
 
 
 # %%
