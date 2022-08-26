@@ -7,7 +7,6 @@ from sapai.compress import *
 
 
 class TestEffects(unittest.TestCase):
-
     def test_target_function(self):
         shop = Shop()
         shop.roll()
@@ -63,7 +62,9 @@ class TestEffects(unittest.TestCase):
                     te = temp_team[1].pet
                 if func_name == "FoodMultiplier":
                     te = Food("pear")
-                targets, possible = func(apet, apet_idx, teams, te, te_idx, fixed_targets)
+                targets, possible = func(
+                    apet, apet_idx, teams, te, te_idx, fixed_targets
+                )
 
     def test_tiger_func(self):
         t = Team(["spider", "tiger"], battle=True)
@@ -86,7 +87,7 @@ class TestEffects(unittest.TestCase):
         self.assertEqual(t[0].level, 3)
         self.assertEqual(t[0].attack, 18)
         self.assertEqual(t[0].health, 18)
-    
+
     def test_multiple_cats(self):
         player = Player(shop=Shop(["pear"]), team=Team([Pet("cat")]))
         player.buy_food(0, 0)
@@ -102,7 +103,9 @@ class TestEffects(unittest.TestCase):
         self.assertEqual(player.team[0].attack, 10)
         self.assertEqual(player.team[0].health, 11)
 
-        player = Player(shop=Shop(["pear"]), team=Team([Pet("cat"), Pet("cat"), Pet("cat")]))
+        player = Player(
+            shop=Shop(["pear"]), team=Team([Pet("cat"), Pet("cat"), Pet("cat")])
+        )
         player.buy_food(0, 0)
 
         # should add +8/+8
@@ -123,11 +126,11 @@ class TestEffects(unittest.TestCase):
         t1 = Team([fish], battle=True)
 
         leopard.sob_trigger(t1)
-        self.assertEqual(fish.health, 45) # 25 damage, -20 melon
+        self.assertEqual(fish.health, 45)  # 25 damage, -20 melon
         self.assertEqual(fish.status, "none")
 
         attack_phase = get_attack(leopard, fish)
-        self.assertEqual(attack_phase[1], 30) # fish hits melon
+        self.assertEqual(attack_phase[1], 30)  # fish hits melon
         self.assertEqual(leopard.status, "none")
 
     def test_garlic(self):
@@ -139,16 +142,16 @@ class TestEffects(unittest.TestCase):
         t = Team(["dolphin", "otter", "mosquito"], battle=True)
         t2 = Team([fish], battle=True)
         t[0].pet.sob_trigger(t2)
-        self.assertEqual(fish.health, 47) # 5 damage, -2 garlic
+        self.assertEqual(fish.health, 47)  # 5 damage, -2 garlic
 
         t[2].pet.sob_trigger(t2)
-        self.assertEqual(fish.health, 46) # should still do 1 damage
+        self.assertEqual(fish.health, 46)  # should still do 1 damage
 
         attack_phase = get_attack(t[0].pet, fish)
-        self.assertEqual(attack_phase[0], 2) # dolphin 4/6
+        self.assertEqual(attack_phase[0], 2)  # dolphin 4/6
 
         attack_phase = get_attack(t[1].pet, fish)
-        self.assertEqual(attack_phase[0], 1) # otter 1/2
+        self.assertEqual(attack_phase[0], 1)  # otter 1/2
 
     def test_coconut(self):
         gorilla = Pet("gorilla")
@@ -156,14 +159,14 @@ class TestEffects(unittest.TestCase):
         t = Team([gorilla], battle=True)
         t2 = Team(["crocodile"], battle=True)
         t3 = Team(["dragon"], battle=True)
-        
+
         t2[0].pet.sob_trigger(t)
-        self.assertEqual(gorilla.health, 9) # unchanged
+        self.assertEqual(gorilla.health, 9)  # unchanged
         self.assertEqual(gorilla.status, "none")
 
         gorilla.status = "status-coconut-shield"
         attack_phase = get_attack(gorilla, t3[0].pet)
-        self.assertEqual(attack_phase[1], 0) # dragon hits coconut
+        self.assertEqual(attack_phase[1], 0)  # dragon hits coconut
         self.assertEqual(gorilla.status, "none")
 
     def test_weak(self):
@@ -176,10 +179,10 @@ class TestEffects(unittest.TestCase):
         t3 = Team(["dragon"], battle=True)
 
         t2[0].pet.sob_trigger(t)
-        self.assertEqual(fish.health, 42) # 5 + 3
+        self.assertEqual(fish.health, 42)  # 5 + 3
 
         attack_phase = get_attack(fish, t3[0].pet)
-        self.assertEqual(attack_phase[1], 9) # 6/8 + 3
+        self.assertEqual(attack_phase[1], 9)  # 6/8 + 3
 
     def test_peacock(self):
         peacock = Pet("peacock")
