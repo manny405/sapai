@@ -98,6 +98,10 @@ class Pet:
         return min(self._health + self._until_end_of_battle_health_buff, 50)
 
     @property
+    def fainted(self):
+        return self._health <= 0
+
+    @property
     def ability(self):
         if self.override_ability:
             return self.override_ability_dict
@@ -107,11 +111,26 @@ class Pet:
             return empty_ability
 
     def get_damage(self, value):
-        return status.apply_damage_dict[self.status](value)
+        """
+        Apply status to the input value to reduce/increase damage. Removes
+        pet status if in status.apply_once when get_damage is called.
+        """
+        damage = status.apply_damage_dict[self.status](value)
+        if self.status in status.apply_once:
+            self.status = "none"
+        return damage
 
     def hurt(self, value):
+        """
+        The variable _hurt stores the number of triggers that should be activated
+        when hurt_trigger is activated. Note that hurt_trigger should not be
+        activated for pets that have fainted.
+        """
         self._health -= value
         self._hurt += 1
+
+    def reset_hurt(self):
+        self._hurt = 0
 
     def set_ability(self, ability_dict):
         self.override_ability = True
@@ -409,6 +428,9 @@ class Pet:
         activated = True
         return activated, targets, possible
 
+    def enemy_summoned_trigger(self, trigger=None):
+        return False, [], [[]]
+
     def levelup_trigger(self, trigger=None):
         """
         Apply pet's ability when a friend (or self) level-up
@@ -495,6 +517,7 @@ class Pet:
         activated = True
         return activated, targets, possible
 
+    @status.apply_faint_status_trigger
     def faint_trigger(self, trigger=None, te_idx=[], oteam=None):
         """
         Apply pet's ability associated with a friend (or self) fainting
@@ -508,6 +531,10 @@ class Pet:
         targets = []
         possible = []
         if self.ability["trigger"] != "Faint":
+            ### Remove from team when faint_trigger called before returning if
+            ###   triggered by self
+            if trigger == self:
+                self.team.remove(self)
             return activated, targets, possible
 
         if type(trigger).__name__ != "Pet":
@@ -522,13 +549,18 @@ class Pet:
         elif self.ability["triggeredBy"]["kind"] == "FriendAhead":
             pet_ahead = self.team.get_ahead(self, n=1)
             if len(pet_ahead) == 0:
+                if trigger == self:
+                    self.team.remove(self)
                 return activated, targets, possible
             pet_ahead = pet_ahead[0]
             if trigger != pet_ahead:
+                if trigger == self:
+                    self.team.remove(self)
                 return activated, targets, possible
         elif self.ability["triggeredBy"]["kind"] == "EachFriend":
             if trigger == self:
                 ### Only time this doesn't activate is if it self triggered
+                self.team.remove(self)
                 return activated, targets, possible
         else:
             pass
@@ -701,10 +733,11 @@ class Pet:
         possible = []
         if self._hurt == 0:
             raise Exception("Called hurt trigger on pet that was not hurt")
-        else:
-            self._hurt -= 1
+        if self.fainted:
+            raise Exception("Called hurt trigger on fainted pet")
 
         if self.ability["trigger"] != "Hurt":
+            self.reset_hurt()
             return activated, targets, possible
 
         if type(trigger).__name__ != "Team":
@@ -717,19 +750,31 @@ class Pet:
 
         ### Cannot call if health is less than zero because fainted
         if self._health <= 0:
+            self.reset_hurt()
             return activated, targets, possible
 
         if "maxTriggers" in self.ability:
             if self.ability_counter >= self.ability["maxTriggers"]:
+                self.reset_hurt()
                 return activated, targets, possible
             else:
                 self.ability_counter += 1
 
-        func = get_effect_function(self)
-        pet_idx = self.team.get_idx(self)
-        targets, possible = tiger_func(
-            func, False, self, [0, pet_idx], [self.team, trigger], trigger
-        )
+        ### Loop hurt for as many hurt triggers are stored
+        targets = []
+        possible = []
+        while self._hurt > 0:
+            func = get_effect_function(self)
+            pet_idx = self.team.get_idx(self)
+            temp_targets, temp_possible = tiger_func(
+                func, False, self, [0, pet_idx], [self.team, trigger], trigger
+            )
+            targets += temp_targets
+            possible += temp_possible
+            self._hurt -= 1
+
+        ### Affirm hurt has been reset
+        assert self._hurt == 0
 
         activated = True
         return activated, targets, possible

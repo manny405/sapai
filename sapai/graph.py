@@ -289,7 +289,8 @@ def graph_battle(f, file_name="", verbose=False):
             g.node(
                 str(node_idx), style="rounded,invisible", shape="box", label=temp_table
             )
-            g.edge(prev_node, str(node_idx))
+            if prev_node != None:
+                g.edge(prev_node, str(node_idx))
             prev_node = str(node_idx)
             node_idx = node_idx + 1
 

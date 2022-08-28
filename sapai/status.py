@@ -1,3 +1,6 @@
+from sapai.data import data
+
+
 def apply_(value):
     return max([value, 0])
 
@@ -55,6 +58,33 @@ def apply_honey_bee(pet, team):
 
 def apply_extra_life(pet, team):
     raise Exception("Not implemented")
+
+
+def apply_faint_status_trigger(faint_trigger_fn):
+    def faint_status_trigger(self, trigger, te_idx, oteam):
+        activated, targets, possible = faint_trigger_fn(self, trigger, te_idx, oteam)
+
+        ### If pet itself has not fainted, status is not activated
+        if trigger != self:
+            return activated, targets, possible
+
+        ### Check status
+        if self.status in ["status-honey-bee", "status-extra-life"]:
+            original_ability = self.ability
+            ability = data["statuses"][self.status]["ability"]
+            self.set_ability(ability)
+            status_activated, status_targets, status_possible = faint_trigger_fn(
+                self, trigger, te_idx, oteam
+            )
+            return (
+                status_activated,
+                targets + status_targets,
+                possible + status_possible,
+            )
+
+        return activated, targets, possible
+
+    return faint_status_trigger
 
 
 apply_null_dict = {

@@ -840,5 +840,17 @@ class TestPetTriggers(unittest.TestCase):
         self.assertEqual(ally.health, 8 - 7)
         self.assertEqual(enemy.health, 2 - 7)
 
+    def test_camel(self):
+        for i in range(1, 6):
+            target = Team(["camel", "dragon"])
+            target[0].pet._health = 6 - i
+            target[1].pet._attack = 6 + 2 * i
+            target[1].pet._health = 8 + 2 * i
+            t = Team(["camel", "dragon"])
+            for _ in range(i):
+                t[0].pet.hurt(1)
+            t[0].pet.hurt_trigger(t)
+            self.assertEqual(t.state, target.state)
+
 
 # %%

@@ -11,22 +11,34 @@ from sapai.compress import *
 
 class TestBattles(unittest.TestCase):
     def test_multi_hurt(self):
-        t0 = Team(["badger", "camel", "fish"])
+        seed_state = np.random.RandomState(seed=3).get_state()
+        t0 = Team(["badger", "camel", "fish"], seed_state=seed_state)
         t0[0].pet._health = 1
         t0[0].pet._attack = 1
-        t1 = Team(["cricket", "horse", "mosquito", "tiger"])
+        t1 = Team(["cricket", "mosquito", "tiger"], seed_state=seed_state)
 
         b = Battle(t0, t1)
         b.battle()
+
+        ### For this seed, enemy mosquito hits camel and badger
+        ### Camel will activate for mosquito, badger, cricket, zombie cricket
+        camel_buff = 2 * 4
+        tiger_attack = t1[2].obj.attack
+        self.assertEqual(len(b.t1.filled), 0)
+        self.assertEqual(b.t0[0].health, 2 + camel_buff - tiger_attack)
+        self.assertEqual(b.t0[0].attack, 2 + camel_buff)
 
     def test_multi_faint(self):
         t0 = Team(["badger", "camel", "fish"])
         t0[0].pet._health = 1
-        t0[0].pet._attack = 5
+        t0[0].pet._attack = 6
+        t0[0].pet.level = 2
         t1 = Team(["cricket", "horse", "mosquito", "tiger"])
 
         b = Battle(t0, t1)
-        b.battle()
+        b.attack()
+
+        ### Cricket will kill badger, badger faint should kill camel and horse
 
     def test_before_and_after_attack(self):
         t0 = Team(["elephant", "snake", "dragon", "fish"])
@@ -388,6 +400,54 @@ class TestBattles(unittest.TestCase):
         test_battle = Battle(team1, team2)
         result = test_battle.battle()
         self.assertEqual(result, 0)
+
+    def test_badger(self):
+        seed_state = np.random.RandomState(seed=1).get_state()
+        badger_frac = [None, 0.5, 1.0, 1.5]
+        ### Testing that badger damage is correct across entire relevant range
+        for l in range(1, 4):
+            for i in range(1, 50):
+                t0 = Team(["badger", "fish", "fish"], seed_state=seed_state)
+                t0[0].obj.level = l
+                t0[0].obj._attack = i
+                t0[0].obj._health = 1
+                t1 = Team(["mosquito", "fish"], seed_state=seed_state)
+                t0[0].obj.hurt(1)
+                activated, targets, _ = t0[0].obj.faint_trigger(
+                    t0[0].obj, [0, 0], oteam=t1
+                )
+
+                badger_damage = max(int(i * badger_frac[l]), 1)
+                self.assertTrue(activated)
+                self.assertEqual(targets, [t1[0].obj, t0[1].obj])
+                self.assertEqual(t0[1].obj.health, 2 - badger_damage)
+                self.assertEqual(t1[0].obj.health, 2 - badger_damage)
+                self.assertEqual(t0[2].obj.health, 2)
+                self.assertEqual(t1[1].obj.health, 2)
+
+        ### Testing badger damage is correct for different positions
+        t0 = Team(["fish", "badger", "fish"], seed_state=seed_state)
+        t0[1].obj.level = 2
+        t0[1].obj._attack = 4
+        t0[1].obj._health = 1
+        t1 = Team(["mosquito", "fish"], seed_state=seed_state)
+        t0[1].obj.hurt(1)
+        activated, targets, _ = t0[1].obj.faint_trigger(t0[1].obj, [0, 1], oteam=t1)
+        badger_damage = 4
+        self.assertEqual(targets, [t0[0].obj, t0[2].obj])
+        self.assertEqual(t0[0].obj.health, 2 - 4)
+        self.assertEqual(t0[2].obj.health, 2 - 4)
+
+        t0 = Team(["fish", "fish", "badger"], seed_state=seed_state)
+        t0[2].obj.level = 2
+        t0[2].obj._attack = 4
+        t0[2].obj._health = 1
+        t1 = Team(["mosquito", "fish"], seed_state=seed_state)
+        t0[2].obj.hurt(1)
+        activated, targets, _ = t0[2].obj.faint_trigger(t0[2].obj, [0, 2], oteam=t1)
+        badger_damage = 4
+        self.assertEqual(targets, [t0[1].obj])
+        self.assertEqual(t0[1].obj.health, 2 - 4)
 
     def test_peacock(self):
         ### Check that peacock attack is correct after battle

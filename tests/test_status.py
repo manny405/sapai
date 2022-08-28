@@ -31,17 +31,19 @@ class TestStatus(unittest.TestCase):
             assert p.get_damage(i) == (i - 2)
 
     def test_melon_damage(self):
-        p = Pet("fish")
-        p.eat(Food("melon"))
         for i in range(MIN, 20):
+            p = Pet("fish")
+            p.eat(Food("melon"))
             assert p.get_damage(i) == 0
         for i in range(21, MAX):
+            p = Pet("fish")
+            p.eat(Food("melon"))
             assert p.get_damage(i) == (i - 20)
 
     def test_coconut_damage(self):
-        p = Pet("fish")
-        p.status = "status-coconut-shield"
         for i in range(MIN, MAX):
+            p = Pet("fish")
+            p.status = "status-coconut-shield"
             assert p.get_damage(i) == 0
 
     def test_weak(self):
