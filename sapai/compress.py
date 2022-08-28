@@ -56,6 +56,10 @@ def minimal_state(obj):
     stats and current shop pets. This will save memory/storage and improve
     computational efficiency.
 
+    In addition, this is useful for testing to assert that the final team
+    after battle is equal to a reference team, without comparison of the
+    seed_state.
+
     """
     state = obj.state
 

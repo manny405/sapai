@@ -352,9 +352,6 @@ def battle_phase(battle_obj, phase, teams, pet_priority, phase_dict):
         ### Check if fainted and performed fainted triggers
         battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict)
 
-    elif phase == "phase_attack_after":
-        battle_phase_attack_after(battle_obj, phase, teams, pet_priority, phase_dict)
-
     else:
         raise Exception("Phase {} not found".format(phase))
 
@@ -596,20 +593,20 @@ def get_attack_idx(phase, teams, pet_priority, phase_dict):
     return ret_idx, ret_next_idx
 
 
-def battle_phase_attack_after(battle_obj, phase, teams, pet_priority, phase_dict):
-    phase_list = phase_dict[phase]
-    pp = pet_priority
+# def battle_phase_attack_after(battle_obj, phase, teams, pet_priority, phase_dict):
+#     phase_list = phase_dict[phase]
+#     pp = pet_priority
 
-    ### Can get the two animals that just previously attacked from the
-    ###   phase_dict
-    attack_history = phase_dict["phase_attack"]
-    if len(attack_history) == 0:
-        return phase_dict
+#     ### Can get the two animals that just previously attacked from the
+#     ###   phase_dict
+#     attack_history = phase_dict["phase_attack"]
+#     if len(attack_history) == 0:
+#         return phase_dict
 
-    t0_pidx = attack_history[0][1][0]
-    t1_pidx = attack_history[0][1][1]
+#     t0_pidx = attack_history[0][1][0]
+#     t1_pidx = attack_history[0][1][1]
 
-    return phase_dict
+#     return phase_dict
 
 
 def run_looping_effect_queue(
@@ -635,6 +632,19 @@ def run_looping_effect_queue(
 
     """
 
+    def get_friend_ahead_reference():
+        t0_fa_ref = {}
+        t1_fa_ref = {}
+        for i, team in enumerate(teams):
+            for slot in team:
+                key = id(slot.obj)
+                friend_ahead = teams[i].get_ahead(slot.obj, n=1)
+                if len(friend_ahead) > 0:
+                    [t0_fa_ref, t1_fa_ref][i][key] = friend_ahead[0]
+                else:
+                    [t0_fa_ref, t1_fa_ref][i][key] = []
+        return t0_fa_ref, t1_fa_ref
+
     def loop_effect_queue(effect_queue, summon_queue, run_status_summon):
         """
         Arguments
@@ -648,6 +658,7 @@ def run_looping_effect_queue(
         ### For fly, doesn't matter when its ability is called, its effect needs
         ###   to be placed after all other summons
         final_summon_queue = []
+        faint_list = []
         while True:
             ### Question: Does pet_priority need to be re-evaluated in this loop?
             ###   Should match what actual game does.
@@ -656,6 +667,7 @@ def run_looping_effect_queue(
             knockout_queue = []
             summoned_list = []
             faint_list = []
+            fa_ref = get_friend_ahead_reference()
 
             ### First empty the current effect queue
             for _ in range(len(effect_queue)):
@@ -717,7 +729,7 @@ def run_looping_effect_queue(
                         ### If another pet was summoned, then need to use this
                         ###   to trigger fly summon location
                         if p.ability["effect"]["kind"] in ["SummonPet", "RespawnPet"]:
-                            faint_list[-1] = [(p, [team_idx, status_targets[0]])]
+                            faint_list[-1] = (p, [team_idx, status_targets[0]])
                         ### And add it to summoned_list
                         summoned_list += status_targets
                     elif status_summon:
@@ -828,7 +840,10 @@ def run_looping_effect_queue(
                         and p.ability["triggeredBy"]["kind"] == "EachFriend"
                         and fainted_pet.team == p.team
                     ):
-                        if p.ability["effect"]["kind"] == "SummonPet":
+                        if (
+                            p.ability["effect"]["kind"] == "SummonPet"
+                            and run_status_summon == False
+                        ):
                             ### If summon due to pet dying, then put into the
                             ###   summon queue
                             final_summon_queue.append(
@@ -866,6 +881,25 @@ def run_looping_effect_queue(
                         and fainted_pet.team == oteam
                     ):
                         raise Exception("Need enemy team tests")
+                    elif (
+                        p.ability["trigger"] == "Faint"
+                        and p.ability["triggeredBy"]["kind"] == "FriendAhead"
+                        and fainted_pet.team == p.team
+                    ):
+                        if fa_ref[team_idx][id(p)] == fainted_pet:
+                            effect_queue.append(
+                                [
+                                    p,
+                                    team_idx,
+                                    pet_idx,
+                                    trigger_method,
+                                    [fainted_pet, te_idx, oteam, True],
+                                ]
+                            )
+                    else:
+                        ### For now, all relevant effects are hard-coded above,
+                        ###  There's better way to do this once test suite built
+                        pass
 
             ### Break if no more effects to trigger
             if len(effect_queue) == 0:
@@ -892,11 +926,8 @@ def run_looping_effect_queue(
     summon_queue = loop_effect_queue(effect_queue, summon_queue, False)
     ### Then run summon queue through looping effect queue
     _ = loop_effect_queue(summon_queue, summon_queue, True)
-
-    ### Not always zero because of, for example, fly and honey status trigger
-    ###   as implemented now. It's ugly but works. It's correct that this final
-    ###   queue should not be emptied when this occurs.
-    # assert len(_) == 0
+    ### Queues should be totally empty at end of looping
+    assert len(_) == 0
 
     ### Done
     return

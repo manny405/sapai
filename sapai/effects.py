@@ -521,7 +521,7 @@ def AllOf(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
         func = get_effect_function(effect_kind)
         apet.ability["effect"] = temp_effect
         temp_target, temp_possible = func(apet, apet_idx, teams, te, fixed_targets)
-        target.append(temp_target)
+        target += temp_target
         possible_targets.append(temp_possible)
     apet.ability["effect"] = original_effect
     return target, possible_targets
@@ -841,7 +841,6 @@ def SummonPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
         ### Move nahead pets forward which should be infront of the triggering pet
         end_idx = (5 - npets) + nahead
         fteam.move_forward(start_idx=0, end_idx=end_idx)
-        print(apet, nahead, te_idx[1])
     elif team == "Enemy":
         target_team = oteam
         if type(target_team).__name__ != "Team":
@@ -852,13 +851,8 @@ def SummonPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     else:
         raise Exception(apet.ability["effect"]["team"])
 
-    n = 1
-    if apet.name == "pet-sheep":
-        n = 2
-    elif apet.name == "pet-rooster":
-        n = apet.level
-
     target = []
+    n = apet.ability["effect"].get("n", 1)
     for _ in range(n):
         ### Check for furthest back open position
         empty_idx = []

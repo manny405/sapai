@@ -5058,6 +5058,7 @@ data = {
                     "withAttack": 2,
                     "withHealth": 2,
                     "team": "Friendly",
+                    "n": 2,
                 },
             },
             "level2Ability": {
@@ -5070,6 +5071,7 @@ data = {
                     "withAttack": 4,
                     "withHealth": 4,
                     "team": "Friendly",
+                    "n": 2,
                 },
             },
             "level3Ability": {
@@ -5082,6 +5084,7 @@ data = {
                     "withAttack": 6,
                     "withHealth": 6,
                     "team": "Friendly",
+                    "n": 2,
                 },
             },
             "probabilities": [
@@ -6669,19 +6672,34 @@ data = {
                 "description": "Faint: Summon a Chick with 1 health and half the Attack of this.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
-                "effect": {"kind": "SummonPet", "pet": "pet-chick", "team": "Friendly"},
+                "effect": {
+                    "kind": "SummonPet",
+                    "pet": "pet-chick",
+                    "team": "Friendly",
+                    "n": 1,
+                },
             },
             "level2Ability": {
                 "description": "Faint: Summon 2 Chicks with 1 health and half the Attack of this.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
-                "effect": {"kind": "SummonPet", "pet": "pet-chick", "team": "Friendly"},
+                "effect": {
+                    "kind": "SummonPet",
+                    "pet": "pet-chick",
+                    "team": "Friendly",
+                    "n": 2,
+                },
             },
             "level3Ability": {
                 "description": "Faint: Summon 3 Chicks with 1 health and half the Attack of this.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
-                "effect": {"kind": "SummonPet", "pet": "pet-chick", "team": "Friendly"},
+                "effect": {
+                    "kind": "SummonPet",
+                    "pet": "pet-chick",
+                    "team": "Friendly",
+                    "n": 3,
+                },
             },
             "probabilities": [
                 {

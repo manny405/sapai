@@ -14,33 +14,6 @@ from sapai.compress import *
 g = partial(graph_battle, verbose=True)
 
 
-def run_sob(t0, t1):
-    b = Battle(t0, t1)
-    phase_dict = {
-        "init": [[str(x) for x in b.t0], [str(x) for x in b.t1]],
-        "start": {
-            "phase_start": [],
-        },
-    }
-    run_looping_effect_queue(
-        "sob_trigger",
-        ["oteam"],
-        b,
-        "phase_start",
-        [b.t0, b.t1],
-        b.pet_priority,
-        phase_dict["start"],
-    )
-    phase_dict["start"]["phase_move_end"] = [
-        [
-            [str(x) for x in b.t0],
-            [str(x) for x in b.t1],
-        ]
-    ]
-    b.battle_history = phase_dict
-    return b
-
-
 class TestEffectQueue(unittest.TestCase):
     def test_summon_sob(self):
         ref_team = Team(["pet-zombie-cricket"], battle=True)
@@ -192,32 +165,169 @@ class TestEffectQueue(unittest.TestCase):
         self.assertEqual(b.t0.state, ref_team.state)
 
     def test_sheep_fly(self):
-        pass
+        ref_team = Team(["zombie-fly", "bee", "pet-ram", "pet-ram", "fly"], battle=True)
+        ref_team[0].obj._attack = 4
+        ref_team[0].obj._health = 4
+        ref_team[2].obj._attack = 2
+        ref_team[2].obj._health = 2
+        ref_team[3].obj._attack = 2
+        ref_team[3].obj._health = 2
+        ref_team[4].obj.ability_counter = 1
+
+        t0 = Team(["sheep", "fly"])
+        t0[0].obj.eat(Food("honey"))
+        t0[0].obj._health = 1
+        t1 = Team(["dolphin"])
+        b = run_sob(t0, t1)
+
+        self.assertEqual(b.t0.state, ref_team.state)
+
+    def test_spider_fly(self):
+        ref_team = Team(["zombie-fly", "spider", "turtle", "fly"], battle=True)
+        ref_team[0].obj._attack = 4
+        ref_team[0].obj._health = 4
+        ref_team[1].obj._attack = 1
+        ref_team[1].obj._health = 1
+        ref_team[1].obj.level = 3
+        ### Spider spaws everything at 2/2
+        ref_team[2].obj._attack = 2
+        ref_team[2].obj._health = 2
+        ref_team[2].obj.level = 3
+        ref_team[3].obj.ability_counter = 1
+
+        seed_state = np.random.RandomState(seed=3).get_state()
+        t0 = Team(["spider", "fly"], seed_state=seed_state)
+        t0[0].obj.eat(Food("mushroom"))
+        t0[0].obj.level = 3
+        t0[0].obj._health = 1
+        t1 = Team(["dolphin"])
+        b = run_sob(t0, t1)
+
+        self.assertEqual(minimal_state(b.t0), minimal_state(ref_team))
+
+    def test_ox_fly(self):
+        ref_team = Team(["bee", "ram", "ram", "ox", "fly"], battle=True)
+        ref_team[1].obj._attack = 2
+        ref_team[1].obj._health = 2
+        ref_team[2].obj._attack = 2
+        ref_team[2].obj._health = 2
+        ref_team[3].obj._attack = 2
+        ref_team[3].obj.ability_counter = 2
+        ref_team[3].obj.status = "status-melon-armor"
+
+        t0 = Team(["sheep", "ox", "fly"])
+        t0[0].obj.eat(Food("honey"))
+        t0[0].obj._health = 1
+        t1 = Team(["dolphin"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
 
     def test_rhino_loop(self):
         pass
 
+    def test_kangaroo_ability(self):
+        """
+        Ensure that kangaroo ability activates before any hurt or faint triggers
+
+        """
+
+        ### If kangaroo ability doesn't activate first, then it would faint
+        ###   from blowfish ability
+        t0 = Team(["sheep", "kangaroo"])
+        t1 = Team(["blowfish"])
+        b = run_sob(t0, t1)
+
+        ### If kangaroo ability doesn't activate first, then it would faint
+        ###   from badger faint ability
+        t0 = Team(["sheep", "kangaroo"])
+        t1 = Team(["badger"])
+        b = run_sob(t0, t1)
+
+
+def run_sob(t0, t1):
+    b = Battle(t0, t1)
+    phase_dict = {
+        "init": [[str(x) for x in b.t0], [str(x) for x in b.t1]],
+        "start": {
+            "phase_start": [],
+        },
+    }
+    run_looping_effect_queue(
+        "sob_trigger",
+        ["oteam"],
+        b,
+        "phase_start",
+        [b.t0, b.t1],
+        b.pet_priority,
+        phase_dict["start"],
+    )
+    phase_dict["start"]["phase_move_end"] = [
+        [
+            [str(x) for x in b.t0],
+            [str(x) for x in b.t1],
+        ]
+    ]
+    b.battle_history = phase_dict
+    return b
+
+
+def run_attack(t0, t1, run_before=False, finish_battle=False):
+    b = Battle(t0, t1)
+    phase_dict = {
+        "init": [[str(x) for x in b.t0], [str(x) for x in b.t1]],
+        "attack 0": {
+            "phase_move_start": [],
+            "phase_attack": [],
+        },
+    }
+
 
 # %%
 
-# t0 = Team(["badger", "fish", "fly"])
-# t0[0].obj.eat(Food("honey"))
+# seed_state = np.random.RandomState(seed=3).get_state()
+# t0 = Team(["spider", "fly"], seed_state=seed_state)
+# t0[0].obj.eat(Food("mushroom"))
 # t0[0].obj.level = 3
 # t0[0].obj._health = 1
-# t0[1].obj.eat(Food("mushroom"))
 # t1 = Team(["dolphin"])
 # b = run_sob(t0, t1)
-# g(b)
 
+# ref_team = Team(["zombie-fly", "spider", "turtle", "fly"], battle=True)
+# ref_team[0].obj._attack = 4
+# ref_team[0].obj._health = 4
+# ref_team[1].obj._attack = 1
+# ref_team[1].obj._health = 1
+# ref_team[1].obj.level = 3
+# ref_team[2].obj.level = 3
+# ref_team[3].obj.ability_counter = 1
+# t = minimal_state(b.t0)
+# r = minimal_state(ref_team)
 
-t0 = Team(["badger", "fish", "fly", "shark"])
-t0[0].obj.eat(Food("honey"))
-t0[0].obj.level = 3
-t0[0].obj._health = 1
-t0[1].obj.eat(Food("mushroom"))
-t1 = Team(["dolphin"])
-b = run_sob(t0, t1)
-# g(b)
+# for i in range(len(t["team"])):
+#     print(i, t["team"][i] == r["team"][i])
+
+#%%
+# ref_team = Team(["bee", "ram", "ram", "ox", "fly"], battle=True)
+# ref_team[1].obj._attack = 2
+# ref_team[1].obj._health = 2
+# ref_team[2].obj._attack = 2
+# ref_team[2].obj._health = 2
+# ref_team[3].obj._attack = 2
+# ref_team[3].obj.ability_counter = 2
+# ref_team[3].obj.status = "status-melon-armor"
+
+# t0 = Team(["sheep", "ox", "fly"])
+# t0[0].obj.eat(Food("honey"))
+# t0[0].obj._health = 1
+# t1 = Team(["dolphin"])
+# b = run_sob(t0, t1)
+
+# t = b.t0.state
+# r = ref_team.state
+# for i in range(len(t["team"])):
+#     print(i, t["team"][i] == r["team"][i])
+# print(b.t0.state == ref_team.state)
+# %%
 
 
 #%%

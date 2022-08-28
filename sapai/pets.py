@@ -518,7 +518,9 @@ class Pet:
         return activated, targets, possible
 
     @status.apply_faint_status_trigger
-    def faint_trigger(self, trigger=None, te_idx=[], oteam=None):
+    def faint_trigger(
+        self, trigger=None, te_idx=[], oteam=None, force_friend_ahead=False
+    ):
         """
         Apply pet's ability associated with a friend (or self) fainting
 
@@ -546,7 +548,10 @@ class Pet:
         if self.ability["triggeredBy"]["kind"] == "Self":
             if trigger != self:
                 return activated, targets, possible
-        elif self.ability["triggeredBy"]["kind"] == "FriendAhead":
+        elif (
+            self.ability["triggeredBy"]["kind"] == "FriendAhead"
+            and force_friend_ahead == False
+        ):
             pet_ahead = self.team.get_ahead(self, n=1)
             if len(pet_ahead) == 0:
                 if trigger == self:
