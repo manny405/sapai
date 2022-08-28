@@ -574,8 +574,6 @@ class Pet:
         if "maxTriggers" in self.ability:
             if self.ability_counter >= self.ability["maxTriggers"]:
                 return activated, targets, possible
-            else:
-                self.ability_counter += 1
 
         func = get_effect_function(self)
         if self.team.check_friend(self):
@@ -590,6 +588,8 @@ class Pet:
 
         if func in [RespawnPet, SummonPet, SummonRandomPet]:
             ### API for SummonPet is slightly different
+            if isinstance(te_idx[1], Pet):
+                te_idx[1] = te_idx[1].team.index(te_idx[1])
             targets, possible = tiger_func(
                 func, True, self, [0, pet_idx], teams, trigger, te_idx
             )
@@ -598,8 +598,26 @@ class Pet:
                 func, True, self, [0, pet_idx], teams, trigger
             )
 
+        ### Increment only for number of targets summoned
+        for _ in targets:
+            self.ability_counter += 1
+
         activated = True
         return activated, targets, possible
+
+    def status_summon_trigger(self, trigger=None, te_idx=[], oteam=None):
+        activated = False
+        targets = []
+        possible = []
+        if self.status not in ["status-honey-bee", "status-extra-life"]:
+            return activated, targets, possible
+
+        ### Once this trigger is called, overide pet's ability for API
+        ability = data["statuses"][self.status]["ability"]
+        self.set_ability(ability)
+        self.status = "none"
+
+        return self.faint_trigger(trigger, te_idx, oteam)
 
     def sob_trigger(self, trigger):
         """
@@ -822,8 +840,8 @@ class Pet:
     def __repr__(self):
         return "< {} {}-{} {} {}-{} >".format(
             self.name,
-            self.attack,
-            self.health,
+            self._attack,
+            self._health,
             self.status,
             self.level,
             self.experience,

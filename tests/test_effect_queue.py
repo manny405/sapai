@@ -74,7 +74,7 @@ class TestEffectQueue(unittest.TestCase):
         ref_team[0].obj._health = 1
 
         ### Check puffer-fish ping-pong, even though not part of start of
-        ### battle it should work if hurt is triggered manually
+        ### battle it should work if hurt is triggered manufriend
         t0 = Team(["blowfish"])
         t1 = Team(["blowfish"])
         t0[0].obj.hurt(1)
@@ -91,7 +91,7 @@ class TestEffectQueue(unittest.TestCase):
 
     def test_badger_sob(self):
         """
-        Fairly complex example, where badger has honey, ally fish has one-up,
+        Fairly complex example, where badger has honey, friend fish has one-up,
         then dolphin kills badger for sob, badger kills dolphin and fish,
         then bee spawns and one-up fish spawns, all in the correct locations.
         """
@@ -110,9 +110,23 @@ class TestEffectQueue(unittest.TestCase):
 
     def test_badger_honey_fly_sob(self):
         """
-        Same as above but with fly for ally.
+        Same as above but with fly for friend. Badger and fish should spawn
+        their status pets first, then fly should place zombie-flies in the
+        correct locations.
+
+        This is a very complex example. All these cases succeed demonstrating
+        the validity of the code to replicate the game auto-battle mechanics.
         """
-        t0 = Team(["badger", "fish", "fish", "fly"])
+        ref_team = Team(["zombie-fly", "bee", "zombie-fly", "fish", "fly"], battle=True)
+        ref_team[0].obj._attack = 4
+        ref_team[0].obj._health = 4
+        ref_team[2].obj._attack = 4
+        ref_team[2].obj._health = 4
+        ref_team[3].obj._attack = 1
+        ref_team[3].obj._health = 1
+        ref_team[4].obj.ability_counter = 2
+
+        t0 = Team(["badger", "fish", "fly"])
         t0[0].obj.eat(Food("honey"))
         t0[0].obj.level = 3
         t0[0].obj._health = 1
@@ -120,27 +134,63 @@ class TestEffectQueue(unittest.TestCase):
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
 
-    def test_badger_honey_fly_shark_sob(self):
-        """
-        Same as above but with additional shark for ally
-        """
-        t0 = Team(["badger", "fish", "fish", "fly", "shark"])
+        self.assertEqual(b.t0.state, ref_team.state)
+
+        ### Another fish, then ability counter of fly should be only 1
+        ref_team = Team(["zombie-fly", "bee", "fish", "fish", "fly"], battle=True)
+        ref_team[0].obj._attack = 4
+        ref_team[0].obj._health = 4
+        ref_team[2].obj._attack = 1
+        ref_team[2].obj._health = 1
+        ref_team[4].obj.ability_counter = 1
+        t0 = Team(["badger", "fish", "fish", "fly"])
         t0[0].obj.eat(Food("honey"))
         t0[0].obj.level = 3
         t0[0].obj._health = 1
         t0[1].obj.eat(Food("mushroom"))
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
-        
+        self.assertEqual(b.t0.state, ref_team.state)
+
+    def test_badger_honey_fly_shark_sob(self):
+        """
+        Same as above but with shark for friend
+        """
+        ### Shark should activate twice
+        ref_team = Team(["zombie-fly", "bee", "fish", "fly", "shark"], battle=True)
+        ref_team[0].obj._attack = 4
+        ref_team[0].obj._health = 4
+        ref_team[2].obj._attack = 1
+        ref_team[2].obj._health = 1
+        ref_team[4].obj._attack = 4 + 4
+        ref_team[4].obj._health = 4 + 4
+        ref_team[3].obj.ability_counter = 1
+        ref_team[4].obj.ability_counter = 2
+
+        t0 = Team(["badger", "fish", "fly", "shark"])
+        t0[0].obj.eat(Food("honey"))
+        t0[0].obj.level = 3
+        t0[0].obj._health = 1
+        t0[1].obj.eat(Food("mushroom"))
+        t1 = Team(["dolphin"])
+        b = run_sob(t0, t1)
+
+        self.assertEqual(b.t0.state, ref_team.state)
+
     def test_badger_hedgehog(self):
+        """
+        Badger should kill dolphin and hedgehog, hedgehog's ability should
+        activate, the bee should spawn leaving bee as pet left and t0 as winner
+        """
+        ref_team = Team(["pet-bee"], battle=True)
         t0 = Team(["badger", "hedgehog"])
         t0[0].obj.eat(Food("honey"))
         t0[0].obj.level = 3
         t0[0].obj._health = 1
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
-        
-    
+        self.assertEqual(b.t0.state, ref_team.state)
+
     def test_sheep_fly(self):
         pass
 
@@ -149,3 +199,25 @@ class TestEffectQueue(unittest.TestCase):
 
 
 # %%
+
+# t0 = Team(["badger", "fish", "fly"])
+# t0[0].obj.eat(Food("honey"))
+# t0[0].obj.level = 3
+# t0[0].obj._health = 1
+# t0[1].obj.eat(Food("mushroom"))
+# t1 = Team(["dolphin"])
+# b = run_sob(t0, t1)
+# g(b)
+
+
+t0 = Team(["badger", "fish", "fly", "shark"])
+t0[0].obj.eat(Food("honey"))
+t0[0].obj.level = 3
+t0[0].obj._health = 1
+t0[1].obj.eat(Food("mushroom"))
+t1 = Team(["dolphin"])
+b = run_sob(t0, t1)
+# g(b)
+
+
+#%%

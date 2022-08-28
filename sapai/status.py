@@ -70,19 +70,25 @@ def apply_faint_status_trigger(faint_trigger_fn):
 
         ### Check status
         if self.status in ["status-honey-bee", "status-extra-life"]:
-            original_ability = self.ability
-            ability = data["statuses"][self.status]["ability"]
-            self.set_ability(ability)
-            status_activated, status_targets, status_possible = faint_trigger_fn(
-                self, trigger, te_idx, oteam
-            )
-            return (
-                status_activated,
-                targets + status_targets,
-                possible + status_possible,
-            )
-
-        return activated, targets, possible
+            ### It's not good that this has to be moved outside of this function
+            ###   because that's ugly way to do it. But if it works for now then
+            ###   can clean up later with good testing suite.
+            # original_ability = self.ability
+            # ability = data["statuses"][self.status]["ability"]
+            # self.set_ability(ability)
+            # status_activated, status_targets, status_possible = faint_trigger_fn(
+            #     self, trigger, te_idx, oteam
+            # )
+            # return (
+            #     status_activated,
+            #     targets + status_targets,
+            #     possible + status_possible,
+            # )
+            ### Return that this pet has a status that needs to be activated
+            ###   after fainting
+            return activated, targets, possible, True
+        else:
+            return activated, targets, possible, False
 
     return faint_status_trigger
 

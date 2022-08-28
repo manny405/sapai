@@ -835,12 +835,13 @@ def SummonPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
         target_team = fteam
         #### First, determine how many pets should be infront
         nahead = len(fteam.get_ahead(te_idx[1], n=5))
-        npets = len(fteam)
+        npets = len(fteam.filled)
         ### Then move team as far backward as possible
         fteam.move_backward()
         ### Move nahead pets forward which should be infront of the triggering pet
         end_idx = (5 - npets) + nahead
         fteam.move_forward(start_idx=0, end_idx=end_idx)
+        print(apet, nahead, te_idx[1])
     elif team == "Enemy":
         target_team = oteam
         if type(target_team).__name__ != "Team":
