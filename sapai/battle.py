@@ -11,6 +11,7 @@ from sapai.effects import (
     RespawnPet,
     SummonPet,
     SummonRandomPet,
+    Evolve,
 )
 from sapai import status
 
@@ -146,7 +147,6 @@ class Battle:
                 "phase_move_start": [],
                 "phase_attack_before": [],
                 "phase_attack": [],
-                "phase_attack_after": [],
                 "phase_move_end": [],
             }
         }
@@ -157,34 +157,42 @@ class Battle:
             return False
         if len(t1.filled) == 0:
             return False
-        return True
+
+        for temp_phase in phase_dict[attack_str]:
+            battle_phase(
+                self,
+                temp_phase,
+                [self.t0, self.t1],
+                self.pet_priority,
+                phase_dict[attack_str],
+            )
+            self.battle_history.update(phase_dict)
+
+        ### Check if battle is over
+        status = self.check_battle_result()
+        if status < 0:
+            return True
+        else:
+            ### End battle
+            return False
 
     def check_battle_result(self):
-        t0 = self.t0
-        t1 = self.t1
-        found0 = False
-        for temp_slot in t0:
-            if not temp_slot.empty:
-                if temp_slot.pet.health > 0:
-                    found0 = True
-                    break
-        found1 = False
-        for temp_slot in t1:
-            if not temp_slot.empty:
-                if temp_slot.pet.health > 0:
-                    found1 = True
-                    break
-        if found0 and found1:
+        f0 = len(self.t0.filled) == 0
+        f1 = len(self.t1.filled) == 0
+        if not f0 and not f1:
             ### Fight not over
             return -1
-        if found0:
+        elif f0 and f1:
+            ### Draw
+            return 2
+        elif f0:
             ### t0 won
             return 0
-        if found1:
+        elif f1:
             ### t1 won
             return 1
-        ### Must have been draw
-        return 2
+        else:
+            raise Exception("Impossible")
 
     @staticmethod
     def update_pet_priority(t0, t1):
@@ -342,11 +350,21 @@ def battle_phase(battle_obj, phase, teams, pet_priority, phase_dict):
         phase_dict[phase] = [start_order, end_order]
 
     elif phase == "phase_start":
-        battle_phase_start(battle_obj, phase, teams, pet_priority, phase_dict)
+        run_looping_effect_queue(
+            "sob_trigger", ["oteam"], battle_obj, phase, teams, pet_priority, phase_dict
+        )
 
     ##### Trigger logic for an attack
     elif phase == "phase_attack_before":
-        battle_phase_attack_before(battle_obj, phase, teams, pet_priority, phase_dict)
+        run_looping_effect_queue(
+            "before_attack_trigger",
+            ["oteam"],
+            battle_obj,
+            phase,
+            teams,
+            pet_priority,
+            phase_dict,
+        )
 
     elif phase == "phase_attack":
         ### Check if fainted and performed fainted triggers
@@ -354,92 +372,6 @@ def battle_phase(battle_obj, phase, teams, pet_priority, phase_dict):
 
     else:
         raise Exception("Phase {} not found".format(phase))
-
-
-def battle_phase_start(battle_obj, phase, teams, pet_priority, phase_dict):
-    phase_list = phase_dict["phase_start"]
-    pp = pet_priority
-    for team_idx, pet_idx in pp:
-        p = teams[team_idx][pet_idx].pet
-        fteam, oteam = get_teams([team_idx, pet_idx], teams)
-        activated, targets, possible = p.sob_trigger(oteam)
-        append_phase_list(
-            phase_list, p, team_idx, pet_idx, activated, targets, possible
-        )
-
-    check_self_summoned_triggers(teams, pet_priority, phase_dict)
-
-    return phase_list
-
-
-def check_summon_triggers(
-    phase_list, p, team_idx, pet_idx, fteam, activated, targets, possible
-):
-    if activated == False:
-        return 0
-
-    func = get_effect_function(p)
-    if func not in [RespawnPet, SummonPet, SummonRandomPet]:
-        return 0
-
-    if "team" in p.ability["effect"]:
-        team = p.ability["effect"]["team"]
-        if team == "Enemy":
-            return 0
-
-    ### Otherwise, summon triggers need to be checked for each Pet in targets
-    if len(targets) > 0:
-        if type(targets[0]) == list:
-            temp_all_targets = []
-            for entry in targets:
-                temp_all_targets += entry
-            targets = temp_all_targets
-
-    for temp_te in targets:
-        for temp_slot in fteam:
-            temp_pet = temp_slot.pet
-            tempa, tempt, tempp = temp_pet.friend_summoned_trigger(temp_te)
-            append_phase_list(
-                phase_list, temp_pet, team_idx, pet_idx, tempa, tempt, tempp
-            )
-
-    return len(targets)
-
-
-def check_self_summoned_triggers(teams, pet_priority, phase_dict):
-    """
-    Currently only butterfly
-
-    """
-
-    phase_list = phase_dict["phase_start"]
-    pp = pet_priority
-    for team_idx, pet_idx in pp:
-        p = teams[team_idx][pet_idx].pet
-        if p.health <= 0:
-            continue
-        if p.ability["trigger"] != "Summoned":
-            continue
-        if p.ability["triggeredBy"]["kind"] != "Self":
-            continue
-
-        func = get_effect_function(p)
-        target = func(p, [0, pet_idx], teams, te=p)
-        append_phase_list(phase_list, p, team_idx, pet_idx, True, target, [target])
-
-
-def check_status_triggers(phase_list, p, team_idx, pet_idx, teams):
-    if p.status not in ["status-honey-bee", "status-extra-life"]:
-        return
-
-    ability = data["statuses"][p.status]["ability"]
-    p.set_ability(ability)
-    te_idx = [team_idx, pet_idx]
-    activated, targets, possible = p.faint_trigger(p, te_idx)
-    append_phase_list(phase_list, p, team_idx, pet_idx, activated, targets, possible)
-    check_summon_triggers(
-        phase_list, p, team_idx, pet_idx, teams[team_idx], activated, targets, possible
-    )
 
 
 def battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict):
@@ -506,9 +438,30 @@ def battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict):
         p1._attack = original_attack
         p1._until_end_of_battle_attack_buff = original_tmp_attack
 
-    ### Add knockout list to the end of phase_list. This is later removed
-    ###   in the knockout phase
-    phase_list.append(knockout_list)
+    attack_history = phase_dict["phase_attack"]
+    if len(attack_history) == 0:
+        ### Can return safely?
+        return phase_dict
+
+    t0_pidx = attack_history[0][1][0]
+    t1_pidx = attack_history[0][1][1]
+    ### Activate all after_attack_triggers before any hurt & faint triggers
+    for team_idx, pet_idx in pet_priority:
+        ### Check if current pet is directly behind the pet that just attacked
+        test_idx = [t0_pidx, t1_pidx][team_idx] + 1
+        if pet_idx != test_idx:
+            continue
+        p = teams[team_idx][pet_idx].pet
+        fteam, oteam = get_teams([team_idx, pet_idx], teams)
+        activated, targets, possible = p.after_attack_trigger(oteam)
+        append_phase_list(
+            phase_list, p, team_idx, pet_idx, activated, targets, possible
+        )
+
+    ### Now run loop, activating all hurt triggers first, which is how game works
+    run_looping_effect_queue(
+        "hurt_trigger", ["oteam"], battle_obj, phase, teams, pet_priority, phase_dict
+    )
 
     return phase_dict
 
@@ -516,27 +469,6 @@ def battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict):
 def get_attack(p0, p1):
     attack_list = [p1.get_damage(p0.attack), p0.get_damage(p1.attack)]
     return attack_list
-
-
-def battle_phase_attack_before(battle_obj, phase, teams, pet_priority, phase_dict):
-    phase_list = phase_dict["phase_attack_before"]
-    aidx, nidx = get_attack_idx(phase, teams, pet_priority, phase_dict)
-    pp = pet_priority
-    if len(aidx) != 2:
-        ### Must be two animals available for attacking to continue with battle
-        return phase_list
-    for team_idx, pet_idx in pp:
-        if aidx[team_idx][1] != pet_idx:
-            ### Effects are only activated for the attacking pet
-            continue
-        p = teams[team_idx][pet_idx].pet
-        fteam, oteam = get_teams([team_idx, pet_idx], teams)
-        activated, targets, possible = p.before_attack_trigger(oteam)
-        append_phase_list(
-            phase_list, p, team_idx, pet_idx, activated, targets, possible
-        )
-
-    return phase_dict
 
 
 def get_attack_idx(phase, teams, pet_priority, phase_dict):
@@ -591,22 +523,6 @@ def get_attack_idx(phase, teams, pet_priority, phase_dict):
         ret_next_idx.append(())
 
     return ret_idx, ret_next_idx
-
-
-# def battle_phase_attack_after(battle_obj, phase, teams, pet_priority, phase_dict):
-#     phase_list = phase_dict[phase]
-#     pp = pet_priority
-
-#     ### Can get the two animals that just previously attacked from the
-#     ###   phase_dict
-#     attack_history = phase_dict["phase_attack"]
-#     if len(attack_history) == 0:
-#         return phase_dict
-
-#     t0_pidx = attack_history[0][1][0]
-#     t1_pidx = attack_history[0][1][1]
-
-#     return phase_dict
 
 
 def run_looping_effect_queue(
@@ -668,6 +584,8 @@ def run_looping_effect_queue(
             summoned_list = []
             faint_list = []
             fa_ref = get_friend_ahead_reference()
+            insert_idx_list = []
+            insert_values = []
 
             ### First empty the current effect queue
             for _ in range(len(effect_queue)):
@@ -689,7 +607,8 @@ def run_looping_effect_queue(
                         knockout_queue.append(p)
 
                 ### Store summoned pets
-                if get_effect_function(p) in [RespawnPet, SummonPet, SummonRandomPet]:
+                effect_fn = get_effect_function(p)
+                if effect_fn in [RespawnPet, SummonPet, SummonRandomPet]:
                     summoned_list += targets
                     ### Replace the fainted pet with summoned pet for purposes
                     ###   of indices, te_idx
@@ -702,6 +621,38 @@ def run_looping_effect_queue(
                             if check_p == p:
                                 change_te_idx = entry[-1][1]
                                 change_te_idx[1] = targets[0]
+                elif effect_fn in [Evolve]:
+                    summoned_list += targets
+                    ### Find correct place in queue for summon effect
+                    for evolve_summoned in targets:
+                        ### TODO: make this into function outside
+                        insert_idx = 0
+                        for p, _, _, _, _ in effect_queue:
+                            if evolve_summoned.attack > p.attack:
+                                break
+                            elif evolve_summoned.attack == p.attack:
+                                if evolve_summoned.health > p.health:
+                                    break
+                                elif evolve_summoned.health < p.health:
+                                    ### Then keep checking next
+                                    insert_idx += 1
+                                    pass
+                                else:
+                                    ### ASSUMPTION: if equal, just insert here
+                                    break
+                            else:
+                                ### Otherwise increment idx and keep looping
+                                insert_idx += 1
+                        insert_idx_list.append(insert_idx)
+                        insert_values.append(
+                            [
+                                evolve_summoned,
+                                team_idx,
+                                evolve_summoned.team.get_idx(evolve_summoned),
+                                getattr(evolve_summoned, "friend_summoned_trigger"),
+                                [p],
+                            ]
+                        )
 
                 ### Store pets that just performed a faint trigger
                 if trigger_method.__name__ in "faint_status_trigger":
@@ -745,13 +696,44 @@ def run_looping_effect_queue(
                     else:
                         pass
 
+                if len(insert_idx_list) != 0:
+                    break
+
+            ### If something has been inserted, then need to return to the
+            ###   top of the effect queue
+            if len(insert_idx_list) != 0:
+                for insert_idx, insert_value in zip(insert_idx_list, insert_values):
+                    effect_queue.insert(insert_idx, insert_value)
+                continue
+
             ### Then check for additional triggers to add to the queue by the
             ###   pet priority
             pp = battle_obj.update_pet_priority(teams[0], teams[1])
+
+            ### First add those with before faint trigger
+
+            ### Then add those with hurt trigger
             for team_idx, pet_idx in pp:
                 p = teams[team_idx][pet_idx].pet
                 fteam, oteam = get_teams([team_idx, pet_idx], teams)
+                if p._hurt > 0:
+                    trigger_method = getattr(p, "hurt_trigger")
+                    effect_queue.append(
+                        [
+                            p,
+                            team_idx,
+                            pet_idx,
+                            trigger_method,
+                            [
+                                oteam,
+                            ],
+                        ]
+                    )
 
+            ### Then add faint triggers
+            for team_idx, pet_idx in pp:
+                p = teams[team_idx][pet_idx].pet
+                fteam, oteam = get_teams([team_idx, pet_idx], teams)
                 if p.health <= 0:
                     trigger_method = getattr(p, "faint_trigger")
                     func = get_effect_function(p)
@@ -782,22 +764,12 @@ def run_looping_effect_queue(
                         )
                     ### If fainted, cannot activate any more effects
                     continue
-                elif p._hurt > 0:
-                    trigger_method = getattr(p, "hurt_trigger")
-                    effect_queue.append(
-                        [
-                            p,
-                            team_idx,
-                            pet_idx,
-                            trigger_method,
-                            [
-                                oteam,
-                            ],
-                        ]
-                    )
-                else:
-                    pass
 
+            ### Then add triggers that were trigger by a pet fainting, including
+            ###   knockout triggers
+            for team_idx, pet_idx in pp:
+                p = teams[team_idx][pet_idx].pet
+                fteam, oteam = get_teams([team_idx, pet_idx], teams)
                 ### Deal with pets that scored a knockout when emptying effect queue
                 ###   in the previous loop
                 if p in knockout_queue:
@@ -810,24 +782,6 @@ def run_looping_effect_queue(
                             trigger_method,
                             [
                                 oteam,
-                            ],
-                        ]
-                    )
-
-                ### Activating effect to pets that were summoned
-                for summoned_pet in summoned_list:
-                    if summoned_pet.team == p.team:
-                        trigger_method = getattr(p, "friend_summoned_trigger")
-                    else:
-                        trigger_method = getattr(p, "enemy_summoned_trigger")
-                    effect_queue.append(
-                        [
-                            p,
-                            team_idx,
-                            pet_idx,
-                            trigger_method,
-                            [
-                                summoned_pet,
                             ],
                         ]
                     )
@@ -901,6 +855,27 @@ def run_looping_effect_queue(
                         ###  There's better way to do this once test suite built
                         pass
 
+            ### Finally activate effects for pets that were summoned
+            for team_idx, pet_idx in pp:
+                p = teams[team_idx][pet_idx].pet
+                fteam, oteam = get_teams([team_idx, pet_idx], teams)
+                for summoned_pet in summoned_list:
+                    if summoned_pet.team == p.team:
+                        trigger_method = getattr(p, "friend_summoned_trigger")
+                    else:
+                        trigger_method = getattr(p, "enemy_summoned_trigger")
+                    effect_queue.append(
+                        [
+                            p,
+                            team_idx,
+                            pet_idx,
+                            trigger_method,
+                            [
+                                summoned_pet,
+                            ],
+                        ]
+                    )
+
             ### Break if no more effects to trigger
             if len(effect_queue) == 0:
                 break
@@ -913,14 +888,17 @@ def run_looping_effect_queue(
     knockout_queue = []
     summon_queue = []
 
-    pp = pet_priority
-    for team_idx, pet_idx in pp:
-        p = teams[team_idx][pet_idx].pet
-        fteam, oteam = get_teams([team_idx, pet_idx], teams)
-        trigger_method = getattr(p, trigger)
-        temp_trigger_kw_dict = {"oteam": oteam}
-        temp_trigger_args = [temp_trigger_kw_dict[x] for x in trigger_args]
-        effect_queue.append([p, team_idx, pet_idx, trigger_method, temp_trigger_args])
+    if trigger != None:
+        pp = pet_priority
+        for team_idx, pet_idx in pp:
+            p = teams[team_idx][pet_idx].pet
+            fteam, oteam = get_teams([team_idx, pet_idx], teams)
+            trigger_method = getattr(p, trigger)
+            temp_trigger_kw_dict = {"oteam": oteam}
+            temp_trigger_args = [temp_trigger_kw_dict[x] for x in trigger_args]
+            effect_queue.append(
+                [p, team_idx, pet_idx, trigger_method, temp_trigger_args]
+            )
 
     ### Run loop for effect queue
     summon_queue = loop_effect_queue(effect_queue, summon_queue, False)

@@ -755,9 +755,11 @@ class Pet:
         targets = []
         possible = []
         if self._hurt == 0:
-            raise Exception("Called hurt trigger on pet that was not hurt")
-        if self.fainted:
-            raise Exception("Called hurt trigger on fainted pet")
+            return activated, targets, possible
+        if self.health < 0:
+            ### Cannot call hurt trigger on fainted pet
+            self.reset_hurt()
+            return activated, targets, possible
 
         if self.ability["trigger"] != "Hurt":
             self.reset_hurt()

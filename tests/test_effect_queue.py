@@ -5,7 +5,7 @@ from functools import partial
 import numpy as np
 
 from sapai import *
-from sapai.battle import Battle, run_looping_effect_queue
+from sapai.battle import Battle, run_looping_effect_queue, battle_phase
 from sapai.graph import graph_battle
 from sapai.compress import *
 
@@ -13,18 +13,22 @@ from sapai.compress import *
 ###   visualize behavior of the run_looping_effect_queue
 g = partial(graph_battle, verbose=True)
 
+### Always check identical behavior of t0,t1 reordering indifference
+
 
 class TestEffectQueue(unittest.TestCase):
     def test_summon_sob(self):
         ref_team = Team(["pet-zombie-cricket"], battle=True)
+        ref_team[0].obj._attack = 1
+        ref_team[0].obj._health = 1
 
         ### Simple sob test for effect loop behavior
         t0 = Team(["cricket"])
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
-        ref_team[0].obj._attack = 1
-        ref_team[0].obj._health = 1
         self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
         ### Dolphin should kill cricket, then mosquito has no target, so
         ###   ref_state should remain the same
@@ -32,6 +36,8 @@ class TestEffectQueue(unittest.TestCase):
         t1 = Team(["dolphin", "mosquito"])
         b = run_sob(t0, t1)
         self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
         ### Dolphin should kill cricket, then dolphin should hit camel for 5
         ###   leaving it with 1 hp, then mosquito only be able to hit camel
@@ -41,6 +47,8 @@ class TestEffectQueue(unittest.TestCase):
         t1[2].obj.level = 3
         b = run_sob(t0, t1)
         self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_blowfish_pingpong(self):
         ref_team = Team(["blowfish"], battle=True)
@@ -61,6 +69,8 @@ class TestEffectQueue(unittest.TestCase):
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
         self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_badger_sob(self):
         """
@@ -80,6 +90,8 @@ class TestEffectQueue(unittest.TestCase):
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
         self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_badger_honey_fly_sob(self):
         """
@@ -106,8 +118,9 @@ class TestEffectQueue(unittest.TestCase):
         t0[1].obj.eat(Food("mushroom"))
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
-
         self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
         ### Another fish, then ability counter of fly should be only 1
         ref_team = Team(["zombie-fly", "bee", "fish", "fish", "fly"], battle=True)
@@ -124,6 +137,8 @@ class TestEffectQueue(unittest.TestCase):
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
         self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_badger_honey_fly_shark_sob(self):
         """
@@ -147,8 +162,9 @@ class TestEffectQueue(unittest.TestCase):
         t0[1].obj.eat(Food("mushroom"))
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
-
         self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_badger_hedgehog(self):
         """
@@ -163,6 +179,8 @@ class TestEffectQueue(unittest.TestCase):
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
         self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_sheep_fly(self):
         ref_team = Team(["zombie-fly", "bee", "pet-ram", "pet-ram", "fly"], battle=True)
@@ -179,8 +197,9 @@ class TestEffectQueue(unittest.TestCase):
         t0[0].obj._health = 1
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
-
         self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_spider_fly(self):
         ref_team = Team(["zombie-fly", "spider", "turtle", "fly"], battle=True)
@@ -202,7 +221,6 @@ class TestEffectQueue(unittest.TestCase):
         t0[0].obj._health = 1
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
-
         self.assertEqual(minimal_state(b.t0), minimal_state(ref_team))
 
     def test_ox_fly(self):
@@ -221,27 +239,99 @@ class TestEffectQueue(unittest.TestCase):
         t1 = Team(["dolphin"])
         b = run_sob(t0, t1)
         self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
-    def test_rhino_loop(self):
-        pass
+    def test_butterfly_dolphin(self):
+        """
+        If caterpillar is higher attack than dolphin, then it should be killed
+        when it transforms to butterfly. Otherwise, dolphin attacks caterpillar.
+        Fly does not activate for caterpillar because it's Evolve, not Faint
+        effect.
+
+        """
+        ### First check default behavior of butterfly
+        ref_team = Team(["butterfly", "fish", "fly"], battle=True)
+        ref_team[0].obj._attack = 50
+        ref_team[0].obj._health = 50
+        ref_team[1].obj._attack = 50
+        ref_team[1].obj._health = 50
+
+        t0 = Team(["caterpillar", "fish", "fly"])
+        t0[0].obj._attack = 50
+        t0[0].obj._health = 1
+        t0[0].obj.level = 3
+        t0[1].obj._attack = 50
+        t0[1].obj._health = 50
+        t1 = Team(["fish"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+
+        ### Check that dolphin will kill butterfly when it's lowest health
+        ref_team = Team(["zombie-fly", "fish", "fly"], battle=True)
+        ref_team[0].obj._attack = 4
+        ref_team[0].obj._health = 4
+        ref_team[1].obj._attack = 50
+        ref_team[1].obj._health = 50
+        ref_team[2].obj.ability_counter = 1
+
+        t0 = Team(["caterpillar", "fish", "fly"])
+        t0[0].obj._attack = 50
+        t0[0].obj._health = 1
+        t0[0].obj.level = 3
+        t0[1].obj._attack = 50
+        t0[1].obj._health = 50
+        t1 = Team(["dolphin"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+
+        ### Check that dolphin will attack fly first before caterpiller when
+        ###   caterpillar attack is lower
+        ref_team = Team(["butterfly", "fish"], battle=True)
+        ref_team[0].obj._attack = 50
+        ref_team[0].obj._health = 50
+        ref_team[1].obj._attack = 50
+        ref_team[1].obj._health = 50
+
+        t0 = Team(["caterpillar", "fish", "fly"])
+        t0[0].obj._attack = 1
+        t0[0].obj._health = 50
+        t0[0].obj.level = 3
+        t0[1].obj._attack = 50
+        t0[1].obj._health = 50
+        t1 = Team(["dolphin"])
+        b = run_sob(t0, t1)
+
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_kangaroo_ability(self):
         """
         Ensure that kangaroo ability activates before any hurt or faint triggers
 
         """
-
         ### If kangaroo ability doesn't activate first, then it would faint
         ###   from blowfish ability
-        t0 = Team(["sheep", "kangaroo"])
-        t1 = Team(["blowfish"])
-        b = run_sob(t0, t1)
+        ref_team = Team(["kangaroo"], battle=True)
+        ref_team[0].obj._attack = 3
+        ref_team[0].obj._health = 2
 
-        ### If kangaroo ability doesn't activate first, then it would faint
-        ###   from badger faint ability
-        t0 = Team(["sheep", "kangaroo"])
-        t1 = Team(["badger"])
-        b = run_sob(t0, t1)
+        t0 = Team(["fish", "kangaroo"])
+        t1 = Team(["blowfish"])
+        t1[0].obj._attack = 50
+        b = run_attack(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_attack(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+
+    def test_rhino_loop(self):
+        pass
 
 
 def run_sob(t0, t1):
@@ -271,63 +361,48 @@ def run_sob(t0, t1):
     return b
 
 
-def run_attack(t0, t1, run_before=False, finish_battle=False):
+def run_attack(t0, t1, run_before=False):
     b = Battle(t0, t1)
     phase_dict = {
         "init": [[str(x) for x in b.t0], [str(x) for x in b.t1]],
-        "attack 0": {
-            "phase_move_start": [],
-            "phase_attack": [],
-        },
+        "attack 0": {},
     }
+    if run_before:
+        phase_dict["attack 0"]["phase_attack_before"] = []
+    phase_dict["attack 0"]["phase_attack"] = []
+    phase_dict["attack 0"]["phase_move_end"] = []
+    phase_str = "attack 0"
+    for temp_phase in phase_dict[phase_str]:
+        battle_phase(b, temp_phase, [b.t0, b.t1], b.pet_priority, phase_dict[phase_str])
+    b.battle_history = phase_dict
+    phase_dict[phase_str]["phase_move_end"] = [
+        [
+            [str(x) for x in b.t0],
+            [str(x) for x in b.t1],
+        ]
+    ]
+    b.battle_history = phase_dict
+    return b
+
+
+def run_battle(t0, t1):
+    b = Battle(t0, t1)
+    b.battle()
+    return b
 
 
 # %%
-
-# seed_state = np.random.RandomState(seed=3).get_state()
-# t0 = Team(["spider", "fly"], seed_state=seed_state)
-# t0[0].obj.eat(Food("mushroom"))
-# t0[0].obj.level = 3
-# t0[0].obj._health = 1
-# t1 = Team(["dolphin"])
-# b = run_sob(t0, t1)
-
-# ref_team = Team(["zombie-fly", "spider", "turtle", "fly"], battle=True)
-# ref_team[0].obj._attack = 4
-# ref_team[0].obj._health = 4
-# ref_team[1].obj._attack = 1
-# ref_team[1].obj._health = 1
-# ref_team[1].obj.level = 3
-# ref_team[2].obj.level = 3
-# ref_team[3].obj.ability_counter = 1
-# t = minimal_state(b.t0)
-# r = minimal_state(ref_team)
-
-# for i in range(len(t["team"])):
-#     print(i, t["team"][i] == r["team"][i])
-
-#%%
-# ref_team = Team(["bee", "ram", "ram", "ox", "fly"], battle=True)
-# ref_team[1].obj._attack = 2
-# ref_team[1].obj._health = 2
-# ref_team[2].obj._attack = 2
-# ref_team[2].obj._health = 2
-# ref_team[3].obj._attack = 2
-# ref_team[3].obj.ability_counter = 2
-# ref_team[3].obj.status = "status-melon-armor"
-
-# t0 = Team(["sheep", "ox", "fly"])
-# t0[0].obj.eat(Food("honey"))
-# t0[0].obj._health = 1
-# t1 = Team(["dolphin"])
-# b = run_sob(t0, t1)
 
 # t = b.t0.state
 # r = ref_team.state
 # for i in range(len(t["team"])):
 #     print(i, t["team"][i] == r["team"][i])
 # print(b.t0.state == ref_team.state)
+
 # %%
+# t0 = Team(["rhino"])
+# t1 = Team(["ant", "ant", "ant", "ant", "ant"])
+# b = run_attack(t0, t1)
 
 
 #%%

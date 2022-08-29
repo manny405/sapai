@@ -599,7 +599,9 @@ def Evolve(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
         # tiger behind, just does nothing
         return target, possible
     fteam[apet_idx[1]] = spet
-    return target, possible
+    spet.team = fteam
+    spet.player = fteam.player
+    return [spet], possible
 
 
 def FoodMultiplier(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
