@@ -460,7 +460,7 @@ def battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict):
 
     ### Now run loop, activating all hurt triggers first, which is how game works
     run_looping_effect_queue(
-        "hurt_trigger", ["oteam"], battle_obj, phase, teams, pet_priority, phase_dict
+        None, [], battle_obj, phase, teams, pet_priority, phase_dict
     )
 
     return phase_dict
@@ -561,7 +561,7 @@ def run_looping_effect_queue(
                     [t0_fa_ref, t1_fa_ref][i][key] = []
         return t0_fa_ref, t1_fa_ref
 
-    def loop_effect_queue(effect_queue, summon_queue, run_status_summon):
+    def loop_effect_queue(effect_queue, summon_queue, run_status_summon, init_knockout):
         """
         Arguments
         ---------
@@ -575,6 +575,19 @@ def run_looping_effect_queue(
         ###   to be placed after all other summons
         final_summon_queue = []
         faint_list = []
+        ### If init_knockout, check for initial knockout triggers
+        init_knockout_list = []
+        if init_knockout:
+            if "phase_attack" in phase_dict:
+                attack_history = phase_dict["phase_attack"]
+                if len(attack_history) > 0:
+                    t0_pidx = attack_history[0][1][0]
+                    t1_pidx = attack_history[0][1][1]
+                    if teams[0][t0_pidx].obj.health <= 0:
+                        init_knockout_list.append(teams[1][t1_pidx].obj)
+                    if teams[1][t1_pidx].obj.health <= 0:
+                        init_knockout_list.append(teams[0][t0_pidx].obj)
+
         while True:
             ### Question: Does pet_priority need to be re-evaluated in this loop?
             ###   Should match what actual game does.
@@ -586,6 +599,11 @@ def run_looping_effect_queue(
             fa_ref = get_friend_ahead_reference()
             insert_idx_list = []
             insert_values = []
+
+            if init_knockout:
+                knockout_queue += init_knockout_list
+            ### Don't check again
+            init_knockout = False
 
             ### First empty the current effect queue
             for _ in range(len(effect_queue)):
@@ -604,7 +622,22 @@ def run_looping_effect_queue(
                 ### Store any pet that scored a knockout with its effect
                 for temp_target in targets:
                     if temp_target.health <= 0:
-                        knockout_queue.append(p)
+                        ### If scored knockout with effect, need to break
+                        ###   right away to insert another knockout trigger to
+                        ###   the top of the effect queue
+                        if trigger_method == getattr(p, "knockout_trigger"):
+                            insert_idx_list.append(0)
+                            insert_values.append(
+                                [
+                                    p,
+                                    team_idx,
+                                    pet_idx,
+                                    trigger_method,
+                                    effect_args,
+                                ]
+                            )
+                if len(insert_values) > 0:
+                    break
 
                 ### Store summoned pets
                 effect_fn = get_effect_function(p)
@@ -882,9 +915,9 @@ def run_looping_effect_queue(
             )
 
     ### Run loop for effect queue
-    summon_queue = loop_effect_queue(effect_queue, summon_queue, False)
+    summon_queue = loop_effect_queue(effect_queue, summon_queue, False, True)
     ### Then run summon queue through looping effect queue
-    _ = loop_effect_queue(summon_queue, summon_queue, True)
+    _ = loop_effect_queue(summon_queue, summon_queue, True, False)
     ### Queues should be totally empty at end of looping
     assert len(_) == 0
 

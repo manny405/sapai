@@ -62,6 +62,18 @@ class TestEffectQueue(unittest.TestCase):
         b = run_sob(t0, t1)
         self.assertEqual(b.t1.state, ref_team.state)
 
+        ### Blowfish should trigger multiple hurt triggers in a row when
+        ###   hurt multiple times in a single effect queue loop. This is
+        ###   working correctly but hard to write an exact unit test for.
+        t0 = Team(["blowfish"])
+        t1 = Team(["hedgehog", "blowfish", "blowfish"])
+        t0[0].obj._health = 50
+        t1[0].obj._health = 1
+        t1[0].obj.hurt(1)
+        t1[1].obj._health = 8
+        t1[2].obj._health = 8
+        b = run_sob(t0, t1)
+
     def test_bee_sob(self):
         ref_team = Team(["pet-bee"], battle=True)
         t0 = Team(["ant"])
@@ -331,7 +343,49 @@ class TestEffectQueue(unittest.TestCase):
         self.assertEqual(b.t1.state, ref_team.state)
 
     def test_rhino_loop(self):
-        pass
+        """
+        Ant abilities should not activate until rhino has killed all. Therefore
+        enemy team should be empty.
+        Ant abilities should find no targets if pet is summoned (? need ref for this)
+        """
+        ref_team = Team([], battle=True)
+        t0 = Team(["rhino"])
+        t1 = Team(["ant", "ant", "ant", "ant", "ant"])
+        t1[0].obj.level = 3
+        t1[1].obj.level = 3
+        t1[2].obj.level = 3
+        t1[3].obj.level = 3
+        t1[4].obj.level = 3
+        b = run_attack(t0, t1)
+        self.assertEqual(b.t1.state, ref_team.state)
+        b = run_attack(t1, t0)
+        self.assertEqual(b.t0.state, ref_team.state)
+
+        ref_team = Team(["zombie-cricket"], battle=True)
+        ref_team[0].obj._attack = 1
+        ref_team[0].obj._health = 1
+        t0 = Team(["rhino"])
+        t1 = Team(["cricket", "ant", "ant", "ant", "ant"])
+        t1[1].obj.level = 3
+        t1[2].obj.level = 3
+        t1[3].obj.level = 3
+        t1[4].obj.level = 3
+        b = run_attack(t0, t1)
+        self.assertEqual(b.t1.state, ref_team.state)
+        b = run_attack(t1, t0)
+        self.assertEqual(b.t0.state, ref_team.state)
+
+    def test_rhino_turtle(self):
+        """
+        Turtle, with BeforeFaint ability, should trigger before the rhino. Therefore, the pet behind turtle should not be hurt.
+        """
+        ref_team = Team(["ant"], battle=True)
+        t0 = Team(["rhino"])
+        t1 = Team(["turtle", "ant"])
+        b = run_attack(t0, t1)
+        self.assertEqual(b.t1.state, ref_team.state)
+        b = run_attack(t1, t0)
+        self.assertEqual(b.t0.state, ref_team.state)
 
 
 def run_sob(t0, t1):
