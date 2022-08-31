@@ -2558,7 +2558,7 @@ data = {
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
                 "description": "Faint: Give the two friends behind +1/+1.",
-                "trigger": "Faint",
+                "trigger": "BeforeFaint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
@@ -2570,7 +2570,7 @@ data = {
             },
             "level2Ability": {
                 "description": "Faint: Give the two friends behind +2/+2.",
-                "trigger": "Faint",
+                "trigger": "BeforeFaint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
@@ -2582,7 +2582,7 @@ data = {
             },
             "level3Ability": {
                 "description": "Faint: Give the two friends behind +3/+3.",
-                "trigger": "Faint",
+                "trigger": "BeforeFaint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
@@ -3817,7 +3817,7 @@ data = {
             "packs": ["StandardPack"],
             "level1Ability": {
                 "description": "Faint: Deal Attack damage to adjacent animals",
-                "trigger": "Faint",
+                "trigger": "BeforeFaint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "DealDamage",
@@ -3827,7 +3827,7 @@ data = {
             },
             "level2Ability": {
                 "description": "Faint: Deal Attack damage to adjacent animals",
-                "trigger": "Faint",
+                "trigger": "BeforeFaint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "DealDamage",
@@ -3837,7 +3837,7 @@ data = {
             },
             "level3Ability": {
                 "description": "Faint: Deal Attack damage to adjacent animals",
-                "trigger": "Faint",
+                "trigger": "BeforeFaint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "DealDamage",
@@ -5455,7 +5455,7 @@ data = {
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
                 "description": "Faint: Give friend behind Melon Armor",
-                "trigger": "Faint",
+                "trigger": "BeforeFaint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ApplyStatus",
@@ -5465,7 +5465,7 @@ data = {
             },
             "level2Ability": {
                 "description": "Faint: Give 2 friends behind Melon Armor",
-                "trigger": "Faint",
+                "trigger": "BeforeFaint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ApplyStatus",
@@ -5475,7 +5475,7 @@ data = {
             },
             "level3Ability": {
                 "description": "Faint: Give 3 friends behind Melon Armor",
-                "trigger": "Faint",
+                "trigger": "BeforeFaint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ApplyStatus",

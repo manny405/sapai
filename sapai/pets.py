@@ -532,7 +532,7 @@ class Pet:
         activated = False
         targets = []
         possible = []
-        if self.ability["trigger"] != "Faint":
+        if self.ability["trigger"] not in ["Faint", "BeforeFaint"]:
             ### Remove from team when faint_trigger called before returning if
             ###   triggered by self
             if trigger == self:

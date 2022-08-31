@@ -710,15 +710,19 @@ def run_looping_effect_queue(
             ###   pet priority
             pp = battle_obj.update_pet_priority(teams[0], teams[1])
 
-            ### First add those with before faint trigger
+            before_faint_trigger_list = []
+            hurt_trigger_list = []
+            knockout_trigger_list = []
+            faint_trigger_list = []
+            pet_faint_trigger_list = []
+            pet_summoned_trigger_list = []
 
-            ### Then add those with hurt trigger
             for team_idx, pet_idx in pp:
                 p = teams[team_idx][pet_idx].pet
                 fteam, oteam = get_teams([team_idx, pet_idx], teams)
-                if p._hurt > 0:
+                if p._hurt > 0 and p.health > 0:
                     trigger_method = getattr(p, "hurt_trigger")
-                    effect_queue.append(
+                    hurt_trigger_list.append(
                         [
                             p,
                             team_idx,
@@ -729,52 +733,37 @@ def run_looping_effect_queue(
                             ],
                         ]
                     )
-
-            ### Then add faint triggers
-            for team_idx, pet_idx in pp:
-                p = teams[team_idx][pet_idx].pet
-                fteam, oteam = get_teams([team_idx, pet_idx], teams)
-                if p.health <= 0:
+                elif p.health <= 0:
                     trigger_method = getattr(p, "faint_trigger")
                     func = get_effect_function(p)
+                    temp_args = [
+                        p,
+                        team_idx,
+                        pet_idx,
+                        trigger_method,
+                        [p, [team_idx, pet_idx], oteam],
+                    ]
                     ### Check if faint effect should be put in summon queue or
                     ###   activated immediately
                     if func in [RespawnPet, SummonPet, SummonRandomPet]:
                         ### Don't add summon ability if already in summon_queue
                         if p not in summon_queue_added:
-                            summon_queue.append(
-                                [
-                                    p,
-                                    team_idx,
-                                    pet_idx,
-                                    trigger_method,
-                                    [p, [team_idx, pet_idx], oteam],
-                                ]
-                            )
+                            summon_queue.append(temp_args)
                             summon_queue_added.append(p)
                     else:
-                        effect_queue.append(
-                            [
-                                p,
-                                team_idx,
-                                pet_idx,
-                                trigger_method,
-                                [p, [team_idx, pet_idx], oteam],
-                            ]
-                        )
+                        ### Check if BeforeAttack
+                        if p.ability["trigger"] == "BeforeFaint":
+                            before_faint_trigger_list.append(temp_args)
+                        else:
+                            faint_trigger_list.append(temp_args)
                     ### If fainted, cannot activate any more effects
                     continue
 
-            ### Then add triggers that were trigger by a pet fainting, including
-            ###   knockout triggers
-            for team_idx, pet_idx in pp:
-                p = teams[team_idx][pet_idx].pet
-                fteam, oteam = get_teams([team_idx, pet_idx], teams)
                 ### Deal with pets that scored a knockout when emptying effect queue
                 ###   in the previous loop
                 if p in knockout_queue:
                     trigger_method = getattr(p, "knockout_trigger")
-                    effect_queue.append(
+                    knockout_trigger_list.append(
                         [
                             p,
                             team_idx,
@@ -789,6 +778,17 @@ def run_looping_effect_queue(
                 ### Activating effects triggered by fainted pets
                 for fainted_pet, te_idx in faint_list:
                     trigger_method = getattr(p, "faint_trigger")
+                    temp_args = [
+                        p,
+                        team_idx,
+                        pet_idx,
+                        trigger_method,
+                        [
+                            fainted_pet,
+                            te_idx,
+                            oteam,
+                        ],
+                    ]
                     if (
                         p.ability["trigger"] == "Faint"
                         and p.ability["triggeredBy"]["kind"] == "EachFriend"
@@ -800,35 +800,11 @@ def run_looping_effect_queue(
                         ):
                             ### If summon due to pet dying, then put into the
                             ###   summon queue
-                            final_summon_queue.append(
-                                [
-                                    p,
-                                    team_idx,
-                                    pet_idx,
-                                    trigger_method,
-                                    [
-                                        fainted_pet,
-                                        te_idx,
-                                        oteam,
-                                    ],
-                                ]
-                            )
+                            final_summon_queue.append(temp_args)
                         else:
                             ### Otherwise, add to effect queue for activation
                             ###   right away
-                            effect_queue.append(
-                                [
-                                    p,
-                                    team_idx,
-                                    pet_idx,
-                                    trigger_method,
-                                    [
-                                        fainted_pet,
-                                        te_idx,
-                                        oteam,
-                                    ],
-                                ]
-                            )
+                            pet_faint_trigger_list.append(temp_args)
                     elif (
                         p.ability["trigger"] == "Faint"
                         and p.ability["triggeredBy"]["kind"] == "EachEnemy"
@@ -841,7 +817,7 @@ def run_looping_effect_queue(
                         and fainted_pet.team == p.team
                     ):
                         if fa_ref[team_idx][id(p)] == fainted_pet:
-                            effect_queue.append(
+                            pet_faint_trigger_list.append(
                                 [
                                     p,
                                     team_idx,
@@ -855,16 +831,12 @@ def run_looping_effect_queue(
                         ###  There's better way to do this once test suite built
                         pass
 
-            ### Finally activate effects for pets that were summoned
-            for team_idx, pet_idx in pp:
-                p = teams[team_idx][pet_idx].pet
-                fteam, oteam = get_teams([team_idx, pet_idx], teams)
                 for summoned_pet in summoned_list:
                     if summoned_pet.team == p.team:
                         trigger_method = getattr(p, "friend_summoned_trigger")
                     else:
                         trigger_method = getattr(p, "enemy_summoned_trigger")
-                    effect_queue.append(
+                    pet_summoned_trigger_list.append(
                         [
                             p,
                             team_idx,
@@ -875,6 +847,15 @@ def run_looping_effect_queue(
                             ],
                         ]
                     )
+
+            effect_queue = (
+                before_faint_trigger_list
+                + hurt_trigger_list
+                + knockout_trigger_list
+                + faint_trigger_list
+                + pet_faint_trigger_list
+                + pet_summoned_trigger_list
+            )
 
             ### Break if no more effects to trigger
             if len(effect_queue) == 0:
