@@ -61,18 +61,27 @@ class TestEffectQueue(unittest.TestCase):
         t0[0].obj.hurt(1)
         b = run_sob(t0, t1)
         self.assertEqual(b.t1.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t0.state, ref_team.state)
 
         ### Blowfish should trigger multiple hurt triggers in a row when
-        ###   hurt multiple times in a single effect queue loop. This is
-        ###   working correctly but hard to write an exact unit test for.
+        ###   hurt multiple times in a single effect queue loop. Therefore,
+        ###   in this case, t0 blowfish should only take 4 points of damage
+        ###   not 6, which would be the case if hurt triggers always alternated
+        ref_team = Team(["blowfish"], battle=True)
+        ref_team[0].obj._health = 46
+
         t0 = Team(["blowfish"])
-        t1 = Team(["hedgehog", "blowfish", "blowfish"])
+        t1 = Team(["hedgehog", "blowfish"])
         t0[0].obj._health = 50
         t1[0].obj._health = 1
         t1[0].obj.hurt(1)
-        t1[1].obj._health = 8
-        t1[2].obj._health = 8
+        t1[1].obj._attack = 50
+        t1[1].obj._health = 6
         b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_bee_sob(self):
         ref_team = Team(["pet-bee"], battle=True)
@@ -377,7 +386,8 @@ class TestEffectQueue(unittest.TestCase):
 
     def test_rhino_turtle(self):
         """
-        Turtle, with BeforeFaint ability, should trigger before the rhino. Therefore, the pet behind turtle should not be hurt.
+        Turtle, with BeforeFaint ability, should trigger before the rhino.
+        Therefore, the pet behind turtle should not be hurt.
         """
         ref_team = Team(["ant"], battle=True)
         t0 = Team(["rhino"])
@@ -386,6 +396,96 @@ class TestEffectQueue(unittest.TestCase):
         self.assertEqual(b.t1.state, ref_team.state)
         b = run_attack(t1, t0)
         self.assertEqual(b.t0.state, ref_team.state)
+
+    def test_rhino_double(self):
+        """
+        Test that rhino damage is double against tier 1 pets
+        """
+        pass
+
+    def test_elephant(self):
+        """
+        Testing variety of elephant behaviors
+        """
+        ### Peacock
+        Team(["elephant", "blowfish"])
+
+        ### Should kill three pets behind if they're health is 1
+
+        ### Blowfish
+        t0 = Team(["elephant", "blowfish"])
+        t1 = Team(["turtle"])
+
+    def test_crab(self):
+        """
+        Test that if crab's attack is smaller than dolphin, it should faint,
+        otherwise it should live
+        """
+        pass
+
+    def test_scorpion(self):
+        """
+        When scorpion comes back from one-up, it should gain peanut
+        """
+        pass
+
+    def test_turkey_horse(self):
+        """
+        Test turkey and horse are giving buffs properly to summoned pets
+        """
+        ### Sheep
+
+        ### Rooster
+
+        ### Sheep fly
+        pass
+
+    def test_boar(self):
+        """
+        Ensure boar receives buff before attack correctly
+        """
+        pass
+
+    def test_leopard_tiger_blowfish(self):
+        """
+        Test start of turn for leopard tiger versus blowfish
+        """
+        pass
+
+    def test_skunk(self):
+        pass
+
+    def test_whale(self):
+        """
+        Check that whale's Swallow is performed correctly and that the pet
+        is spit out at the right attack and health
+        """
+        pass
+
+    def test_whale_tiger(self):
+        """
+        Ensure that whale and tiger are performing properly together.
+        """
+        pass
+
+    def test_crocodile(self):
+        """
+        Test crocodile is multiple triggers and hurts multiple pets if the
+        back one faints
+        """
+        pass
+
+    def test_tiger(self):
+        """
+        Test tiger for nearly all pets
+        """
+        pass
+
+    def test_rat(self):
+        pass
+
+    def test_gorilla(self):
+        pass
 
 
 def run_sob(t0, t1):

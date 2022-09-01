@@ -648,11 +648,20 @@ class Pet:
             else:
                 self.ability_counter += 1
 
-        func = get_effect_function(self)
-        pet_idx = self.team.get_idx(self)
-        targets, possible = tiger_func(
-            func, False, self, [0, pet_idx], [self.team, trigger], trigger
-        )
+        triggers = 1
+        if "triggers" in self.ability["effect"]:
+            triggers = self.ability["effect"]["triggers"]
+
+        targets = []
+        possible = []
+        for _ in range(triggers):
+            func = get_effect_function(self)
+            pet_idx = self.team.get_idx(self)
+            temp_targets, temp_possible = tiger_func(
+                func, False, self, [0, pet_idx], [self.team, trigger], trigger
+            )
+            targets += temp_targets
+            possible += temp_possible
 
         activated = True
         return activated, targets, possible
@@ -680,11 +689,20 @@ class Pet:
             else:
                 self.ability_counter += 1
 
-        func = get_effect_function(self)
-        pet_idx = self.team.get_idx(self)
-        targets, possible = tiger_func(
-            func, False, self, [0, pet_idx], [self.team, trigger], trigger
-        )
+        triggers = 1
+        if "triggers" in self.ability["effect"]:
+            triggers = self.ability["effect"]["triggers"]
+
+        targets = []
+        possible = []
+        for _ in range(triggers):
+            func = get_effect_function(self)
+            pet_idx = self.team.get_idx(self)
+            temp_targets, temp_possible = tiger_func(
+                func, False, self, [0, pet_idx], [self.team, trigger], trigger
+            )
+            targets += temp_targets
+            possible += temp_possible
 
         activated = True
         return activated, targets, possible

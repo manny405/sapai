@@ -875,7 +875,8 @@ def SummonPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
             spet._health = apet.ability["effect"]["withHealth"]
         if "withLevel" in apet.ability["effect"]:
             spet.level = apet.ability["effect"]["withLevel"]
-        if apet.name == "pet-rooster":
+
+        if "attackPercentage" in "pet-rooster":
             spet._attack = int(apet.attack * 0.5)
 
         target.append(spet)
