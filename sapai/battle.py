@@ -384,79 +384,80 @@ def battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict):
     p0 = teams[0][aidx[0][1]].pet
     p1 = teams[1][aidx[1][1]].pet
 
-    #### Implement food
-    p0a, p1a = get_attack(p0, p1)
+    if p0._health > 0 and p1._health > 0:
+        #### Implement food
+        p0a, p1a = get_attack(p0, p1)
 
-    teams[0][aidx[0][1]].pet.hurt(p1a)
-    teams[1][aidx[1][1]].pet.hurt(p0a)
-    phase_list.append(["Attack", (aidx[0]), str(p0), [str(p1)]])
+        teams[0][aidx[0][1]].pet.hurt(p1a)
+        teams[1][aidx[1][1]].pet.hurt(p0a)
+        phase_list.append(["Attack", (aidx[0]), str(p0), [str(p1)]])
 
-    ### Keep track of knockouts for rhino and hippo by:
-    ###   (attacking_pet, team_idx)
-    knockout_list = []
-    if teams[0][aidx[0][1]].pet.health <= 0:
-        knockout_list.append((p1, 1))
-    if teams[1][aidx[1][1]].pet.health <= 0:
-        knockout_list.append((p0, 0))
+        ### Keep track of knockouts for rhino and hippo by:
+        ###   (attacking_pet, team_idx)
+        knockout_list = []
+        if teams[0][aidx[0][1]].pet.health <= 0:
+            knockout_list.append((p1, 1))
+        if teams[1][aidx[1][1]].pet.health <= 0:
+            knockout_list.append((p0, 0))
 
-    ### Implement chili
-    if p0.status == "status-splash-attack":
-        original_attack = p0._attack
-        original_tmp_attack = p0._until_end_of_battle_attack_buff
-        original_status = p0.status
-        p0._attack = 5
-        p0._until_end_of_battle_attack_buff = 0
-        if len(nidx[1]) != 0:
-            pn1 = teams[1][nidx[1][1]].pet
-            p0a, p1a = get_attack(p0, pn1)
-            pn1.hurt(p0a)
-            phase_list.append(["splash", (aidx[0]), (str(p0)), [str(pn1)]])
+        ### Implement chili
+        if p0.status == "status-splash-attack":
+            original_attack = p0._attack
+            original_tmp_attack = p0._until_end_of_battle_attack_buff
+            original_status = p0.status
+            p0._attack = 5
+            p0._until_end_of_battle_attack_buff = 0
+            if len(nidx[1]) != 0:
+                pn1 = teams[1][nidx[1][1]].pet
+                p0a, p1a = get_attack(p0, pn1)
+                pn1.hurt(p0a)
+                phase_list.append(["splash", (aidx[0]), (str(p0)), [str(pn1)]])
 
-            if pn1.health <= 0:
-                knockout_list.append((p0, 0))
+                if pn1.health <= 0:
+                    knockout_list.append((p0, 0))
 
-        p0.status = original_status
-        p0._attack = original_attack
-        p0._until_end_of_battle_attack_buff = original_tmp_attack
+            p0.status = original_status
+            p0._attack = original_attack
+            p0._until_end_of_battle_attack_buff = original_tmp_attack
 
-    if p1.status == "status-splash-attack":
-        original_attack = p1._attack
-        original_tmp_attack = p1._until_end_of_battle_attack_buff
-        original_status = p1.status
-        p1._attack = 5
-        p1._until_end_of_battle_attack_buff = 0
-        if len(nidx[0]) != 0:
-            pn0 = teams[0][nidx[0][1]].pet
-            p0a, p1a = get_attack(pn0, p1)
-            pn0.hurt(p1a)
-            phase_list.append(["splash", (aidx[1]), (str(p1)), [str(pn0)]])
+        if p1.status == "status-splash-attack":
+            original_attack = p1._attack
+            original_tmp_attack = p1._until_end_of_battle_attack_buff
+            original_status = p1.status
+            p1._attack = 5
+            p1._until_end_of_battle_attack_buff = 0
+            if len(nidx[0]) != 0:
+                pn0 = teams[0][nidx[0][1]].pet
+                p0a, p1a = get_attack(pn0, p1)
+                pn0.hurt(p1a)
+                phase_list.append(["splash", (aidx[1]), (str(p1)), [str(pn0)]])
 
-            if pn0.health <= 0:
-                knockout_list.append((p1, 1))
+                if pn0.health <= 0:
+                    knockout_list.append((p1, 1))
 
-        p1.status = original_status
-        p1._attack = original_attack
-        p1._until_end_of_battle_attack_buff = original_tmp_attack
+            p1.status = original_status
+            p1._attack = original_attack
+            p1._until_end_of_battle_attack_buff = original_tmp_attack
 
-    attack_history = phase_dict["phase_attack"]
-    if len(attack_history) == 0:
-        ### Can return safely?
-        return phase_dict
+        attack_history = phase_dict["phase_attack"]
+        if len(attack_history) == 0:
+            ### Can return safely?
+            return phase_dict
 
-    t0_pidx = attack_history[0][1][0]
-    t1_pidx = attack_history[0][1][1]
-    ### Activate all after_attack_triggers before any hurt & faint triggers
-    for team_idx, pet_idx in pet_priority:
-        ### Check if current pet is directly behind the pet that just attacked
-        test_idx = [t0_pidx, t1_pidx][team_idx] + 1
-        if pet_idx != test_idx:
-            continue
-        p = teams[team_idx][pet_idx].pet
-        fteam, oteam = get_teams([team_idx, pet_idx], teams)
-        activated, targets, possible = p.after_attack_trigger(oteam)
-        append_phase_list(
-            phase_list, p, team_idx, pet_idx, activated, targets, possible
-        )
+        t0_pidx = attack_history[0][1][0]
+        t1_pidx = attack_history[0][1][1]
+        ### Activate all after_attack_triggers before any hurt & faint triggers
+        for team_idx, pet_idx in pet_priority:
+            ### Check if current pet is directly behind the pet that just attacked
+            test_idx = [t0_pidx, t1_pidx][team_idx] + 1
+            if pet_idx != test_idx:
+                continue
+            p = teams[team_idx][pet_idx].pet
+            fteam, oteam = get_teams([team_idx, pet_idx], teams)
+            activated, targets, possible = p.after_attack_trigger(oteam)
+            append_phase_list(
+                phase_list, p, team_idx, pet_idx, activated, targets, possible
+            )
 
     ### Now run loop, activating all hurt triggers first, which is how game works
     run_looping_effect_queue(

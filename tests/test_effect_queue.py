@@ -462,18 +462,19 @@ class TestEffectQueue(unittest.TestCase):
         self.assertEqual(b.t1.state, ref_team.state)
 
         ### Kill all without ever attacking
+        seed_state = np.random.RandomState(seed=3).get_state()
         ref_team = Team(["elephant", "blowfish"], battle=True)
         ref_team[0].obj.level = 3
         ref_team[1].obj._health = 50
         ref_team[1].obj._health -= 6
-        t0 = Team(["elephant", "blowfish"])
+        t0 = Team(["elephant", "blowfish"], seed_state=seed_state)
         t0[0].obj.level = 3
         t0[1].obj._health = 50
         t1 = Team(["pig", "pig", "pig", "pig", "pig"])
         b = run_battle(t0, t1)
-        self.assertEqual(b.t0.state, ref_team.state)
+        self.assertEqual(minimal_state(b.t0), minimal_state(ref_team))
         b = run_battle(t1, t0)
-        self.assertEqual(b.t1.state, ref_team.state)
+        self.assertEqual(minimal_state(b.t1), minimal_state(ref_team))
 
     def test_crab(self):
         """
@@ -533,7 +534,7 @@ class TestEffectQueue(unittest.TestCase):
         back one faints
         """
         pass
-    
+
     def test_rat(self):
         pass
 
@@ -545,8 +546,6 @@ class TestEffectQueue(unittest.TestCase):
         Test tiger for nearly all pets
         """
         pass
-
-    
 
 
 def run_sob(t0, t1):
