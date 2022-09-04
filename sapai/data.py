@@ -7713,6 +7713,7 @@ data = {
                     "kind": "DealDamage",
                     "target": {"kind": "FirstEnemy"},
                     "amount": 4,
+                    "tier1Double": True,
                 },
             },
             "level2Ability": {
@@ -7723,6 +7724,7 @@ data = {
                     "kind": "DealDamage",
                     "target": {"kind": "FirstEnemy"},
                     "amount": 8,
+                    "tier1Double": True,
                 },
             },
             "level3Ability": {
@@ -7733,6 +7735,7 @@ data = {
                     "kind": "DealDamage",
                     "target": {"kind": "FirstEnemy"},
                     "amount": 12,
+                    "tier1Double": True,
                 },
             },
             "probabilities": [

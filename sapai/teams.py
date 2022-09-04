@@ -361,7 +361,15 @@ class TeamSlot(Slot):
         return self.obj.attack
 
     @property
+    def _attack(self):
+        return self.obj.attack
+
+    @property
     def health(self):
+        return self.obj.health
+
+    @property
+    def _health(self):
         return self.obj.health
 
     @property

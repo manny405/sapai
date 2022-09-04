@@ -401,20 +401,79 @@ class TestEffectQueue(unittest.TestCase):
         """
         Test that rhino damage is double against tier 1 pets
         """
-        pass
+        t0 = Team(["rhino"])
+        t1 = Team(["fish", "fish"])
+        t1[1].obj._health = 50
+        ref_team = Team(["fish"], battle=True)
+        ref_team[0].obj._health = 50
+        ref_team[0].obj._health -= t0[0].ability["effect"]["amount"] * 2
+        b = run_attack(t0, t1)
+        self.assertEqual(b.t1.state, ref_team.state)
+        b = run_attack(t1, t0)
+        self.assertEqual(b.t0.state, ref_team.state)
+
+        t0 = Team(["rhino"])
+        t1 = Team(["fish", "dog"])
+        t1[1].obj._health = 50
+        ref_team = Team(["dog"], battle=True)
+        ref_team[0].obj._health = 50
+        ref_team[0].obj._health -= t0[0].ability["effect"]["amount"]
+        b = run_attack(t0, t1)
+        self.assertEqual(b.t1.state, ref_team.state)
+        b = run_attack(t1, t0)
+        self.assertEqual(b.t0.state, ref_team.state)
 
     def test_elephant(self):
         """
         Testing variety of elephant behaviors
         """
         ### Peacock
-        Team(["elephant", "blowfish"])
+        ref_team = Team(["peacock"], battle=True)
+        ref_team[0].obj._health -= 3
+        ref_team[0].obj._attack += ref_team[0].ability["effect"]["attackAmount"] * 3
+        t0 = Team(["elephant", "peacock"])
+        t0[0].obj.level = 3
+        t1 = Team(["dragon"])
+        b = run_attack(t0, t1, run_before=True)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_attack(t1, t0, run_before=True)
+        self.assertEqual(b.t1.state, ref_team.state)
 
         ### Should kill three pets behind if they're health is 1
+        ref_team = Team([], battle=True)
+        t0 = Team(["elephant", "pig", "pig", "pig"])
+        t0[0].obj.level = 3
+        t1 = Team(["dragon"])
+        b = run_attack(t0, t1, run_before=True)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_attack(t1, t0, run_before=True)
+        self.assertEqual(b.t1.state, ref_team.state)
 
-        ### Blowfish
+        ### Blowfish kills three
+        ref_team = Team(["elephant", "blowfish"], battle=True)
+        ref_team[0].obj.level = 3
+        ref_team[1].obj._health -= 3
         t0 = Team(["elephant", "blowfish"])
-        t1 = Team(["turtle"])
+        t0[0].obj.level = 3
+        t1 = Team(["pig", "pig", "pig"])
+        b = run_attack(t0, t1, run_before=True)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_attack(t1, t0, run_before=True)
+        self.assertEqual(b.t1.state, ref_team.state)
+
+        ### Kill all without ever attacking
+        ref_team = Team(["elephant", "blowfish"], battle=True)
+        ref_team[0].obj.level = 3
+        ref_team[1].obj._health = 50
+        ref_team[1].obj._health -= 6
+        t0 = Team(["elephant", "blowfish"])
+        t0[0].obj.level = 3
+        t0[1].obj._health = 50
+        t1 = Team(["pig", "pig", "pig", "pig", "pig"])
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_crab(self):
         """
@@ -474,6 +533,12 @@ class TestEffectQueue(unittest.TestCase):
         back one faints
         """
         pass
+    
+    def test_rat(self):
+        pass
+
+    def test_gorilla(self):
+        pass
 
     def test_tiger(self):
         """
@@ -481,11 +546,7 @@ class TestEffectQueue(unittest.TestCase):
         """
         pass
 
-    def test_rat(self):
-        pass
-
-    def test_gorilla(self):
-        pass
+    
 
 
 def run_sob(t0, t1):

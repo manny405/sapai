@@ -555,8 +555,14 @@ def DealDamage(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
         else:
             raise Exception()
     for target_pet in target:
-        health_amount = target_pet.get_damage(health_amount)
-        target_pet.hurt(health_amount)
+        if apet.ability["effect"].get("tier1Double", False):
+            if target_pet.tier == 1:
+                temp_health_amount = target_pet.get_damage(health_amount * 2)
+            else:
+                temp_health_amount = target_pet.get_damage(health_amount)
+        else:
+            temp_health_amount = target_pet.get_damage(health_amount)
+        target_pet.hurt(temp_health_amount)
     return target, possible
 
 
