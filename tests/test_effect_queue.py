@@ -8,6 +8,7 @@ from sapai import *
 from sapai.battle import Battle, run_looping_effect_queue, battle_phase
 from sapai.graph import graph_battle
 from sapai.compress import *
+from sapai.data import data
 
 ### Remember: Can always graph result with graph_battle(b,verbose=True) to
 ###   visualize behavior of the run_looping_effect_queue
@@ -512,7 +513,41 @@ class TestEffectQueue(unittest.TestCase):
         Test that if crab's attack is smaller than dolphin, it should faint,
         otherwise it should live
         """
-        pass
+        # Test crab with no friends to copy
+        ref_team = Team(["crab"], battle=True)
+        ref_team[0].obj._health = 3
+        t0 = Team(["crab"])
+        t0[0].obj._health = 3
+        t1 = Team(["sloth"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+
+        # Test crab with 3 attack dies to dolphin with 4
+        ref_team = Team(["sloth"], battle=True)
+        ref_team[0].obj._health = 50
+        t0 = Team(["sloth", "crab"])
+        t0[0].obj._health = 50
+        t0[1].obj._attack = 3
+        t1 = Team(["dolphin"])
+        t1[0].obj._attack = 4
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+
+        # Test crab with 3 attack lives to dolphin with 2
+        ref_team = Team(["sloth", "crab"], battle=True)
+        ref_team[0].obj._health = 50
+        ref_team[1].obj._health = 25 - data["pets"]["pet-dolphin"]["level1Ability"]["effect"]["amount"]
+        t0 = Team(["sloth", "crab"])
+        t0[0].obj._health = 50
+        t0[1].obj._attack = 3
+        t1 = Team(["dolphin"])
+        t1[0].obj._attack = 2
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_scorpion(self):
         """
