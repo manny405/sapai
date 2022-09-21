@@ -290,7 +290,30 @@ class TestEffectQueue(unittest.TestCase):
         b = run_sob(t1, t0)
         self.assertEqual(b.t1.state, ref_team.state)
 
-        ### Check that dolphin will kill butterfly when it's lowest health
+        ### Check that dolphin will kill butterfly when it is:
+        ### lowest health and attack LOWER than dolphin (evolves after dolphin shoots)
+        ref_team = Team(["zombie-fly", "fish", "fly"], battle=True)
+        ref_team[0].obj._attack = 4
+        ref_team[0].obj._health = 4
+        ref_team[1].obj._attack = 50
+        ref_team[1].obj._health = 50
+        ref_team[2].obj.ability_counter = 1
+
+        t0 = Team(["caterpillar", "fish", "fly"])
+        t0[0].obj._attack = 1
+        t0[0].obj._health = 1
+        t0[0].obj.level = 3
+        t0[1].obj._attack = 50
+        t0[1].obj._health = 50
+        t1 = Team(["dolphin"])
+        t1[0].obj._attack = 50
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+
+        ### Check that dolphin will kill caterpillar when it is:
+        ### ANY health and attack HIGHER than dolphin (evolves into 1-1 before dolphin shoots)
         ref_team = Team(["zombie-fly", "fish", "fly"], battle=True)
         ref_team[0].obj._attack = 4
         ref_team[0].obj._health = 4
@@ -300,11 +323,19 @@ class TestEffectQueue(unittest.TestCase):
 
         t0 = Team(["caterpillar", "fish", "fly"])
         t0[0].obj._attack = 50
-        t0[0].obj._health = 1
         t0[0].obj.level = 3
         t0[1].obj._attack = 50
         t0[1].obj._health = 50
         t1 = Team(["dolphin"])
+        t1[0].obj._attack = 1
+        # caterpillar has lowest health (1)
+        t0[0].obj._health = 1
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # caterpillar has high health (50) (killed after evolve into butterfly)
+        t0[0].obj._health = 50
         b = run_sob(t0, t1)
         self.assertEqual(b.t0.state, ref_team.state)
         b = run_sob(t1, t0)
