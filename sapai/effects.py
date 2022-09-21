@@ -592,6 +592,9 @@ def GainGold(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
 
 
 def Evolve(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+    # If pet is dead, do not evolve
+    if apet.health <= 0:
+        return [], []
     if len(fixed_targets) == 0:
         target, possible = get_target(apet, apet_idx, teams, te=te)
     else:
