@@ -522,6 +522,17 @@ class TestEffectQueue(unittest.TestCase):
         b = run_sob(t0, t1)
         self.assertEqual(b.t0.state, ref_team.state)
 
+        # Test crab with highest health on team
+        ref_team = Team(["crab", "sloth"], battle=True)
+        ref_team[0].obj._health = 2
+        ref_team[1].obj._health = 4
+        t0 = Team(["crab", "sloth"])
+        t0[0].obj._health = 10
+        t0[1].obj._health = 4
+        t1 = Team(["sloth"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+
         # Test crab with 3 attack dies to dolphin with 4
         ref_team = Team(["sloth"], battle=True)
         ref_team[0].obj._health = 50
@@ -538,7 +549,9 @@ class TestEffectQueue(unittest.TestCase):
         # Test crab with 3 attack lives to dolphin with 2
         ref_team = Team(["sloth", "crab"], battle=True)
         ref_team[0].obj._health = 50
-        ref_team[1].obj._health = 25 - data["pets"]["pet-dolphin"]["level1Ability"]["effect"]["amount"]
+        ref_team[1].obj._health = (
+            25 - data["pets"]["pet-dolphin"]["level1Ability"]["effect"]["amount"]
+        )
         t0 = Team(["sloth", "crab"])
         t0[0].obj._health = 50
         t0[1].obj._attack = 3
