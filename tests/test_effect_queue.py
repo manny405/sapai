@@ -562,6 +562,31 @@ class TestEffectQueue(unittest.TestCase):
         b = run_sob(t1, t0)
         self.assertEqual(b.t1.state, ref_team.state)
 
+    def test_rooster(self):
+        """Test that rooster gains a minimum of 1 attack"""
+        # Rooster's chick has minimum 1 attack
+        ref_team = Team(["chick"], battle=True)
+        ref_team[0].obj._attack = 1
+        t0 = Team(["rooster"])
+        t0[0].obj._attack = 1
+        t1 = Team(["dolphin"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Rooster's chick has half (rounded down) health
+        ref_team = Team(["chick", "chick"], battle=True)
+        ref_team[0].obj._attack = 2
+        ref_team[1].obj._attack = 3
+        t0 = Team(["rooster", "rooster"])
+        t0[0].obj._attack = 4
+        t0[1].obj._attack = 7
+        t1 = Team(["dolphin", "dolphin"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+
     def test_scorpion(self):
         """
         When scorpion comes back from one-up, it should gain peanut
