@@ -466,7 +466,11 @@ def get_target(
     elif kind == "HighestHealthFriend":
         health_list = []
         for temp_idx in fidx:
-            health_list.append(fteam[temp_idx].pet.health)
+            # All pets that aren't this pet
+            if fteam[temp_idx].pet is not apet:
+                health_list.append(fteam[temp_idx].pet.health)
+            else:
+                health_list.append(1)
         if len(health_list) == 0:
             return [], []
         max_health = np.max(health_list)
@@ -592,6 +596,9 @@ def GainGold(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
 
 
 def Evolve(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+    # If pet is dead, do not evolve
+    if apet.health <= 0:
+        return [], []
     if len(fixed_targets) == 0:
         target, possible = get_target(apet, apet_idx, teams, te=te)
     else:
@@ -882,8 +889,9 @@ def SummonPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
         if "withLevel" in apet.ability["effect"]:
             spet.level = apet.ability["effect"]["withLevel"]
 
-        if "attackPercentage" in "pet-rooster":
-            spet._attack = int(apet.attack * 0.5)
+        if "attackPercentage" in apet.ability["effect"]:
+            percentage = apet.ability["effect"]["attackPercentage"] / 100
+            spet._attack = max(int(apet.attack * percentage), 1)
 
         target.append(spet)
 
@@ -1064,14 +1072,15 @@ def TransferStats(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
             if copy_health:
                 raise Exception("This should not be possible")
         else:
-            temp_from = get_target(apet, apet_idx, teams, te=te, get_from=True)
+            copy_from = get_target(apet, apet_idx, teams, te=te, get_from=True)
+            copy_from = copy_from[0][0]
             ### Randomness not needed as outcome will be the same for all pets
             ###   that have this ability
-            temp_from = temp_from[0][0]
-            if copy_attack:
-                apet._attack = int(temp_from.attack * percentage)
-            if copy_health:
-                apet._health = int(temp_from.health * percentage)
+            if copy_from is not apet:
+                if copy_attack:
+                    apet._attack = max(int(copy_from.attack * percentage), 1)
+                if copy_health:
+                    apet._health = max(int(copy_from.health * percentage), 1)
 
     return target, possible
 

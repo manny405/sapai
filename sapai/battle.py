@@ -611,14 +611,21 @@ def run_looping_effect_queue(
                 status_summon = False
                 p, team_idx, pet_idx, trigger_method, effect_args = effect_queue.pop(0)
                 fteam, oteam = get_teams([team_idx, pet_idx], teams)
-                returned = trigger_method(*effect_args)
-                if len(returned) == 3:
-                    activated, targets, possible = returned
-                else:
-                    activated, targets, possible, status_summon = returned
-                append_phase_list(
-                    phase_list, p, team_idx, pet_idx, activated, targets, possible
-                )
+
+                activated, targets, possible = False, [], []
+                if (
+                    p.health > 0
+                    or ("faint" in trigger_method.__name__.lower())
+                    or ("status" in trigger_method.__name__.lower())
+                ):
+                    returned = trigger_method(*effect_args)
+                    if len(returned) == 3:
+                        activated, targets, possible = returned
+                    else:
+                        activated, targets, possible, status_summon = returned
+                    append_phase_list(
+                        phase_list, p, team_idx, pet_idx, activated, targets, possible
+                    )
 
                 ### Store any pet that scored a knockout with its effect
                 for temp_target in targets:
@@ -656,9 +663,10 @@ def run_looping_effect_queue(
                                 change_te_idx = entry[-1][1]
                                 change_te_idx[1] = targets[0]
                 elif effect_fn in [Evolve]:
-                    summoned_list += targets
+                    alive_targets = [t for t in targets if t.health > 0]
+                    summoned_list += alive_targets
                     ### Find correct place in queue for summon effect
-                    for evolve_summoned in targets:
+                    for evolve_summoned in alive_targets:
                         ### TODO: make this into function outside
                         insert_idx = 0
                         for p, _, _, _, _ in effect_queue:

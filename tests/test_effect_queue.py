@@ -8,6 +8,7 @@ from sapai import *
 from sapai.battle import Battle, run_looping_effect_queue, battle_phase
 from sapai.graph import graph_battle
 from sapai.compress import *
+from sapai.data import data
 
 ### Remember: Can always graph result with graph_battle(b,verbose=True) to
 ###   visualize behavior of the run_looping_effect_queue
@@ -290,7 +291,30 @@ class TestEffectQueue(unittest.TestCase):
         b = run_sob(t1, t0)
         self.assertEqual(b.t1.state, ref_team.state)
 
-        ### Check that dolphin will kill butterfly when it's lowest health
+        ### Check that dolphin will kill butterfly when it is:
+        ### lowest health and attack LOWER than dolphin (evolves after dolphin shoots)
+        ref_team = Team(["zombie-fly", "fish", "fly"], battle=True)
+        ref_team[0].obj._attack = 4
+        ref_team[0].obj._health = 4
+        ref_team[1].obj._attack = 50
+        ref_team[1].obj._health = 50
+        ref_team[2].obj.ability_counter = 1
+
+        t0 = Team(["caterpillar", "fish", "fly"])
+        t0[0].obj._attack = 1
+        t0[0].obj._health = 1
+        t0[0].obj.level = 3
+        t0[1].obj._attack = 50
+        t0[1].obj._health = 50
+        t1 = Team(["dolphin"])
+        t1[0].obj._attack = 50
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+
+        ### Check that dolphin will kill caterpillar when it is:
+        ### ANY health and attack HIGHER than dolphin (evolves into 1-1 before dolphin shoots)
         ref_team = Team(["zombie-fly", "fish", "fly"], battle=True)
         ref_team[0].obj._attack = 4
         ref_team[0].obj._health = 4
@@ -300,11 +324,19 @@ class TestEffectQueue(unittest.TestCase):
 
         t0 = Team(["caterpillar", "fish", "fly"])
         t0[0].obj._attack = 50
-        t0[0].obj._health = 1
         t0[0].obj.level = 3
         t0[1].obj._attack = 50
         t0[1].obj._health = 50
         t1 = Team(["dolphin"])
+        t1[0].obj._attack = 1
+        # caterpillar has lowest health (1)
+        t0[0].obj._health = 1
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # caterpillar has high health (50) (killed after evolve into butterfly)
+        t0[0].obj._health = 50
         b = run_sob(t0, t1)
         self.assertEqual(b.t0.state, ref_team.state)
         b = run_sob(t1, t0)
@@ -481,7 +513,79 @@ class TestEffectQueue(unittest.TestCase):
         Test that if crab's attack is smaller than dolphin, it should faint,
         otherwise it should live
         """
-        pass
+        # Test crab with no friends to copy
+        ref_team = Team(["crab"], battle=True)
+        ref_team[0].obj._health = 3
+        t0 = Team(["crab"])
+        t0[0].obj._health = 3
+        t1 = Team(["sloth"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+
+        # Test crab with highest health on team
+        ref_team = Team(["crab", "sloth"], battle=True)
+        ref_team[0].obj._health = 2
+        ref_team[1].obj._health = 4
+        t0 = Team(["crab", "sloth"])
+        t0[0].obj._health = 10
+        t0[1].obj._health = 4
+        t1 = Team(["sloth"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+
+        # Test crab with 3 attack dies to dolphin with 4
+        ref_team = Team(["sloth"], battle=True)
+        ref_team[0].obj._health = 50
+        t0 = Team(["sloth", "crab"])
+        t0[0].obj._health = 50
+        t0[1].obj._attack = 3
+        t1 = Team(["dolphin"])
+        t1[0].obj._attack = 4
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+
+        # Test crab with 3 attack lives to dolphin with 2
+        ref_team = Team(["sloth", "crab"], battle=True)
+        ref_team[0].obj._health = 50
+        ref_team[1].obj._health = (
+            25 - data["pets"]["pet-dolphin"]["level1Ability"]["effect"]["amount"]
+        )
+        t0 = Team(["sloth", "crab"])
+        t0[0].obj._health = 50
+        t0[1].obj._attack = 3
+        t1 = Team(["dolphin"])
+        t1[0].obj._attack = 2
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+
+    def test_rooster(self):
+        """Test that rooster gains a minimum of 1 attack"""
+        # Rooster's chick has minimum 1 attack
+        ref_team = Team(["chick"], battle=True)
+        ref_team[0].obj._attack = 1
+        t0 = Team(["rooster"])
+        t0[0].obj._attack = 1
+        t1 = Team(["dolphin"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Rooster's chick has half (rounded down) health
+        ref_team = Team(["chick", "chick"], battle=True)
+        ref_team[0].obj._attack = 2
+        ref_team[1].obj._attack = 3
+        t0 = Team(["rooster", "rooster"])
+        t0[0].obj._attack = 4
+        t0[1].obj._attack = 7
+        t1 = Team(["dolphin", "dolphin"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_scorpion(self):
         """
