@@ -80,12 +80,12 @@ class SAPList:
 
     """
 
-    def __init__(self, slots=[], nslots=None, slot_class=Slot):
+    def __init__(self, slots=None, nslots=None, slot_class=Slot):
         self.slot_class = slot_class
         self._slots = []
         self._nslots = None
-        self.slots = slots
-        if nslots != None:
+        self.slots = [] if slots is None else slots
+        if nslots is not None:
             self.nslots = nslots
 
     def __len__(self):
@@ -173,10 +173,12 @@ class SAPList:
 
     @property
     def left(self):
+        """Returns the first slot"""
         return self._slots[0]
 
     @property
     def right(self):
+        """Returns the last slot"""
         return self._slots[-1]
 
     @property
@@ -257,7 +259,7 @@ class SAPList:
         """
         Move all entries in SlotList after index i to the right
         """
-        self.move_backword()
+        self.move_backward()
 
     def move_left(self, sidx=0, eidx=-1):
         """
