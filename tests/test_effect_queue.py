@@ -591,7 +591,17 @@ class TestEffectQueue(unittest.TestCase):
         """
         When scorpion comes back from one-up, it should gain peanut
         """
-        pass
+        # Kills first sloth as 1-1, then comes back and kills 50-50 with peanut
+        ref_team = Team([], battle=True)
+        t0 = Team(["sloth", "sloth"])
+        t0[1].obj._attack = 50
+        t0[1].obj._health = 50
+        t1 = Team(["scorpion"])
+        t1[0].pet.eat(Food("mushroom"))
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_turkey_horse(self):
         """
@@ -602,54 +612,213 @@ class TestEffectQueue(unittest.TestCase):
         ### Rooster
 
         ### Sheep fly
-        pass
+        self.skipTest("TODO")
 
     def test_boar(self):
         """
         Ensure boar receives buff before attack correctly
         """
-        pass
+        ref_team = Team(["boar"], battle=True)
+        ref_team[0].obj._attack = (
+            1 + data["pets"]["pet-boar"]["level1Ability"]["effect"]["attackAmount"]
+        )
+        ref_team[0].obj._health = data["pets"]["pet-boar"]["level1Ability"]["effect"][
+            "healthAmount"
+        ]
+        t0 = Team(["boar"])
+        t0[0].obj._attack = 1
+        t0[0].obj._health = 1
+        t1 = Team(["sloth"])
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_leopard_tiger_blowfish(self):
         """
         Test start of turn for leopard tiger versus blowfish
         """
-        pass
+        self.skipTest("TODO")
 
     def test_skunk(self):
-        pass
+        # reduces health by 33%
+        ref_team = Team(["sloth"], battle=True)
+        ref_team[0].pet._health = 20
+        t0 = Team(["sloth"])
+        t0[0].pet._health = 30
+        t1 = Team(["skunk"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # reduces health by 33% and rounds down
+        ref_team = Team(["sloth"], battle=True)
+        ref_team[0].pet._health = 7
+        t0 = Team(["sloth"])
+        t0[0].pet._health = 11
+        t1 = Team(["skunk"])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # leaves pet with minimum of 1 hp
+        ref_team = Team(["sloth"], battle=True)
+        t0 = Team(["sloth"])
+        t1 = Team(["skunk"])
+        t1[0].pet.level = 3
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # hits multiple pets in correct order (high attack first)
+        ref_team = Team(["sloth", "sloth"], battle=True)
+        ref_team[0].pet._health = 7
+        ref_team[1].pet._health = 4
+        t0 = Team(["sloth", "sloth"])
+        t0[0].pet._health = 11
+        t0[1].pet._health = 12
+        t1 = Team(["skunk", "skunk"])
+        t1[0].pet.level = 2
+        t1[0].pet._attack = 2
+        t1[1].pet._attack = 1
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_whale(self):
         """
         Check that whale's Swallow is performed correctly and that the pet
         is spit out at the right attack and health
         """
-        pass
+        # Whale eats pet infront
+        ref_team = Team(["whale"], battle=True)
+        ref_team[0].pet._health = 1
+        t0 = Team(["sloth", "whale"])
+        t0[1].pet._health = 2
+        t1 = Team(["sloth"])
+
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0[0].pet.name, ref_team[0].pet.name)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1[0].pet.name, ref_team[0].pet.name)
+        # Whale eats buffed pet, spits out pet with unbuffed stats
+        ref_team = Team(["sloth"], battle=True)
+        t0 = Team(["sloth", "whale"])
+        t0[0].pet._attack = 50
+        t0[0].pet._health = 50
+        t0[1].pet._health = 1
+        t1 = Team(["sloth"])
+
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # test whale + ant interaction
+        ref_team0 = Team(["ant"], battle=True)
+        ref_team1 = Team([], battle=True)
+        t0 = Team(["ant", "whale"])
+        t0[1].pet._attack = 1
+        t0[1].pet._health = 1
+        t1 = Team(["sloth"])
+        t1[0].pet._attack = 2
+        t1[0].pet._health = 2
+
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team0.state)
+        self.assertEqual(b.t1.state, ref_team1.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team0.state)
+        self.assertEqual(b.t0.state, ref_team1.state)
 
     def test_whale_tiger(self):
         """
         Ensure that whale and tiger are performing properly together.
         """
-        pass
+        self.skipTest("TODO")
 
     def test_crocodile(self):
         """
         Test crocodile is multiple triggers and hurts multiple pets if the
         back one faints
         """
-        pass
+        # Kills back 3 pets
+        ref_team = Team([], battle=True)
+        t0 = Team(["sloth", "sloth", "sloth"])
+        t1 = Team(["crocodile"])
+        t1[0].pet.level = 3
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # hits back pet 3 times
+        ref_team = Team(["sloth"], battle=True)
+        t0 = Team(["sloth", "sloth"])
+        t0[1].pet._health = (
+            3 * data["pets"]["pet-crocodile"]["level3Ability"]["effect"]["amount"]
+        )
+        t1 = Team(["crocodile"])
+        t1[0].pet.level = 3
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_rat(self):
-        pass
+        """Test rat spawns dirty rat on opposing team"""
+        # Summons dirty rat
+        ref_team = Team(["dirty-rat"], battle=True)
+        t0 = Team(["sloth"])
+        t1 = Team(["rat"])
+        t1[0].obj._attack = 1
+        t1[0].obj._health = 1
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Summons multiple dirty rats
+        ref_team = Team(["dirty-rat", "dirty-rat", "dirty-rat"], battle=True)
+        t0 = Team(["sloth"])
+        t1 = Team(["rat"])
+        t1[0].obj._attack = 1
+        t1[0].obj._health = 1
+        t1[0].obj.level = 3
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Summons dirty rats at front of opponent team
+        ref_team = Team(["dirty-rat", "dirty-rat", "sloth"], battle=True)
+        t0 = Team(["sloth", "sloth"])
+        t1 = Team(["rat"])
+        t1[0].obj._attack = 1
+        t1[0].obj._health = 1
+        t1[0].obj.level = 2
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_gorilla(self):
-        pass
+        ref_team = Team(["gorilla"], battle=True)
+        ref_team[0].obj._attack = 50
+        ref_team[0].obj._health = 1
+        ref_team[0].obj.ability_counter = 1
+        t0 = Team(["gorilla"])
+        t0[0].obj._attack = 50
+        t0[0].obj._health = 2
+        t1 = Team(["sloth", "sloth"])
+        t1[1].obj._attack = 50
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_tiger(self):
         """
         Test tiger for nearly all pets
         """
-        pass
+        self.skipTest("TODO")
 
 
 def run_sob(t0, t1):
