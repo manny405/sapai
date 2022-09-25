@@ -70,7 +70,7 @@ class Battle:
         self.battle_iter = 0
 
         ### Build initial effect queue order
-        self.pet_priority = self.update_pet_priority(self.t0, self.t1)
+        self.pet_priority = self.calculate_pet_priority()
 
     def battle(self):
         ### Perform all effects that occur at the start of the battle
@@ -112,7 +112,7 @@ class Battle:
 
             ### If animals have moved or fainted then effect order must be updated
             if temp_phase.startswith("phase_move"):
-                self.pet_priority = self.update_pet_priority(t0, t1)
+                self.pet_priority = self.calculate_pet_priority()
 
     def attack(self):
         """
@@ -131,7 +131,7 @@ class Battle:
 
         """
         ### First update effect order
-        self.pet_priority = self.update_pet_priority(self.t0, self.t1)
+        self.pet_priority = self.calculate_pet_priority()
         ### Set all pet's hurt values back to 0
         for slot in self.t0:
             slot.pet.reset_hurt()
@@ -194,22 +194,19 @@ class Battle:
         else:
             raise Exception("Impossible")
 
-    @staticmethod
-    def update_pet_priority(t0, t1):
+    def calculate_pet_priority(self):
         """
-
         Prepares the order that the animals effects should be considered in
 
         Note that effects are performed in the order of highest attack to lowest
         attack. If there is a tie, then health values are compared. If there is
         a tie then a random animal is chosen first.
-
         """
         ### Build all data types to determine effect order
-        pets = [x for x in t0] + [x for x in t1]
-        attack = [x.attack for x in t0] + [x.attack for x in t1]
-        health = [x.health for x in t0] + [x.health for x in t1]
-        teams = [0 for x in t0] + [1 for x in t1]
+        pets = [x for x in self.t0] + [x for x in self.t1]
+        attack = [x.attack for x in self.t0] + [x.attack for x in self.t1]
+        health = [x.health for x in self.t0] + [x.health for x in self.t1]
+        teams = [0 for x in self.t0] + [1 for x in self.t1]
         idx = [x for x in range(5)] + [x for x in range(5)]
 
         for iter_idx, value in enumerate(attack):
@@ -287,7 +284,7 @@ class Battle:
         pet_priority = []
         pet_priority_pets = []
         for t, i in zip(teams, idx):
-            if [t0, t1][t][i].empty == True:
+            if [self.t0, self.t1][t][i].empty == True:
                 continue
             pet_priority.append((t, i))
 
@@ -326,7 +323,7 @@ class RBattle(Battle):
         self.battle_list = []
 
         ### Build initial effect queue order
-        self.pet_priority = self.update_pet_priority(self.t0, self.t1)
+        self.pet_priority = self.calculate_pet_priority()
 
         raise Exception("Not implemented")
 
@@ -593,7 +590,7 @@ def run_looping_effect_queue(
             ### Question: Does pet_priority need to be re-evaluated in this loop?
             ###   Should match what actual game does.
             ### For now, putting it in here
-            pp = battle_obj.update_pet_priority(teams[0], teams[1])
+            pp = battle_obj.calculate_pet_priority()
             knockout_queue = []
             summoned_list = []
             faint_list = []
@@ -750,7 +747,7 @@ def run_looping_effect_queue(
 
             ### Then check for additional triggers to add to the queue by the
             ###   pet priority
-            pp = battle_obj.update_pet_priority(teams[0], teams[1])
+            pp = battle_obj.calculate_pet_priority()
 
             before_faint_trigger_list = []
             hurt_trigger_list = []
