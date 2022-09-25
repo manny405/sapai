@@ -9051,8 +9051,8 @@ data = {
             },
             "packs": ["StandardPack"],
             "tier": "Summoned",
-            "baseAttack": "?",
-            "baseHealth": "?",
+            "baseAttack": 4,
+            "baseHealth": 4,
         },
         "pet-dirty-rat": {
             "name": "Dirty Rat",
@@ -9090,8 +9090,8 @@ data = {
             },
             "packs": ["StandardPack", "ExpansionPack1"],
             "tier": "Summoned",
-            "baseAttack": "?",
-            "baseHealth": "?",
+            "baseAttack": 2,
+            "baseHealth": 2,
         },
         "pet-butterfly": {
             "name": "Butterfly",

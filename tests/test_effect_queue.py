@@ -608,11 +608,136 @@ class TestEffectQueue(unittest.TestCase):
         Test turkey and horse are giving buffs properly to summoned pets
         """
         ### Sheep
+        # Test Horse
+        ref_team = Team(["ram", "ram", "horse"], battle=True)
+        ref_team[0].pet._until_end_of_battle_attack_buff = data["pets"]["pet-horse"][
+            "level1Ability"
+        ]["effect"]["attackAmount"]
+        ref_team[1].pet._until_end_of_battle_attack_buff = data["pets"]["pet-horse"][
+            "level1Ability"
+        ]["effect"]["attackAmount"]
+        t0 = Team(["sheep", "horse"])
+        t1 = Team(["sloth"])
+        t1[0].pet._attack = 50
+        b = run_battle(t0, t1)
+        self.maxDiff = None
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Test Turkey
+        ref_team = Team(["ram", "ram", "turkey"], battle=True)
+        ref_team[0].pet._attack = (
+            ref_team[0].pet._attack
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["attackAmount"]
+        )
+        ref_team[0].pet._health = (
+            ref_team[0].pet._health
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["healthAmount"]
+        )
+        ref_team[1].pet._attack = (
+            ref_team[1].pet._attack
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["attackAmount"]
+        )
+        ref_team[1].pet._health = (
+            ref_team[1].pet._health
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["healthAmount"]
+        )
+        t0 = Team(["sheep", "turkey"])
+        t1 = Team(["sloth"])
+        t1[0].pet._attack = 50
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
         ### Rooster
+        # Test Horse
+        ref_team = Team(["chick", "horse"], battle=True)
+        ref_team[0].pet._attack = 2
+        ref_team[0].pet._until_end_of_battle_attack_buff = data["pets"]["pet-horse"][
+            "level1Ability"
+        ]["effect"]["attackAmount"]
+        t0 = Team(["rooster", "horse"])
+        t1 = Team(["sloth"])
+        t1[0].pet._attack = 50
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Test Turkey
+        ref_team = Team(["chick", "turkey"], battle=True)
+        ref_team[0].pet._attack = 2
+        ref_team[0].pet._attack = (
+            ref_team[0].pet._attack
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["attackAmount"]
+        )
+        ref_team[0].pet._health = (
+            ref_team[0].pet._health
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["healthAmount"]
+        )
+        t0 = Team(["rooster", "turkey"])
+        t1 = Team(["sloth"])
+        t1[0].pet._attack = 50
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
         ### Sheep fly
-        self.skipTest("TODO")
+        # Test Horse
+        ref_team = Team(["zombie-fly", "ram", "ram", "horse", "fly"], battle=True)
+        ref_team[4].pet.ability_counter = 1
+        ref_team[0].pet._until_end_of_battle_attack_buff = data["pets"]["pet-horse"][
+            "level1Ability"
+        ]["effect"]["attackAmount"]
+        ref_team[1].pet._until_end_of_battle_attack_buff = data["pets"]["pet-horse"][
+            "level1Ability"
+        ]["effect"]["attackAmount"]
+        ref_team[2].pet._until_end_of_battle_attack_buff = data["pets"]["pet-horse"][
+            "level1Ability"
+        ]["effect"]["attackAmount"]
+        t0 = Team(["sheep", "horse", "fly"])
+        t1 = Team(["sloth"])
+        t1[0].pet._attack = 50
+        b = run_battle(t0, t1)
+        self.maxDiff = None
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Test Turkey
+        ref_team = Team(["zombie-fly", "ram", "ram", "turkey", "fly"], battle=True)
+        ref_team[4].pet.ability_counter = 1
+        ref_team[0].pet._attack = (
+            ref_team[0].pet._attack
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["attackAmount"]
+        )
+        ref_team[0].pet._health = (
+            ref_team[0].pet._health
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["healthAmount"]
+        )
+        ref_team[1].pet._attack = (
+            ref_team[1].pet._attack
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["attackAmount"]
+        )
+        ref_team[1].pet._health = (
+            ref_team[1].pet._health
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["healthAmount"]
+        )
+        ref_team[2].pet._attack = (
+            ref_team[2].pet._attack
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["attackAmount"]
+        )
+        ref_team[2].pet._health = (
+            ref_team[2].pet._health
+            + data["pets"]["pet-turkey"]["level1Ability"]["effect"]["healthAmount"]
+        )
+        t0 = Team(["sheep", "turkey", "fly"])
+        t1 = Team(["sloth"])
+        t1[0].pet._attack = 50
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_boar(self):
         """
