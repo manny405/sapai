@@ -923,6 +923,45 @@ class TestEffectQueue(unittest.TestCase):
         self.assertEqual(b.t0.state, ref_team.state)
         b = run_battle(t1, t0)
         self.assertEqual(b.t1.state, ref_team.state)
+        # no dirty rats in a full opponent team
+        ref_team = Team(["sloth", "sloth", "sloth", "sloth", "sloth"], battle=True)
+        ref_team[0].obj._health = 49
+        t0 = Team(["sloth", "sloth", "sloth", "sloth", "sloth"], battle=True)
+        t0[0].obj._health = 50
+        t1 = Team(["rat"])
+        t1[0].obj._attack = 1
+        t1[0].obj._health = 1
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # dirty rat instead of fly in full opponent team (rat lower attack)
+        # even when fly has higher priority, rat summons dirty rat
+        ref_team = Team(["dirty-rat", "sloth", "sloth", "sloth", "fly"], battle=True)
+        ref_team[4].pet.ability_counter = 0
+        ref_team[4].obj._attack = 50
+        t0 = Team(["sloth", "sloth", "sloth", "sloth", "fly"], battle=True)
+        t0[4].obj._attack = 50
+        t1 = Team(["rat"])
+        t1[0].obj._attack = 1
+        t1[0].obj._health = 1
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # dirty rat instead of fly in full opponent team (rat higher attack)
+        ref_team = Team(["dirty-rat", "sloth", "sloth", "sloth", "fly"], battle=True)
+        ref_team[4].pet.ability_counter = 0
+        ref_team[4].obj._attack = 1
+        t0 = Team(["sloth", "sloth", "sloth", "sloth", "fly"], battle=True)
+        t0[4].obj._attack = 1
+        t1 = Team(["rat"])
+        t1[0].obj._attack = 50
+        t1[0].obj._health = 1
+        b = run_battle(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_battle(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
 
     def test_gorilla(self):
         ref_team = Team(["gorilla"], battle=True)
@@ -944,6 +983,10 @@ class TestEffectQueue(unittest.TestCase):
         Test tiger for nearly all pets
         """
         self.skipTest("TODO")
+        # Causes crash when tiger is behind any pet with ability
+        t0 = Team(["dolphin", "tiger"])
+        t1 = Team([])
+        b = run_battle(t0, t1)
 
 
 def run_sob(t0, t1):
