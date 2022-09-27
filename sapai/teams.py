@@ -19,13 +19,26 @@ class Team(SAPList):
 
     def __init__(
         self,
-        slots=[],
-        battle=False,
+        slots: list = None,
+        battle: bool = False,
         shop=None,
         player=None,
         pack="StandardPack",
         seed_state=None,
     ):
+        """Initialises a team
+
+        Args:
+            slots (list, optional):
+                List of `str` (pet names), `Pet`, or `TeamSlot`. Defaults to [].
+            battle (bool, optional): True if the team is in battle.
+            shop (Shop, optional): Shop object. Defaults to None.
+            player (Player, optional): Player object. Defaults to None.
+            pack (str, optional): The pack of the team. Defaults to "StandardPack".
+            seed_state (_type_, optional): The random seed state. Defaults to None.
+        """
+        if slots is None:
+            slots = []
         super().__init__(slots, 5, slot_class=TeamSlot)
         self._battle = battle
         self.seed_state = seed_state
@@ -122,7 +135,7 @@ class Team(SAPList):
     def remove(self, obj):
         if type(obj) == int:
             self.slots[obj] = TeamSlot(seed_state=self.seed_state)
-        elif type(obj).__name__ == "TeamSlot":
+        elif isinstance(obj, TeamSlot):
             found = False
             for iter_idx, temp_slot in enumerate(self.slots):
                 if temp_slot == obj:
@@ -131,7 +144,7 @@ class Team(SAPList):
             if not found:
                 raise Exception("Remove {} not found".format(obj))
             self.slots[found_idx] = TeamSlot(seed_state=self.seed_state)
-        elif type(obj).__name__ == "Pet":
+        elif isinstance(obj, Pet):
             found = False
             for iter_idx, temp_slot in enumerate(self.slots):
                 temp_pet = temp_slot.pet
@@ -145,14 +158,14 @@ class Team(SAPList):
             raise Exception("Object of type {} not recognized".format(type(obj)))
 
     def check_friend(self, obj):
-        if type(obj).__name__ == "TeamSlot":
+        if isinstance(obj, TeamSlot):
             found = False
             for iter_idx, temp_slot in enumerate(self.slots):
                 if temp_slot == obj:
                     found_idx = iter_idx
                     found = True
             return found
-        elif type(obj).__name__ == "Pet":
+        elif isinstance(obj, Pet):
             found = False
             for iter_idx, temp_slot in enumerate(self.slots):
                 temp_pet = temp_slot.pet
@@ -164,7 +177,7 @@ class Team(SAPList):
             raise Exception("Object of type {} not recognized".format(type(obj)))
 
     def get_idx(self, obj):
-        if type(obj).__name__ == "TeamSlot":
+        if isinstance(obj, TeamSlot):
             found = False
             for iter_idx, temp_slot in enumerate(self.slots):
                 if temp_slot == obj:
@@ -173,7 +186,7 @@ class Team(SAPList):
             if not found:
                 raise Exception("get_idx {} not found".format(obj))
             return found_idx
-        elif type(obj).__name__ == "Pet":
+        elif isinstance(obj, Pet):
             found = False
             for iter_idx, temp_slot in enumerate(self.slots):
                 temp_pet = temp_slot.pet
@@ -279,9 +292,9 @@ class Team(SAPList):
         return self.slots[idx]
 
     def __setitem__(self, idx, obj):
-        if type(obj).__name__ == "Pet":
+        if isinstance(obj, Pet):
             self.slots[idx] = TeamSlot(obj, seed_state=self.seed_state)
-        elif type(obj).__name__ == "TeamSlot":
+        elif isinstance(obj, TeamSlot):
             self.slots[idx] = obj
         elif type(obj) == str or type(obj) == numpy.str_:
             self.slots[idx] = TeamSlot(obj, seed_state=self.seed_state)
@@ -331,11 +344,11 @@ class Team(SAPList):
 class TeamSlot(Slot):
     def __init__(self, obj=None, seed_state=None):
         self.seed_state = seed_state
-        if type(obj).__name__ == "Pet":
+        if isinstance(obj, Pet):
             self.obj = obj
-        elif type(obj).__name__ == "TeamSlot":
+        elif isinstance(obj, TeamSlot):
             self.obj = obj.pet
-        elif type(obj).__name__ == "NoneType":
+        elif obj is None:
             self.obj = Pet(seed_state=self.seed_state)
         elif type(obj) == str or type(obj) == numpy.str_:
             self.obj = Pet(obj, seed_state=self.seed_state)

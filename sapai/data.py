@@ -3058,7 +3058,7 @@ data = {
             "baseHealth": 5,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Faint: summon one 1/1 Dirty Rat for the opponent that betrays him.",
+                "description": "Faint: Summon one 1/1 Dirty Rat for the opponent.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -3068,23 +3068,25 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Faint: summon one 1/1 Dirty Rat for the opponent that betrays him.",
+                "description": "Faint: Summon two 1/1 Dirty Rats for the opponent.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "SummonPet",
                     "pet": "pet-dirty-rat",
                     "team": "Enemy",
+                    "n": 2,
                 },
             },
             "level3Ability": {
-                "description": "Faint: summon one 1/1 Dirty Rat for the opponent that betrays him.",
+                "description": "Faint: Summon three 1/1 Dirty Rats for the opponent.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "SummonPet",
                     "pet": "pet-dirty-rat",
                     "team": "Enemy",
+                    "n": 3,
                 },
             },
             "probabilities": [
@@ -9049,8 +9051,8 @@ data = {
             },
             "packs": ["StandardPack"],
             "tier": "Summoned",
-            "baseAttack": "?",
-            "baseHealth": "?",
+            "baseAttack": 4,
+            "baseHealth": 4,
         },
         "pet-dirty-rat": {
             "name": "Dirty Rat",
@@ -9088,8 +9090,8 @@ data = {
             },
             "packs": ["StandardPack", "ExpansionPack1"],
             "tier": "Summoned",
-            "baseAttack": "?",
-            "baseHealth": "?",
+            "baseAttack": 2,
+            "baseHealth": 2,
         },
         "pet-butterfly": {
             "name": "Butterfly",

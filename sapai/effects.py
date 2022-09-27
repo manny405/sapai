@@ -613,7 +613,7 @@ def Evolve(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
         return target, possible
     fteam[apet_idx[1]] = spet
     spet.team = fteam
-    spet.player = fteam.player
+    spet.player = apet.player
     return [spet], possible
 
 
