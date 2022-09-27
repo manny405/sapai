@@ -196,7 +196,7 @@ class Battle:
 
     def calculate_pet_priority(self):
         """
-        Prepares the order that the animals effects should be considered in
+        Calculates the order that the animals effects should be considered in
 
         Note that effects are performed in the order of highest attack to lowest
         attack. If there is a tie, then health values are compared. If there is
