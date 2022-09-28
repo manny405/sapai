@@ -53,7 +53,7 @@ class Battle:
 
     """
 
-    def __init__(self, t0, t1, seed: int = None):
+    def __init__(self, t0: Team, t1: Team, seed: int = None):
         """
         Performs the battle between the input teams t1 and t2.
 
@@ -144,7 +144,7 @@ class Battle:
         t0 = self.t0
         t1 = self.t1
 
-        attack_str = "attack {}".format(self.battle_iter)
+        attack_str = f"attack {self.battle_iter}"
         phase_dict = {
             attack_str: {
                 "phase_move_start": [],
@@ -180,18 +180,18 @@ class Battle:
             return False
 
     def check_battle_result(self):
-        f0 = len(self.t0.filled) == 0
-        f1 = len(self.t1.filled) == 0
-        if not f0 and not f1:
+        t0_empty = len(self.t0.filled) == 0
+        t1_empty = len(self.t1.filled) == 0
+        if not t0_empty and not t1_empty:
             ### Fight not over
             return -1
-        elif f0 and f1:
+        elif t0_empty and t1_empty:
             ### Draw
             return 2
-        elif f0:
+        elif t0_empty:
             ### t0 won
             return 0
-        elif f1:
+        elif t1_empty:
             ### t1 won
             return 1
         else:
@@ -215,7 +215,6 @@ class Battle:
         attack = {i: pets[i].attack for i in index}
 
         # Randomised starting order, randomises sorted order of attack ties
-        print()
         index = default_rng(seed).permutation(index)
         # Sort index by attack
         index = sorted(index, reverse=True, key=lambda idx: attack[idx])
@@ -300,7 +299,7 @@ def battle_phase(battle_obj, phase, teams, pet_priority, phase_dict):
         battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict)
 
     else:
-        raise Exception("Phase {} not found".format(phase))
+        raise Exception(f"Phase {phase} not found")
 
 
 def battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict):
@@ -867,7 +866,7 @@ def append_phase_list(phase_list, p, team_idx, pet_idx, activated, targets, poss
     if activated:
         tiger = False
         if len(targets) > 0:
-            if type(targets[0]) == list:
+            if isinstance(list, targets[0]):
                 tiger = True
         func = get_effect_function(p)
 
