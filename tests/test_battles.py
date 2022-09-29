@@ -1,4 +1,3 @@
-#%%
 import unittest
 
 import numpy as np
@@ -7,6 +6,68 @@ from sapai import *
 from sapai.battle import Battle
 from sapai.graph import graph_battle
 from sapai.compress import *
+
+
+class PetPriorityTestCase(unittest.TestCase):
+    def test_attack_priority(self):
+        """Tests attack priority determined by attack (no draws)"""
+        t0 = Team(["sloth", "sloth"])
+        t0[0].pet._attack = 1
+        t0[1].pet._attack = 3
+        t1 = Team(["sloth"])
+        t1[0].pet._attack = 2
+        result = Battle(t0, t1).calculate_pet_priority()
+        self.assertEqual(result, [(0, 1), (1, 0), (0, 0)])
+
+        t0 = Team(["sloth", "sloth"])
+        t0[0].pet._attack = 3
+        t0[1].pet._attack = 2
+        t1 = Team(["sloth"])
+        t1[0].pet._attack = 1
+        result = Battle(t0, t1).calculate_pet_priority()
+        self.assertEqual(result, [(0, 0), (0, 1), (1, 0)])
+
+        # Health or level has no priority over attack
+        t0 = Team(["sloth", "sloth"])
+        t0[0].pet._attack = 1
+        t0[0].pet._health = 50
+        t0[0].pet.level = 3
+        t0[1].pet._attack = 2
+        t1 = Team(["sloth", "sloth"])
+        t1[0].pet._attack = 3
+        t1[1].pet._attack = 4
+        result = Battle(t0, t1).calculate_pet_priority()
+        self.assertEqual(result, [(1, 1), (1, 0), (0, 1), (0, 0)])
+
+    def test_no_health_priority(self):
+        """Tests priority is not determined by health"""
+        t0 = Team(["sloth", "sloth", "sloth", "sloth", "sloth"])
+        t1 = Team(["sloth", "sloth", "sloth", "sloth", "sloth"])
+        battle = Battle(t0, t1)
+        ref_priority = battle.calculate_pet_priority(seed=0)
+        t0[0].pet._health = 50
+        t1[3].pet._health = 25
+        priority = battle.calculate_pet_priority(seed=0)
+        self.assertEqual(priority, ref_priority)
+        t0[0].pet._health = 25
+        t1[3].pet._health = 50
+        priority = battle.calculate_pet_priority(seed=0)
+        self.assertEqual(priority, ref_priority)
+
+    def test_no_level_priority(self):
+        """Tests priority is not determined by level"""
+        t0 = Team(["sloth", "sloth", "sloth", "sloth", "sloth"])
+        t1 = Team(["sloth", "sloth", "sloth", "sloth", "sloth"])
+        battle = Battle(t0, t1)
+        ref_priority = battle.calculate_pet_priority(seed=0)
+        t0[0].pet.level = 3
+        t1[3].pet.level = 2
+        priority = battle.calculate_pet_priority(seed=0)
+        self.assertEqual(priority, ref_priority)
+        t0[0].pet.level = 2
+        t1[3].pet.level = 3
+        priority = battle.calculate_pet_priority(seed=0)
+        self.assertEqual(priority, ref_priority)
 
 
 class TestBattles(unittest.TestCase):
@@ -457,7 +518,4 @@ class TestBattles(unittest.TestCase):
         ### Check peacock after headgehog on both teams
 
         ### Implement later with others
-        pass
-
-
-# %%
+        self.skipTest("TODO")

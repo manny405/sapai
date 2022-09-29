@@ -1,5 +1,6 @@
 import copy
 import numpy as np
+from numpy.random import Generator, default_rng
 
 from sapai.data import data
 from sapai.pets import Pet
@@ -52,10 +53,12 @@ class Battle:
 
     """
 
-    def __init__(self, t0, t1):
+    def __init__(self, t0: Team, t1: Team, seed: int = None):
         """
         Performs the battle between the input teams t1 and t2.
 
+        Args:
+            seed (int, optional): Random seed to use. Defaults to None.
         """
         ### Make copy each team to cary out the battle so that the original
         ### pets are not modified in any way after the battle
@@ -70,7 +73,7 @@ class Battle:
         self.battle_iter = 0
 
         ### Build initial effect queue order
-        self.pet_priority = self.update_pet_priority(self.t0, self.t1)
+        self.pet_priority = self.calculate_pet_priority(seed)
 
     def battle(self):
         ### Perform all effects that occur at the start of the battle
@@ -112,7 +115,7 @@ class Battle:
 
             ### If animals have moved or fainted then effect order must be updated
             if temp_phase.startswith("phase_move"):
-                self.pet_priority = self.update_pet_priority(t0, t1)
+                self.pet_priority = self.calculate_pet_priority()
 
     def attack(self):
         """
@@ -131,7 +134,7 @@ class Battle:
 
         """
         ### First update effect order
-        self.pet_priority = self.update_pet_priority(self.t0, self.t1)
+        self.pet_priority = self.calculate_pet_priority()
         ### Set all pet's hurt values back to 0
         for slot in self.t0:
             slot.pet.reset_hurt()
@@ -141,7 +144,7 @@ class Battle:
         t0 = self.t0
         t1 = self.t1
 
-        attack_str = "attack {}".format(self.battle_iter)
+        attack_str = f"attack {self.battle_iter}"
         phase_dict = {
             attack_str: {
                 "phase_move_start": [],
@@ -177,121 +180,46 @@ class Battle:
             return False
 
     def check_battle_result(self):
-        f0 = len(self.t0.filled) == 0
-        f1 = len(self.t1.filled) == 0
-        if not f0 and not f1:
+        t0_empty = len(self.t0.filled) == 0
+        t1_empty = len(self.t1.filled) == 0
+        if not t0_empty and not t1_empty:
             ### Fight not over
             return -1
-        elif f0 and f1:
+        elif t0_empty and t1_empty:
             ### Draw
             return 2
-        elif f0:
+        elif t0_empty:
             ### t0 won
             return 0
-        elif f1:
+        elif t1_empty:
             ### t1 won
             return 1
         else:
             raise Exception("Impossible")
 
-    @staticmethod
-    def update_pet_priority(t0, t1):
-        """
-
-        Prepares the order that the animals effects should be considered in
+    def calculate_pet_priority(self, seed: int = None):
+        """Calculates the order of pet effects.
 
         Note that effects are performed in the order of highest attack to lowest
-        attack. If there is a tie, then health values are compared. If there is
-        a tie then a random animal is chosen first.
+        attack. If there is a tie then a random animal is chosen first.
 
+        Args:
+            seed (int, optional): Random seed to use. Defaults to None.
+
+        Returns:
+            list: List of tuples containing (team_index, pet_index) of
+                non-empty pet slots.
         """
-        ### Build all data types to determine effect order
-        pets = [x for x in t0] + [x for x in t1]
-        attack = [x.attack for x in t0] + [x.attack for x in t1]
-        health = [x.health for x in t0] + [x.health for x in t1]
-        teams = [0 for x in t0] + [1 for x in t1]
-        idx = [x for x in range(5)] + [x for x in range(5)]
+        pets = [p.pet for p in self.t0] + [p.pet for p in self.t1]
+        index = [i for i in range(10) if isinstance(pets[i].attack, int)]
+        attack = {i: pets[i].attack for i in index}
 
-        for iter_idx, value in enumerate(attack):
-            if value == "none":
-                attack[iter_idx] = 0
-                health[iter_idx] = 0
+        # Randomised starting order, randomises sorted order of attack ties
+        index = default_rng(seed).permutation(index)
+        # Sort index by attack
+        index = sorted(index, reverse=True, key=lambda idx: attack[idx])
 
-        ### Basic sorting by max attack
-        sort_idx = np.arange(0, len(attack))
-        attack = np.array(attack)
-        health = np.array(attack)
-        teams = np.array(teams)
-        idx = np.array(idx)
-
-        ### Find attack collisions
-        uniquea = np.unique(attack)[::-1]
-        start_idx = 0
-        for uattack in uniquea:
-            ### Get collision idx
-            temp_idx = np.where(attack == uattack)[0]
-            temp_attack = attack[temp_idx]
-
-            ### Initialize final idx for sorting
-            temp_sort_idx = np.arange(0, len(temp_idx))
-
-            if len(temp_idx) < 2:
-                end_idx = start_idx + len(temp_idx)
-                sort_idx[start_idx:end_idx] = temp_idx
-                start_idx = end_idx
-                continue
-
-            ### Correct attack collisions by adding in health
-            temp_health = health[temp_idx]
-            temp_stats = temp_attack + temp_health
-            temp_start_idx = 0
-            for ustats in np.unique(temp_stats)[::-1]:
-                temp_sidx = np.where(temp_stats == ustats)[0]
-                temp_sidx = np.random.choice(
-                    temp_sidx, size=(len(temp_sidx),), replace=False
-                )
-                temp_end_idx = temp_start_idx + len(temp_sidx)
-                temp_sort_idx[temp_start_idx:temp_end_idx] = temp_sidx
-                temp_start_idx = temp_end_idx
-
-            ### Double check algorithm
-            sorted_attack = [temp_attack[x] for x in temp_sort_idx]
-            sorted_health = [temp_health[x] for x in temp_sort_idx]
-            for iter_idx, tempa in enumerate(sorted_attack[1:-1]):
-                iter_idx += 1
-                if tempa < sorted_attack[iter_idx]:
-                    raise Exception("That's impossible. Sorting issue.")
-            for iter_idx, temph in enumerate(sorted_health[1:-1]):
-                iter_idx += 1
-                if temph < sorted_health[iter_idx]:
-                    raise Exception("That's impossible. Sorting issue.")
-
-            ### Dereference temp_sort_idx and store in sort_idx
-            end_idx = start_idx + len(temp_idx)
-            sort_idx[start_idx:end_idx] = temp_idx
-            start_idx = end_idx
-
-        ### Finish sorting by max attack
-        attack = np.array([attack[x] for x in sort_idx])
-        health = np.array([health[x] for x in sort_idx])
-        teams = np.array([teams[x] for x in sort_idx])
-        idx = np.array([idx[x] for x in sort_idx])
-
-        ### Double check sorting algorithm
-        for iter_idx, tempa in enumerate(attack[1:-1]):
-            iter_idx += 2
-            if tempa < attack[iter_idx]:
-                raise Exception("That's impossible. Sorting issue.")
-
-        ### Build final queue
-        pet_priority = []
-        pet_priority_pets = []
-        for t, i in zip(teams, idx):
-            if [t0, t1][t][i].empty == True:
-                continue
-            pet_priority.append((t, i))
-
-        return pet_priority
+        return [(idx // 5, idx % 5) for idx in index]
 
 
 class RBattle(Battle):
@@ -326,7 +254,7 @@ class RBattle(Battle):
         self.battle_list = []
 
         ### Build initial effect queue order
-        self.pet_priority = self.update_pet_priority(self.t0, self.t1)
+        self.pet_priority = self.calculate_pet_priority()
 
         raise Exception("Not implemented")
 
@@ -371,7 +299,7 @@ def battle_phase(battle_obj, phase, teams, pet_priority, phase_dict):
         battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict)
 
     else:
-        raise Exception("Phase {} not found".format(phase))
+        raise Exception(f"Phase {phase} not found")
 
 
 def battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict):
@@ -593,7 +521,7 @@ def run_looping_effect_queue(
             ### Question: Does pet_priority need to be re-evaluated in this loop?
             ###   Should match what actual game does.
             ### For now, putting it in here
-            pp = battle_obj.update_pet_priority(teams[0], teams[1])
+            pp = battle_obj.calculate_pet_priority()
             knockout_queue = []
             summoned_list = []
             faint_list = []
@@ -750,7 +678,7 @@ def run_looping_effect_queue(
 
             ### Then check for additional triggers to add to the queue by the
             ###   pet priority
-            pp = battle_obj.update_pet_priority(teams[0], teams[1])
+            pp = battle_obj.calculate_pet_priority()
 
             before_faint_trigger_list = []
             hurt_trigger_list = []
@@ -938,7 +866,7 @@ def append_phase_list(phase_list, p, team_idx, pet_idx, activated, targets, poss
     if activated:
         tiger = False
         if len(targets) > 0:
-            if type(targets[0]) == list:
+            if isinstance(list, targets[0]):
                 tiger = True
         func = get_effect_function(p)
 

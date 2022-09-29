@@ -238,7 +238,7 @@ class Player:
 
         ### Check if any animals fainted because of pill and if any other
         ### animals fainted because of those animals fainting
-        pp = Battle.update_pet_priority(self.team, Team())  # no enemy team in shop
+        pp = Battle(self.team, Team()).calculate_pet_priority()  # no enemy team in shop
         status_list = []
         while True:
             ### Get a list of fainted pets
@@ -293,7 +293,7 @@ class Player:
                     hurt_list.append(pet_idx)
                     activated, targets, possible = p.hurt_trigger(Team())
 
-            pp = Battle.update_pet_priority(self.team, Team())
+            pp = Battle(self.team, Team()).calculate_pet_priority()
 
             ### if nothing happend, stop the loop
             if len(fainted_list) == 0 and len(hurt_list) == 0:
