@@ -97,7 +97,7 @@ class TestBattles(unittest.TestCase):
         t1 = Team(["cricket", "horse", "mosquito", "tiger"])
 
         b = Battle(t0, t1)
-        b.attack()
+        b.run_next_attack()
 
         ### Cricket will kill badger, badger faint should kill camel and horse
 
@@ -164,12 +164,16 @@ class TestBattles(unittest.TestCase):
         test_battle.battle()
 
     def test_ant_in_battle(self):
-        team1 = Team([Pet("ant"), Pet("fish")])
-        team2 = Team([Pet("camel")])
+        ref_team = Team(["sloth"], battle=True)
+        ref_team[0].pet._attack = 3
+        ref_team[0].pet._health = 2
+        t0 = Team(["ant", "sloth"])
+        t0[0].pet._health = 1
+        t1 = Team(["sloth"])
 
-        test_battle = Battle(team1, team2)
-        result = test_battle.battle()
-        self.assertEqual(result, 0)
+        b = Battle(t0, t1)
+        b.battle()
+        self.assertEqual(b.t0.state, ref_team.state)
 
     def test_horse_in_battle(self):
         team1 = Team([Pet("cricket"), Pet("horse")])

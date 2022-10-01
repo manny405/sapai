@@ -1026,45 +1026,142 @@ class TestEffectQueue(unittest.TestCase):
         b = run_sob(t1, t0)
         self.assertEqual(b.t1.state, ref_team.state)
 
-    def test_tiger(self):
-        """
-        Test tiger for nearly all pets
-        """
-        self.skipTest("TODO")
-        # Causes crash when tiger is behind any pet with ability
-        t0 = Team(["dolphin", "tiger"])
+
+class TigerStartOfBattleTestCase(unittest.TestCase):
+    """
+    Test tiger for all start of battle pets
+    """
+
+    def test_tiger_mosquito(self):
+        # Mosquito triggers twice
+        ref_team = Team([], battle=True)
+        t0 = Team(["sloth", "sloth"])
+        t1 = Team(["mosquito", "tiger"])
+        b = Battle(t0, t1).run_start_of_battle()
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = Battle(t1, t0).run_start_of_battle()
+        self.assertEqual(b.t1.state, ref_team.state)
+
+    def test_tiger_crab(self):
+        # No difference if both are level 1
+        ref_team = Team(["sloth", "crab", "tiger"], battle=True)
+        ref_team[0].pet._health = 50
+        ref_team[1].pet._health = 25
+        t0 = Team(["sloth", "crab", "tiger"])
+        t0[0].pet._health = 50
         t1 = Team([])
-        b = run_battle(t0, t1)
+        b = Battle(t0, t1).run_start_of_battle()
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = Battle(t1, t0).run_start_of_battle()
+        self.assertEqual(b.t1.state, ref_team.state)
+        # works with tiger having highest health
+        ref_team = Team(["crab", "tiger"], battle=True)
+        ref_team[0].pet._health = 25
+        ref_team[1].pet._health = 50
+        t0 = Team(["crab", "tiger"])
+        t0[1].pet._health = 50
+        t1 = Team([])
+        b = Battle(t0, t1).run_start_of_battle()
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = Battle(t1, t0).run_start_of_battle()
+        self.assertEqual(b.t1.state, ref_team.state)
+
+    def test_tiger_crab_level_override(self):
+        # level 1 tiger overrides level 2 crab
+        ref_team = Team(["crab", "tiger"], battle=True)
+        ref_team[0].pet._health = 25
+        ref_team[0].pet.level = 2
+        ref_team[1].pet._health = 50
+        t0 = Team(["crab", "tiger"])
+        t0[0].pet.level = 2
+        t0[1].pet._health = 50
+        t1 = Team([])
+        b = Battle(t0, t1).run_start_of_battle()
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = Battle(t1, t0).run_start_of_battle()
+        self.assertEqual(b.t1.state, ref_team.state)
+        # level 2 tiger overrides level 1 crab
+        ref_team = Team(["crab", "tiger"], battle=True)
+        ref_team[0].pet._health = 50
+        ref_team[1].pet._health = 50
+        ref_team[1].pet.level = 2
+        t0 = Team(["crab", "tiger"])
+        t0[1].pet._health = 50
+        t0[1].pet.level = 2
+        t1 = Team([])
+        b = Battle(t0, t1).run_start_of_battle()
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = Battle(t1, t0).run_start_of_battle()
+        self.assertEqual(b.t1.state, ref_team.state)
+
+    def test_tiger_dodo(self):
+        # Dodo gives attack twice
+        ref_team = Team(["sloth", "dodo", "tiger"], battle=True)
+        ref_team[0].pet._attack = 11
+        ref_team[1].pet._attack = 10
+        t0 = Team(["sloth", "dodo", "tiger"])
+        t0[1].pet._attack = 10
+        t1 = Team([])
+        b = Battle(t0, t1).run_start_of_battle()
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = Battle(t1, t0).run_start_of_battle()
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Dodo gives attack twice (level 2 dodo, level 1 tiger)
+        ref_team = Team(["sloth", "dodo", "tiger"], battle=True)
+        ref_team[0].pet._attack = 16
+        ref_team[1].pet._attack = 10
+        ref_team[1].pet.level = 2
+        t0 = Team(["sloth", "dodo", "tiger"])
+        t0[1].pet._attack = 10
+        t0[1].pet.level = 2
+        t1 = Team([])
+        b = Battle(t0, t1).run_start_of_battle()
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = Battle(t1, t0).run_start_of_battle()
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Dodo gives attack twice (level 1 dodo, level 2 tiger)
+        ref_team = Team(["sloth", "dodo", "tiger"], battle=True)
+        ref_team[0].pet._attack = 16
+        ref_team[1].pet._attack = 10
+        ref_team[2].pet.level = 2
+        t0 = Team(["sloth", "dodo", "tiger"])
+        t0[1].pet._attack = 10
+        t0[2].pet.level = 2
+        t1 = Team([])
+        b = Battle(t0, t1).run_start_of_battle()
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = Battle(t1, t0).run_start_of_battle()
+        self.assertEqual(b.t1.state, ref_team.state)
+
+    def test_tiger_dolphin(self):
+        # Dolphin triggers twice
+        ref_team = Team([], battle=True)
+        t0 = Team(["sloth", "sloth"])
+        t1 = Team(["dolphin", "tiger"])
+        b = Battle(t0, t1).run_start_of_battle()
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = Battle(t1, t0).run_start_of_battle()
+        self.assertEqual(b.t1.state, ref_team.state)
+
+    def test_tiger_skunk(self):
+        self.skipTest("TODO")
+
+    def test_tiger_whale(self):
+        self.skipTest("TODO")
+
+    def test_tiger_crocodile(self):
+        self.skipTest("TODO")
+
+    def test_tiger_leopard(self):
+        self.skipTest("TODO")
 
 
 def run_sob(t0, t1):
-    b = Battle(t0, t1)
-    b.run_start_of_battle()
-    return b
+    return Battle(t0, t1).run_start_of_battle()
 
 
 def run_attack(t0, t1, run_before=False):
-    b = Battle(t0, t1)
-    phase_dict = {
-        "init": [[str(x) for x in b.t0], [str(x) for x in b.t1]],
-        "attack 0": {},
-    }
-    if run_before:
-        phase_dict["attack 0"]["phase_attack_before"] = []
-    phase_dict["attack 0"]["phase_attack"] = []
-    phase_dict["attack 0"]["phase_move_end"] = []
-    phase_str = "attack 0"
-    for temp_phase in phase_dict[phase_str]:
-        battle_phase(b, temp_phase, [b.t0, b.t1], b.pet_priority, phase_dict[phase_str])
-    b.battle_history = phase_dict
-    phase_dict[phase_str]["phase_move_end"] = [
-        [
-            [str(x) for x in b.t0],
-            [str(x) for x in b.t1],
-        ]
-    ]
-    b.battle_history = phase_dict
-    return b
+    return Battle(t0, t1).run_next_attack()
 
 
 def run_battle(t0, t1):

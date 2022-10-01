@@ -78,10 +78,8 @@ class Battle:
     def battle(self):
         ### Perform all effects that occur at the start of the battle
         self.run_start_of_battle()
-        while True:
-            result = self.attack()
-            if result == False:
-                break
+        while self.check_battle_result() < 0:
+            self.run_next_attack()
 
         ### Check winner and return 0 for t0 win, 1 for t1 win, 2 for draw
         return self.check_battle_result()
@@ -121,7 +119,7 @@ class Battle:
         # e.g. battle = Battle(team0, team1).run_start_of_battle()
         return self
 
-    def attack(self):
+    def run_next_attack(self):
         """
         Perform and attack and then check for new pet triggers
 
@@ -175,13 +173,9 @@ class Battle:
             )
             self.battle_history.update(phase_dict)
 
-        ### Check if battle is over
-        status = self.check_battle_result()
-        if status < 0:
-            return True
-        else:
-            ### End battle
-            return False
+        # Return self for use in fluent interface
+        # e.g. battle = Battle(team0, team1).run_start_of_battle().run_attack()
+        return self
 
     def check_battle_result(self):
         t0_empty = len(self.t0.filled) == 0
