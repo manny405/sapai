@@ -1039,28 +1039,7 @@ class TestEffectQueue(unittest.TestCase):
 
 def run_sob(t0, t1):
     b = Battle(t0, t1)
-    phase_dict = {
-        "init": [[str(x) for x in b.t0], [str(x) for x in b.t1]],
-        "start": {
-            "phase_start": [],
-        },
-    }
-    run_looping_effect_queue(
-        "sob_trigger",
-        ["oteam"],
-        b,
-        "phase_start",
-        [b.t0, b.t1],
-        b.pet_priority,
-        phase_dict["start"],
-    )
-    phase_dict["start"]["phase_move_end"] = [
-        [
-            [str(x) for x in b.t0],
-            [str(x) for x in b.t1],
-        ]
-    ]
-    b.battle_history = phase_dict
+    b.run_start_of_battle()
     return b
 
 

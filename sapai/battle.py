@@ -77,7 +77,7 @@ class Battle:
 
     def battle(self):
         ### Perform all effects that occur at the start of the battle
-        self.start()
+        self.run_start_of_battle()
         while True:
             result = self.attack()
             if result == False:
@@ -86,7 +86,7 @@ class Battle:
         ### Check winner and return 0 for t0 win, 1 for t1 win, 2 for draw
         return self.check_battle_result()
 
-    def start(self):
+    def run_start_of_battle(self):
         """
         Perform all start of battle effects
 
@@ -116,6 +116,10 @@ class Battle:
             ### If animals have moved or fainted then effect order must be updated
             if temp_phase.startswith("phase_move"):
                 self.pet_priority = self.calculate_pet_priority()
+
+        # Return self for use in fluent interface
+        # e.g. battle = Battle(team0, team1).run_start_of_battle()
+        return self
 
     def attack(self):
         """
