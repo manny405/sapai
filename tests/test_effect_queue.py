@@ -759,12 +759,6 @@ class TestEffectQueue(unittest.TestCase):
         b = run_battle(t1, t0)
         self.assertEqual(b.t1.state, ref_team.state)
 
-    def test_leopard_tiger_blowfish(self):
-        """
-        Test start of turn for leopard tiger versus blowfish
-        """
-        self.skipTest("TODO")
-
     def test_skunk(self):
         # reduces health by 33%
         ref_team = Team(["sloth"], battle=True)
@@ -855,12 +849,6 @@ class TestEffectQueue(unittest.TestCase):
         b = run_battle(t1, t0)
         self.assertEqual(b.t1.state, ref_team0.state)
         self.assertEqual(b.t0.state, ref_team1.state)
-
-    def test_whale_tiger(self):
-        """
-        Ensure that whale and tiger are performing properly together.
-        """
-        self.skipTest("TODO")
 
     def test_crocodile(self):
         """
