@@ -866,7 +866,7 @@ def append_phase_list(phase_list, p, team_idx, pet_idx, activated, targets, poss
     if activated:
         tiger = False
         if len(targets) > 0:
-            if isinstance(list, targets[0]):
+            if isinstance(targets[0], list):
                 tiger = True
         func = get_effect_function(p)
 
