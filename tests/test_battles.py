@@ -104,13 +104,13 @@ class TestBattles(unittest.TestCase):
     def test_before_and_after_attack(self):
         t0 = Team(["elephant", "snake", "dragon", "fish"])
         t1 = Team(["cricket", "horse", "fly", "tiger"])
-        t0[2]._health = 50
+        t0[2].pet._health = 50
 
         b = Battle(t0, t1)
         b.battle()
         t0 = Team(["elephant", "snake", "dragon", "fish"])
         t1 = Team(["cricket", "horse", "fly", "tiger"])
-        t0[2]._health = 50
+        t0[2].pet._health = 50
 
         b = Battle(t0, t1)
         b.battle()
@@ -162,47 +162,6 @@ class TestBattles(unittest.TestCase):
 
         test_battle = Battle(player1.team, player2.team)
         test_battle.battle()
-
-    def test_caterpillar_order_high_attack(self):
-        cp = Pet("caterpillar")
-        cp.level = 3
-        cp._attack = 5  # 1 more than dolphin
-        cp._health = 7
-        t = Team([cp, "dragon"])
-        t2 = Team(["dolphin", "dragon"])
-        b = Battle(t, t2)
-        r = b.battle()
-        # print(b.battle_history) # caterpillar evolves first, dolphin snipes butterfly, 1v2 loss
-        self.assertEqual(r, 1)
-
-    def test_caterpillar_order_low_attack(self):
-        cp = Pet("caterpillar")
-        cp.level = 3
-        cp._attack = 1
-        cp._health = 7
-        t = Team([cp, "dragon"])
-        t2 = Team(["dolphin", "dragon"])
-        b = Battle(t, t2)
-        r = b.battle()
-        # print(b.battle_history) # dolphin hits caterpillar, caterpillar evolves, copies dragon, win
-        self.assertEqual(r, 0)
-
-    def test_dodo(self):
-        dodo = Pet("dodo")
-        dodo.level = 3
-        dodo._attack = 10
-        team1 = Team([Pet("leopard"), dodo])
-
-        fish = Pet("fish")
-        fish._attack = 5
-        fish._health = 20
-        team2 = Team([fish])
-
-        test_battle = Battle(team1, team2)
-        result = test_battle.battle()
-
-        # dodo adds enough attack for leopard to kill fish
-        self.assertEqual(result, 0)
 
     def test_ant_in_battle(self):
         team1 = Team([Pet("ant"), Pet("fish")])

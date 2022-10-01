@@ -1005,7 +1005,7 @@ def tiger_func(func, te_fainted, *args):
     else:
         temp_targets, temp_possible = func(*args)
 
-    return [targets] + [temp_targets], [possible] + [temp_possible]
+    return targets + temp_targets, possible + temp_possible
 
 
 empty_ability = {

@@ -978,6 +978,54 @@ class TestEffectQueue(unittest.TestCase):
         b = run_battle(t1, t0)
         self.assertEqual(b.t1.state, ref_team.state)
 
+    def test_dodo(self):
+        # Transfers attack (even)
+        ref_team = Team(["sloth", "dodo"], battle=True)
+        ref_team[0].pet._attack = 3
+        ref_team[1].pet._attack = 4
+        t0 = Team(["sloth", "dodo"])
+        t0[1].pet._attack = 4
+        t1 = Team([])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Transfers attack (odd)
+        ref_team = Team(["sloth", "dodo"], battle=True)
+        ref_team[0].pet._attack = 3
+        ref_team[1].pet._attack = 5
+        t0 = Team(["sloth", "dodo"])
+        t0[1].pet._attack = 5
+        t1 = Team([])
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Transfers attack to attack based sniper (higher attack priority)
+        ref_team = Team([], battle=True)
+        t0 = Team(["sloth"])
+        t0[0].pet._health = 10
+        t1 = Team(["leopard", "dodo"])
+        t1[0].pet._attack = 10
+        t1[1].pet._attack = 20
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+        # Transfers attack to attack based sniper (lower attack priority)
+        # sniper goes before attack buff
+        ref_team = Team(["sloth"], battle=True)
+        ref_team[0].pet._health = 1
+        t0 = Team(["sloth"])
+        t0[0].pet._health = 11
+        t1 = Team(["leopard", "dodo"])
+        t1[0].pet._attack = 20
+        t1[1].pet._attack = 18
+        b = run_sob(t0, t1)
+        self.assertEqual(b.t0.state, ref_team.state)
+        b = run_sob(t1, t0)
+        self.assertEqual(b.t1.state, ref_team.state)
+
     def test_tiger(self):
         """
         Test tiger for nearly all pets
