@@ -77,16 +77,14 @@ class Battle:
 
     def battle(self):
         ### Perform all effects that occur at the start of the battle
-        self.start()
-        while True:
-            result = self.attack()
-            if result == False:
-                break
+        self.run_start_of_battle()
+        while self.check_battle_result() < 0:
+            self.run_next_attack()
 
         ### Check winner and return 0 for t0 win, 1 for t1 win, 2 for draw
         return self.check_battle_result()
 
-    def start(self):
+    def run_start_of_battle(self):
         """
         Perform all start of battle effects
 
@@ -117,7 +115,11 @@ class Battle:
             if temp_phase.startswith("phase_move"):
                 self.pet_priority = self.calculate_pet_priority()
 
-    def attack(self):
+        # Return self for use in fluent interface
+        # e.g. battle = Battle(team0, team1).run_start_of_battle()
+        return self
+
+    def run_next_attack(self):
         """
         Perform and attack and then check for new pet triggers
 
@@ -171,13 +173,9 @@ class Battle:
             )
             self.battle_history.update(phase_dict)
 
-        ### Check if battle is over
-        status = self.check_battle_result()
-        if status < 0:
-            return True
-        else:
-            ### End battle
-            return False
+        # Return self for use in fluent interface
+        # e.g. battle = Battle(team0, team1).run_start_of_battle().run_attack()
+        return self
 
     def check_battle_result(self):
         t0_empty = len(self.t0.filled) == 0
@@ -866,7 +864,7 @@ def append_phase_list(phase_list, p, team_idx, pet_idx, activated, targets, poss
     if activated:
         tiger = False
         if len(targets) > 0:
-            if isinstance(list, targets[0]):
+            if isinstance(targets[0], list):
                 tiger = True
         func = get_effect_function(p)
 

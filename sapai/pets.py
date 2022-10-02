@@ -998,14 +998,19 @@ def tiger_func(func, te_fainted, *args):
     ###  be duplicated. This is important for Whale.
     if te_fainted == False:
         apet.override_ability = False
+    # Temporarily set pet level to that of tiger
+    # TODO: add level argument to ability functions
+    original_level = args[0].level
+    args[0].level = pet_behind.level
     if len(args) == 5:
         te_idx = [0, args[4][1] + len(targets)]
         ### Run function again
         temp_targets, temp_possible = func(args[0], args[1], args[2], args[3], te_idx)
     else:
         temp_targets, temp_possible = func(*args)
+    args[0].level = original_level
 
-    return [targets] + [temp_targets], [possible] + [temp_possible]
+    return targets + temp_targets, possible + temp_possible
 
 
 empty_ability = {
