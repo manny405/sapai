@@ -1172,6 +1172,11 @@ class TigerStartOfBattleTestCase(unittest.TestCase):
         self.assertEqual(b.t1.state, ref_team.state)
 
     def test_tiger_whale_different_pets(self):
+        # At the moment effects do not support summoning 2 pets of different types
+        # Best solution would be to change ability["effect"] to be a list
+        # Alternative would be to to edit SummonPet to allow multiple pets,
+        # however the former is more future proof for pets with multiabilities
+        self.skipTest("Functionality not implemented")
         # Spits out 1 sloth and 1 fish
         ref_team = Team(["sloth", "fish", "tiger"], battle=True)
         t0 = Team(["sloth", "fish", "whale", "tiger"])
@@ -1183,6 +1188,9 @@ class TigerStartOfBattleTestCase(unittest.TestCase):
         self.assertEqual(b.t1.state, ref_team.state)
 
     def test_tiger_whale_dead_tiger(self):
+        # See test_tiger_whale_different_pets above. This test should ensure
+        # one of each pet is produced (instead of 2 of each pet)
+        self.skipTest("Functionality not implemented")
         # Spits out 1 sloth and 1 fish even with dead tiger
         ref_team = Team(["sloth", "fish"], battle=True)
         t0 = Team(["sloth", "fish", "whale", "tiger"])
