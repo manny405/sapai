@@ -363,16 +363,23 @@ def get_target(
 
     elif kind == "Level2And3Friends":
         level_list = []
+        ret_pets = []
+        all_possible = []
         for temp_idx in fidx:
             level_list.append(fteam[temp_idx].pet.level)
         if len(level_list) > 0:
             keep_idx = np.where(np.array(level_list) > 1)[0]
-            ret_pets = []
+            all_possible = []
             for temp_idx in keep_idx:
                 ### Dereference idx
                 temp_idx = fidx[temp_idx]
-                ret_pets.append(fteam[temp_idx].pet)
-            return ret_pets, [ret_pets]
+                all_possible.append(fteam[temp_idx].pet)
+            crange = np.arange(0, len(all_possible))
+            cidx = apet.rs.choice(crange, (2,), replace=False)[0]
+            ### Update internal state of random generator
+            apet.seed_state = apet.rs.get_state()
+            ret_pets = all_possible[cidx]
+            return ret_pets, all_possible
         else:
             return [], []
 
