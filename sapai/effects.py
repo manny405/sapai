@@ -375,7 +375,7 @@ def get_target(
                 temp_idx = fidx[temp_idx]
                 all_possible.append(fteam[temp_idx].pet)
             crange = np.arange(0, len(all_possible))
-            cidx = apet.rs.choice(crange, (2,), replace=False)[0]
+            cidx = apet.rs.choice(crange, (min(2, len(all_possible)),), replace=False)[0]
             ### Update internal state of random generator
             apet.seed_state = apet.rs.get_state()
             ret_pets = all_possible[cidx]
