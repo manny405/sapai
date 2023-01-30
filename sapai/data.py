@@ -8645,7 +8645,7 @@ data = {
             "level1Ability": {
                 "description": "Before Attack: Deal 6 damage to a random enemy once",
                 "trigger": "BeforeAttack",
-                "triggeredBy": {"kind": "Player"},
+                "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "DealDamage",
                     "target": {"kind": "RandomEnemy", "n": 1},
@@ -8655,7 +8655,7 @@ data = {
             "level2Ability": {
                 "description": "Before Attack: Deal 6 damage to a random enemy twice",
                 "trigger": "BeforeAttack",
-                "triggeredBy": {"kind": "Player"},
+                "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "DealDamage",
                     "target": {"kind": "RandomEnemy", "n": 2},
@@ -8665,7 +8665,7 @@ data = {
             "level3Ability": {
                 "description": "Before Attack: Deal 6 damage to a random enemy thrice",
                 "trigger": "BeforeAttack",
-                "triggeredBy": {"kind": "Player"},
+                "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "DealDamage",
                     "target": {"kind": "RandomEnemy", "n": 3},
