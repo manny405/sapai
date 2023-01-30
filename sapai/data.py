@@ -2169,13 +2169,13 @@ data = {
                     "effects": [
                         {
                             "kind": "ModifyStats",
-                            "untilEndOfBattle": False,
+                            "untilEndOfBattle": True,
                             "target": {"kind": "Self"},
                             "attackAmount": 1,
                         },
                         {
                             "kind": "ModifyStats",
-                            "untilEndOfBattle": False,
+                            "untilEndOfBattle": True,
                             "target": {"kind": "Self"},
                             "healthAmount": 1,
                         },
@@ -2183,7 +2183,8 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Friend summoned: Gain +2 Attack or +2 Health.",
+                "description": "Friend summoned: Gain +2 Attack or +2 Health"
+                               "until end of battle.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -2191,13 +2192,13 @@ data = {
                     "effects": [
                         {
                             "kind": "ModifyStats",
-                            "untilEndOfBattle": False,
+                            "untilEndOfBattle": True,
                             "target": {"kind": "Self"},
                             "attackAmount": 2,
                         },
                         {
                             "kind": "ModifyStats",
-                            "untilEndOfBattle": False,
+                            "untilEndOfBattle": True,
                             "target": {"kind": "Self"},
                             "healthAmount": 2,
                         },
@@ -2205,7 +2206,8 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Friend summoned: Gain +3 Attack or +3 Health.",
+                "description": "Friend summoned: Gain +3 Attack or +3 Health"
+                               "until end of battle.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -2213,13 +2215,13 @@ data = {
                     "effects": [
                         {
                             "kind": "ModifyStats",
-                            "untilEndOfBattle": False,
+                            "untilEndOfBattle": True,
                             "target": {"kind": "Self"},
                             "attackAmount": 3,
                         },
                         {
                             "kind": "ModifyStats",
-                            "untilEndOfBattle": False,
+                            "untilEndOfBattle": True,
                             "target": {"kind": "Self"},
                             "healthAmount": 3,
                         },
