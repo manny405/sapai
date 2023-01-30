@@ -1253,7 +1253,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Buy food: Gain +2/+2 until end of battle",
+                "description": "Buy food: Gain +4 attack until end of battle",
                 "trigger": "BuyFood",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -1265,7 +1265,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Buy food: Gain +3/+3 until end of battle",
+                "description": "Buy food: Gain +6 attack until end of battle",
                 "trigger": "BuyFood",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
