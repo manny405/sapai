@@ -4798,7 +4798,7 @@ data = {
             },
             "tier": 3,
             "baseAttack": 1,
-            "baseHealth": 1,
+            "baseHealth": 2,
             "packs": ["ExpansionPack1"],
             "level1Ability": {
                 "description": "End turn: If you have 3 or more gold, gain +2/+2",
