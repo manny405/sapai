@@ -6021,7 +6021,7 @@ data = {
                 "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
                 "unicodeCodePoint": "🐬",
             },
-            "tier": 4,
+            "tier": 3,
             "baseAttack": 4,
             "baseHealth": 3,
             "packs": ["StandardPack", "ExpansionPack1"],
