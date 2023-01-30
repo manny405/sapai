@@ -2161,7 +2161,7 @@ data = {
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
                 "description": "Friend summoned: Gain +1 Attack or +1 Health "
-                               "until end of battle.",
+                "until end of battle.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -2184,7 +2184,7 @@ data = {
             },
             "level2Ability": {
                 "description": "Friend summoned: Gain +2 Attack or +2 Health"
-                               "until end of battle.",
+                "until end of battle.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -2207,7 +2207,7 @@ data = {
             },
             "level3Ability": {
                 "description": "Friend summoned: Gain +3 Attack or +3 Health"
-                               "until end of battle.",
+                "until end of battle.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
