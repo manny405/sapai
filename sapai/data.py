@@ -1258,8 +1258,8 @@ data = {
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "attackAmount": 2,
-                    "healthAmount": 2,
+                    "attackAmount": 4,
+                    "healthAmount": 0,
                     "target": {"kind": "Self"},
                     "untilEndOfBattle": True,
                 },
@@ -1270,8 +1270,8 @@ data = {
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "attackAmount": 3,
-                    "healthAmount": 3,
+                    "attackAmount": 6,
+                    "healthAmount": 0,
                     "target": {"kind": "Self"},
                     "untilEndOfBattle": True,
                 },
