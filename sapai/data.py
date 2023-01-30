@@ -5451,7 +5451,7 @@ data = {
             },
             "tier": 4,
             "baseAttack": 2,
-            "baseHealth": 3j,
+            "baseHealth": 5,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
                 "description": "Faint: Give friend behind Melon Armor",
