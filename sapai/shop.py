@@ -185,7 +185,7 @@ class Shop(SAPList):
         del self.slots[idx]
 
     def index(self, obj):
-        if type(obj).__name__ == "ShopSlot":
+        if isinstance(obj, ShopSlot):
             obj = obj.obj
         idx = -1
         for iter_idx, slot in enumerate(self.slots):
@@ -460,7 +460,7 @@ class Shop(SAPList):
     def state(self):
         #### Ensure that state can be JSON serialized
         if getattr(self, "rs", False):
-            if type(self.rs).__name__ == "MockRandomState":
+            if isinstance(self.rs, MockRandomState):
                 seed_state = None
             else:
                 seed_state = list(self.rs.get_state())
@@ -553,7 +553,7 @@ class ShopLearn(Shop):
 
         """
         ### Desired object is ShopSlot in this case
-        if type(obj).__name__ == "ShopSlot":
+        if isinstance(obj, ShopSlot):
             pass
         elif type(obj) == int:
             obj = self.slots[obj]
@@ -657,7 +657,7 @@ class ShopLearn(Shop):
     def state(self):
         #### Ensure that state can be JSON serialized
         if getattr(self, "rs", False):
-            if type(self.rs).__name__ == "MockRandomState":
+            if isinstance(self.rs, MockRandomState):
                 seed_state = None
             else:
                 seed_state = list(self.rs.get_state())
@@ -709,7 +709,7 @@ class ShopSlotNoneItem:
     @property
     def state(self):
         if getattr(self, "rs", False):
-            if type(self.rs).__name__ == "MockRandomState":
+            if isinstance(self.rs, MockRandomState):
                 seed_state = None
             else:
                 seed_state = list(self.rs.get_state())
@@ -764,14 +764,14 @@ class ShopSlot(Slot):
             raise Exception("Unrecognized slot type {}".format(self.slot_type))
 
         if obj != None and type(obj) != str:
-            if type(obj).__name__ == "Pet":
+            if isinstance(obj, Pet):
                 self.slot_type = "pet"
                 self.obj = obj
-            elif type(obj).__name__ == "Food":
+            elif isinstance(obj, Food):
                 self.slot_type = "food"
                 self.obj = obj
                 self.cost = obj.cost
-            elif type(obj).__name__ == "ShopSlot":
+            elif isinstance(obj, ShopSlot):
                 self.slot_type = obj.slot_type
                 self.turn = obj.turn
                 self.pack = obj.pack
@@ -905,7 +905,7 @@ class ShopSlot(Slot):
     def state(self):
         #### Ensure that state can be JSON serialized
         if getattr(self, "rs", False):
-            if type(self.rs).__name__ == "MockRandomState":
+            if isinstance(self.rs, MockRandomState):
                 seed_state = None
             else:
                 seed_state = list(self.rs.get_state())

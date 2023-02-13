@@ -1,7 +1,10 @@
-#%%
+# %%
 import unittest
 
-from sapai import *
+from sapai import (
+    Player,
+    Team
+)
 from sapai.shop import *
 
 
@@ -188,6 +191,5 @@ class TestShop(unittest.TestCase):
         player.start_turn()
         self.assertEqual(player.shop[0].obj.attack, 4)  # mosquito 2/2
         self.assertEqual(player.shop[0].obj.health, 3)
-
 
 # %%

@@ -1,9 +1,8 @@
 import sys, inspect
 import itertools
 import numpy as np
-
-from sapai import pets
 import sapai
+
 from sapai.data import data
 from sapai.tiers import pet_tier_lookup, pet_tier_lookup_std
 from sapai.foods import Food
@@ -52,9 +51,9 @@ This module implements all effects in the game. API description is as follows:
 
 
 def get_effect_function(effect_kind):
-    if type(effect_kind).__name__ == "Pet":
+    if isinstance(effect_kind, sapai.Pet):
         effect_kind = effect_kind.ability["effect"]["kind"]
-    elif type(effect_kind).__name__ == "TeamSlot":
+    elif isinstance(effect_kind, sapai.TeamSlot):
         effect_kind = effect_kind.pet.ability["effect"]["kind"]
     elif type(effect_kind) == str:
         pass
@@ -133,9 +132,9 @@ def get_target(
     te: Pet
         Triggering entity
     """
-    if type(apet).__name__ == "Pet":
+    if isinstance(apet, sapai.Pet):
         effect = apet.ability["effect"]
-    elif type(apet).__name__ == "Food":
+    elif isinstance(apet, Food):
         effect = apet.effect
 
     if len(teams) == 1:
@@ -601,7 +600,7 @@ def Evolve(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
         target = fixed_targets
         possible = [fixed_targets]
     fteam, oteam = get_teams(apet_idx, teams)
-    spet = pets.Pet(target[0].ability["effect"]["into"])
+    spet = sapai.Pet(target[0].ability["effect"]["into"])
     try:
         fteam.remove(target[0])
     except Exception:

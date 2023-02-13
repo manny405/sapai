@@ -10,7 +10,7 @@ from sapai.effects import (
 )
 
 import sapai.shop
-from sapai.shop import Shop
+from sapai.shop import Shop, ShopSlot
 from sapai.teams import Team, TeamSlot
 
 
@@ -132,7 +132,7 @@ class Player:
         if type(pet) == int:
             pet = self.shop[pet]
 
-        if type(pet).__name__ == "ShopSlot":
+        if isinstance(pet, ShopSlot):
             pet = pet.obj
 
         if type(pet).__name__ != "Pet":
@@ -181,7 +181,7 @@ class Player:
             food = self.shop[food]
             if food.slot_type != "food":
                 raise Exception("Shop slot not food")
-        if type(food).__name__ == "ShopSlot":
+        if isinstance(food, ShopSlot):
             food = food.obj
         if type(food).__name__ != "Food":
             raise Exception("Attempted to buy_food using object {}".format(food))
@@ -191,7 +191,7 @@ class Player:
         else:
             if type(team_pet) == int:
                 team_pet = self.team[team_pet]
-            if type(team_pet).__name__ == "TeamSlot":
+            if isinstance(team_pet, TeamSlot):
                 team_pet = team_pet._pet
             if not self.team.check_friend(team_pet):
                 raise Exception(
@@ -332,7 +332,7 @@ class Player:
         if type(pet) == int:
             pet = self.team[pet]
 
-        if type(pet).__name__ == "TeamSlot":
+        if isinstance(pet, TeamSlot):
             pet = pet._pet
 
         if type(pet).__name__ != "Pet":
@@ -358,9 +358,9 @@ class Player:
         if type(team_pet) == int:
             team_pet = self.team[team_pet]
 
-        if type(shop_pet).__name__ == "ShopSlot":
+        if isinstance(shop_pet, ShopSlot):
             shop_pet = shop_pet.obj
-        if type(team_pet).__name__ == "TeamSlot":
+        if isinstance(team_pet, TeamSlot):
             team_pet = team_pet._pet
 
         if type(shop_pet).__name__ != "Pet":
@@ -378,7 +378,7 @@ class Player:
 
     def freeze(self, obj):
         """Freeze one pet or food in the shop"""
-        if type(obj).__name__ == "ShopSlot":
+        if isinstance(obj, ShopSlot):
             obj = obj.obj
             shop_idx = self.shop.index(obj)
         elif type(obj) == int:
@@ -389,7 +389,7 @@ class Player:
 
     def unfreeze(self, obj):
         """Unfreeze one pet or food in the shop"""
-        if type(obj).__name__ == "ShopSlot":
+        if isinstance(obj, ShopSlot):
             obj = obj.obj
             shop_idx = self.shop.index(obj)
         elif type(obj) == int:
@@ -446,9 +446,9 @@ class Player:
         if type(team_pet) == int:
             team_pet = self.team[team_pet]
 
-        if type(shop_pet).__name__ == "ShopSlot":
+        if isinstance(shop_pet, ShopSlot):
             shop_pet = shop_pet.obj
-        if type(team_pet).__name__ == "TeamSlot":
+        if isinstance(team_pet, TeamSlot):
             team_pet = team_pet._pet
 
         if type(shop_pet).__name__ != "Pet":
@@ -495,9 +495,9 @@ class Player:
         if type(pet2) == int:
             pet2 = self.team[pet2]
 
-        if type(pet1).__name__ == "TeamSlot":
+        if isinstance(pet1, TeamSlot):
             pet1 = pet1._pet
-        if type(pet2).__name__ == "TeamSlot":
+        if isinstance(pet2, TeamSlot):
             pet2 = pet2._pet
 
         if not self.team.check_friend(pet1):

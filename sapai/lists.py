@@ -10,7 +10,7 @@ class Slot:
     """
 
     def __init__(self, obj=None):
-        if type(obj).__name__ == "Slot":
+        if isinstance(obj, Slot):
             obj = obj.obj
         self.obj = obj
 

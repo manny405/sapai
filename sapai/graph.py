@@ -1,7 +1,7 @@
 #%%
 
 from graphviz import Digraph
-
+from sapai import Pet
 
 def html_table(
     header="",
@@ -85,7 +85,7 @@ def html_table(
 
 
 def prep_pet_str(pstr):
-    if type(pstr).__name__ == "Pet":
+    if isinstance(pstr, Pet):
         pstr = str(pstr)
     temp_pstr = pstr.replace("<", "")
     temp_pstr = temp_pstr.replace(">", "")

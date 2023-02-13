@@ -803,7 +803,7 @@ class Pet:
 
         #### Ensure that state can be JSON serialized
         if getattr(self, "rs", False):
-            if type(self.rs).__name__ == "MockRandomState":
+            if isinstance(self.rs, MockRandomState):
                 seed_state = None
             else:
                 seed_state = list(self.rs.get_state())
