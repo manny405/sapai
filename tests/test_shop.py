@@ -32,7 +32,7 @@ class TestShop(unittest.TestCase):
         ref_state = s[0].state
         for index in range(10):
             s.roll()
-        assert ref_state == s[0].state
+        self.assertEqual(ref_state, s[0].state)
 
     def test_rabbit_buy_food(self):
         test_player = Player(shop=["honey"], team=["rabbit"])
