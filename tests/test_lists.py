@@ -111,7 +111,7 @@ class TestLists(unittest.TestCase):
             l = SAPList(nslots=list_length)
             fill_idx = np.random.choice(rand_idx, size=(rand_size,), replace=False)
             l[fill_idx] = [Pet("fish") for x in range(rand_size)]
-            bit_set = np.ones((list_length))
+            bit_set = np.ones(list_length)
             bit_set[fill_idx] = 0
             test_idx = list(np.where(bit_set == 1)[0])
             self.assertEqual(l.empty, test_idx)
