@@ -88,7 +88,7 @@ class Team(SAPList):
 
         return
 
-    def move_backward(self):
+    def move_backward(self, **kwargs):
         """
         Adjust the location of the pets in the team, moving them to the furthest
         possible backward location using a recursive function.
