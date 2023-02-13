@@ -5,15 +5,21 @@ from sapai import Pet
 
 def html_table(
     header="",
-    entries=[[]],
-    table_attr=[("BORDER", "1")],
-    header_font_attr=[("COLOR", "#000000")],
+    entries=None,
+    table_attr=None,
+    header_font_attr=None,
     header_bg_color="#1C6EA4",
-    cell_font_attr=[],
+    cell_font_attr=None,
     cell_border=0,
-    column_align=["RIGHT", "LEFT"],
-    cell_bg_colors=[[]],
+    column_align=None,
+    cell_bg_colors=None,
 ):
+    entries = entries or [[]]
+    table_attr = table_attr or [("BORDER", "1")]
+    header_font_attr = header_font_attr or [("COLOR", "#000000")]
+    cell_font_attr = cell_font_attr or []
+    column_align = column_align or ["RIGHT", "LEFT"]
+    cell_bg_colors = cell_bg_colors or [[]]
 
     table_attr_str = ""
     for attr, value in table_attr:

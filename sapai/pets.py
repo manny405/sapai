@@ -494,7 +494,7 @@ class Pet:
         activated = True
         return activated, targets, possible
 
-    def faint_trigger(self, trigger=None, te_idx=[], oteam=None):
+    def faint_trigger(self, trigger=None, te_idx=None, oteam=None):
         """
         Apply pet's ability associated with a friend (or self) fainting
 
@@ -503,6 +503,8 @@ class Pet:
              "ox", "sheep", "turtle", "deer", "rooster", "microbe",
              "eagle", "shark", "fly", "mammoth"]
         """
+        te_idx = te_idx or []
+
         activated = False
         targets = []
         possible = []

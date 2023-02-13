@@ -20,13 +20,15 @@ class Team(SAPList):
 
     def __init__(
         self,
-        slots=[],
+        slots=None,
         battle=False,
         shop=None,
         player=None,
         pack="StandardPack",
         seed_state=None,
     ):
+        slots = slots or []
+
         super().__init__(slots, 5, slot_class=TeamSlot)
         self._battle = battle
         self.seed_state = seed_state

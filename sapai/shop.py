@@ -96,7 +96,7 @@ for key, value in data["foods"].items():
 class Shop(SAPList):
     def __init__(
         self,
-        slots=[],
+        slots=None,
         turn=1,
         shop_attack=0,
         shop_health=0,
@@ -104,6 +104,8 @@ class Shop(SAPList):
         seed_state=None,
         fixed_rules=None,
     ):
+        slots = slots or []
+
         #### Setting up random state
         self.seed_state = seed_state
         if self.seed_state is not None:
@@ -216,8 +218,10 @@ class Shop(SAPList):
                 food_slots.append(slot.obj)
         return food_slots
 
-    def roll(self, team=[], roll_only_empty=False):
+    def roll(self, team=None, roll_only_empty=False):
         """Randomizes shop and returns list of available entries"""
+        team = team or []
+
         self.check_rules()
 
         for slot in self.slots:
@@ -859,7 +863,10 @@ class ShopSlot(Slot):
     def unfreeze(self):
         self.frozen = False
 
-    def roll(self, avail=[], prob=[]):
+    def roll(self, avail=None, prob=None):
+        avail = avail or []
+        prob = prob or []
+
         if self.frozen:
             return
         if self.slot_type == "levelup":

@@ -80,7 +80,9 @@ class SAPList:
 
     """
 
-    def __init__(self, slots=[], nslots=None, slot_class=Slot):
+    def __init__(self, slots=None, nslots=None, slot_class=Slot):
+        slots = slots or []
+
         self.slot_class = slot_class
         self._slots = []
         self._nslots = None

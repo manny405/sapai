@@ -59,11 +59,13 @@ class Player:
         gold=10,
         turn=1,
         lf_winner=None,
-        action_history=[],
+        action_history=None,
         pack="StandardPack",
         seed_state=None,
         wins=0,
     ):
+        action_history = action_history or []
+        
         self.shop = shop
         self.team = team
         self.lives = lives
