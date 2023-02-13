@@ -38,8 +38,8 @@ def html_table(
             temp_check_length = len(entries[iter_idx])
             if temp_length != 0:
                 raise Exception("NOT IMPLEMENTED")
-                if temp_length != temp_check_length:
-                    raise Exception("Must supply one cell_bg_color for every entry")
+            if temp_length != temp_check_length:
+                raise Exception("Must supply one cell_bg_color for every entry")
 
     num_columns = 0
     for entry in entries:
