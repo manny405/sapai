@@ -334,6 +334,7 @@ class RBattle(Battle):
         Performs the battle between the input teams t1 and t2.
 
         """
+        super(RBattle, self).__init__(t0, t1)
         ### Make copy each team to cary out the battle so that the original
         ### pets are not modified in any way after the battle
         self.t0 = t0.copy()
