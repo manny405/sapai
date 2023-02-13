@@ -77,7 +77,7 @@ class Battle:
             ### Then attack
             result = self.attack(battle_iter)
             battle_iter += 1
-            if result == False:
+            if not result:
                 break
 
         ### Check winner and return 0 for t0 win, 1 for t1 win, 2 for draw
@@ -159,9 +159,9 @@ class Battle:
             if not temp_slot.empty:
                 found1 = True
                 break
-        if found0 == False:
+        if not found0:
             return False
-        if found1 == False:
+        if not found1:
             return False
 
         teams = [t0, t1]
@@ -306,7 +306,7 @@ class Battle:
         ### Build final queue
         pet_priority = []
         for t, i in zip(teams, idx):
-            if [t0, t1][t][i].empty == True:
+            if [t0, t1][t][i].empty:
                 continue
             pet_priority.append((t, i))
 
@@ -422,7 +422,7 @@ def append_phase_list(phase_list, p, team_idx, pet_idx, activated, targets, poss
 def check_summon_triggers(
     phase_list, p, team_idx, pet_idx, fteam, activated, targets, possible
 ):
-    if activated == False:
+    if not activated:
         return 0
 
     func = get_effect_function(p)
@@ -740,7 +740,7 @@ def battle_phase_knockout(battle_obj, phase, teams, pet_priority, phase_dict):
                     phase_list, apet, team_idx, pet_idx, activated, targets, possible
                 )
 
-                if activated == False:
+                if not activated:
                     ### Easy breaking condition
                     break
 

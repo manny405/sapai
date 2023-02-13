@@ -897,7 +897,7 @@ def tiger_func(func, te_fainted, *args):
     targets, possible = func(*args)
 
     ### If not in a battle, then tiger doesnt trigger
-    if apet.team.battle == False:
+    if not apet.team.battle:
         return targets, possible
 
     ### If there's no pet behind, then return
@@ -910,12 +910,12 @@ def tiger_func(func, te_fainted, *args):
         return targets, possible
     if pet_behind.health <= 0:
         ### If tiger died and has been removed don't run function again
-        if apet.team.check_friend(pet_behind) == False:
+        if not apet.team.check_friend(pet_behind):
             return targets, possible
 
     ### Reset activiting pet's original ability because that's what should
     ###  be duplicated. This is important for Whale.
-    if te_fainted == False:
+    if not te_fainted:
         apet.override_ability = False
     if len(args) == 5:
         te_idx = [0, args[4][1] + len(targets)]

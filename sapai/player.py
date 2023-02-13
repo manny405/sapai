@@ -308,7 +308,7 @@ class Player:
         return (food, targets)
 
     def check_summon_triggers(self, fainted_pet, pet_idx, activated, targets, possible):
-        if activated == False:
+        if not activated:
             return
         func = get_effect_function(fainted_pet)
         if func not in [RespawnPet, SummonPet, SummonRandomPet]:

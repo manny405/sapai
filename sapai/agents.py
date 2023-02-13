@@ -391,7 +391,7 @@ class CombinatorialSearch:
         return team_dict
 
     def print_message(self, message_type, info):
-        if self.verbose == False:
+        if not self.verbose:
             return
 
         if message_type not in ["start", "size", "player_list_done", "done"]:
@@ -525,7 +525,7 @@ class PairwiseBattles:
         except:
             parallel_check = False
 
-        if parallel_check == False:
+        if not parallel_check:
             raise Exception("MPI parallelization not available")
 
         self.comm = MPI.COMM_WORLD

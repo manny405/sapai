@@ -240,7 +240,7 @@ class Shop(SAPList):
                 slot.roll()
                 self.seed_state = slot.seed_state
             ### Add health and attack from previously purchased cans
-            if slot.frozen == False:
+            if not slot.frozen:
                 if slot.slot_type == "pet":
                     slot.obj._attack += self.shop_attack
                     slot.obj._health += self.shop_health
@@ -353,7 +353,7 @@ class Shop(SAPList):
 
         ### Look for frozen slots first
         for iter_idx, slot in enumerate(self.slots):
-            if slot.frozen == True:
+            if slot.frozen:
                 keep_idx.append(iter_idx)
                 if slot.slot_type == "pet":
                     pslots.append(iter_idx)
@@ -364,7 +364,7 @@ class Shop(SAPList):
 
         ### Then add other slots only if it has not yet exceeded the rules
         for iter_idx, slot in enumerate(self.slots):
-            if slot.frozen == True:
+            if slot.frozen:
                 ### Skip frozen slots because they have already been added
                 continue
             if slot.slot_type == "pet":

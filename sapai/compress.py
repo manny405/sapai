@@ -13,7 +13,7 @@ def compress(obj, minimal=False):
     state = getattr(obj, "state", False)
     if not state:
         raise Exception("No state method found for obj {}".format(obj))
-    if minimal == True:
+    if minimal:
         state = minimal_state(obj)
     json_str = json.dumps(state)
     compressed_str = zlib.compress(json_str.encode())
