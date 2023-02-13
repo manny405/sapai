@@ -1,10 +1,10 @@
 #%%
 
-import os, json, zlib, itertools, torch
+import os, json, itertools, torch
 import numpy as np
 from sapai import Player
 from sapai.battle import Battle
-from sapai.compress import compress, decompress, minimal_state
+from sapai.compress import compress, decompress
 
 ### Pets with a random component
 ###   Random component in the future should just be handled in an exact way

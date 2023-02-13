@@ -689,7 +689,6 @@ def OneOf(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     #     target = fixed_targets
     #     possible = [fixed_targets]
 
-    target = [apet]
     possible = [[apet]]
     original_effect = apet.ability["effect"]
     effects = apet.ability["effect"]["effects"]
@@ -833,7 +832,6 @@ def SummonPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     fteam, oteam = get_teams(apet_idx, teams)
     spet_name = apet.ability["effect"]["pet"]
     team = apet.ability["effect"]["team"]
-    summon_idx = te_idx
 
     if len(fixed_targets) > 0:
         raise NotImplementedError
@@ -994,7 +992,6 @@ def Swallow(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
 
     ### Remove target from team and shop this pet as the given level as a
     ### Summon ability
-    faint_target = []
     for temp_target in target:
         if data["pets"][temp_target.name]["baseAttack"] != "?":
             base_attack = data["pets"][temp_target.name]["baseAttack"]
@@ -1021,7 +1018,6 @@ def Swallow(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
             },
         }
         apet.set_ability(summon_dict)
-        faint_idx = fteam.get_idx(temp_target)
         temp_target._health = -1
 
     fteam.move_forward()

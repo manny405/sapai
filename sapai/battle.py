@@ -1,12 +1,8 @@
-import copy
 import numpy as np
 
 from sapai.data import data
-from sapai.pets import Pet
-from sapai.teams import Team
 from sapai.effects import (
     get_effect_function,
-    get_pet,
     get_teams,
     RespawnPet,
     SummonPet,
@@ -227,10 +223,9 @@ class Battle:
 
         """
         ### Build all data types to determine effect order
-        pets = [x for x in t0] + [x for x in t1]
         attack = [x.attack for x in t0] + [x.attack for x in t1]
         health = [x.health for x in t0] + [x.health for x in t1]
-        teams = [0 for x in t0] + [1 for x in t1]
+        teams = [0 for _ in t0] + [1 for _ in t1]
         idx = [x for x in range(5)] + [x for x in range(5)]
 
         for iter_idx, value in enumerate(attack):
@@ -299,7 +294,6 @@ class Battle:
 
         ### Finish sorting by max attack
         attack = np.array([attack[x] for x in sort_idx])
-        health = np.array([health[x] for x in sort_idx])
         teams = np.array([teams[x] for x in sort_idx])
         idx = np.array([idx[x] for x in sort_idx])
 
@@ -363,8 +357,6 @@ def battle_phase(battle_obj, phase, teams, pet_priority, phase_dict):
     indentation.
     s
     """
-    ### Parse inputs and collect info
-    pp = pet_priority
 
     ##### Trigger logic for starting battle
     if phase.startswith("phase_move"):
@@ -727,7 +719,6 @@ def battle_phase_attack_after(battle_obj, phase, teams, pet_priority, phase_dict
 
 def battle_phase_knockout(battle_obj, phase, teams, pet_priority, phase_dict):
     phase_list = phase_dict[phase]
-    pp = pet_priority
 
     #### Get knockout list from the end of the phase_attack info and remove
     ####   the knockout list from phase attack
