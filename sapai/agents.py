@@ -440,7 +440,7 @@ class DatabaseLookupRanker:
         self.path = path
 
         if os.path.exists(path):
-            with open(path, "r") as f:
+            with open(path) as f:
                 self.database = json.loads(f)
         else:
             self.database = {}
