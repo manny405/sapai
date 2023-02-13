@@ -106,7 +106,7 @@ class Shop(SAPList):
     ):
         #### Setting up random state
         self.seed_state = seed_state
-        if self.seed_state != None:
+        if self.seed_state is not None:
             self.rs = np.random.RandomState()
             self.rs.set_state(self.seed_state)
         else:
@@ -135,7 +135,7 @@ class Shop(SAPList):
         if len(slots) == 0:
             self.pslots = rules[0]  ### Number pet slots for shop tier
             self.fslots = rules[1]  ### Number food slots for shop tiers
-            if fixed_rules == None:
+            if fixed_rules is None:
                 self.fixed_rules = False
                 nslots = self.pslots + self.fslots
             else:
@@ -152,7 +152,7 @@ class Shop(SAPList):
             slot_types = [x.slot_type for x in slots]
             self.pslots = slot_types.count("pet")
             self.fslots = slot_types.count("food")
-            if fixed_rules == None:
+            if fixed_rules is None:
                 self.fixed_rules = True
             else:
                 self.fixed_rules = fixed_rules
@@ -699,7 +699,7 @@ class ShopSlotNoneItem:
         self.name = "none"
         self.seed_state = seed_state
         self.obj = None
-        if self.seed_state != None:
+        if self.seed_state is not None:
             self.rs = np.random.RandomState()
             self.rs.set_state(self.seed_state)
         else:
@@ -746,7 +746,7 @@ class ShopSlot(Slot):
         seed_state=None,
     ):
         self.seed_state = seed_state
-        if self.seed_state != None:
+        if self.seed_state is not None:
             self.rs = np.random.RandomState()
             self.rs.set_state(self.seed_state)
         else:
@@ -763,7 +763,7 @@ class ShopSlot(Slot):
         if slot_type not in ["pet", "food", "levelup", "none"]:
             raise Exception("Unrecognized slot type {}".format(self.slot_type))
 
-        if obj != None and type(obj) != str:
+        if obj is not None and type(obj) != str:
             if isinstance(obj, Pet):
                 self.slot_type = "pet"
                 self.obj = obj
@@ -949,7 +949,7 @@ class ShopSlot(Slot):
 
         ### This should no longer be possible
         # obj.rs = np.random.RandomState()
-        # if seed_state != None:
+        # if seed_state is not None:
         #     obj.rs.set_state(state["item"]["seed_state"])
 
         return cls(

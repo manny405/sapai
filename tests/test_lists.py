@@ -14,10 +14,10 @@ pet_names = list(data["pets"].keys())
 class TestLists(unittest.TestCase):
     def test_empty_slot(self):
         s = Slot()
-        assert s.obj == None
+        assert s.obj is None
         assert s.empty == True
         s = Slot(Slot())
-        assert s.obj == None
+        assert s.obj is None
         assert s.empty == True
 
     def test_pet_slot(self):

@@ -78,11 +78,11 @@ def get_pet(pet_idx, teams, fainted_pet=None, te=None):
         raise Exception("Team idx greater than provided number of teams")
     if team_pet_idx >= 5:
         raise Exception("Team pet idx greater than 5")
-    if fainted_pet == None:
+    if fainted_pet is None:
         pet = teams[team_idx][team_pet_idx].pet
     else:
         pet = fainted_pet
-    if te != None:
+    if te is not None:
         pet = te
     return pet
 
@@ -213,7 +213,7 @@ def get_target(
 
         ret_pets = []
         for temp_slot in [left_slot, right_slot]:
-            if temp_slot == None:
+            if temp_slot is None:
                 continue
             if temp_slot.empty:
                 continue
@@ -240,7 +240,7 @@ def get_target(
 
         ret_pets = []
         for temp_slot in [left_slot, right_slot]:
-            if temp_slot == None:
+            if temp_slot is None:
                 continue
             if temp_slot.empty:
                 continue
@@ -299,7 +299,7 @@ def get_target(
 
     elif kind == "EachShopAnimal":
         shop = apet.shop
-        if shop == None:
+        if shop is None:
             return [], []
         else:
             return shop.pets, [shop.pets]
@@ -480,7 +480,7 @@ def get_target(
         return ret_pets, all_possible
 
     elif kind == "TriggeringEntity":
-        if te != None:
+        if te is not None:
             return [te], [[te]]
         else:
             return [], []
@@ -580,7 +580,7 @@ def GainExperience(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
         if level_up:
             target_pet.levelup_trigger(target_pet)
             player = apet.player
-            if player != None:
+            if player is not None:
                 apet.player.shop.levelup()
     return target, possible
 
@@ -588,7 +588,7 @@ def GainExperience(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
 def GainGold(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     amount = apet.ability["effect"]["amount"]
     player = apet.player
-    if player != None:
+    if player is not None:
         apet.player.gold += amount
     return player, [player]
 
@@ -611,7 +611,7 @@ def Evolve(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
 
 
 def FoodMultiplier(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
-    if te == None:
+    if te is None:
         raise Exception("Must input purchased food to FoodMultiplier")
 
     mult = int(apet.ability["effect"]["amount"])
@@ -1082,7 +1082,7 @@ def TransferStats(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
 
 def DiscountFood(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     shop = apet.shop
-    if shop == None:
+    if shop is None:
         raise Exception("No shop found to discount food")
     amount = apet.ability["effect"]["amount"]
     targets = []

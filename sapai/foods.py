@@ -21,7 +21,7 @@ class Food:
         self.shop = shop
 
         self.seed_state = seed_state
-        if self.seed_state != None:
+        if self.seed_state is not None:
             self.rs = np.random.RandomState()
             self.rs.set_state(self.seed_state)
         else:
@@ -108,7 +108,7 @@ class Food:
         food.apply_until_end_of_battle = state["apply_until_end_of_battle"]
         ### Supply seed_state in state dict should be optional
         if "seed_state" in state:
-            if state["seed_state"] != None:
+            if state["seed_state"] is not None:
                 food.seed_state = state["seed_state"]
                 food.rs = np.random.RandomState()
                 food.rs.set_state(state["seed_state"])

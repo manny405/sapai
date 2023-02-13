@@ -20,7 +20,7 @@ def storeaction(func):
         action_name = str(func.__name__).split(".")[-1]
         targets = func(*args, **kwargs)
         store_targets = []
-        if targets != None:
+        if targets is not None:
             for entry in targets:
                 if getattr(entry, "state", False):
                     store_targets.append(entry.state)
@@ -80,9 +80,9 @@ class Player:
         self.lf_winner = lf_winner
 
         ### Initialize shop and team if not provided
-        if self.shop == None:
+        if self.shop is None:
             self.shop = Shop(pack=self.pack, seed_state=seed_state)
-        if self.team == None:
+        if self.team is None:
             self.team = Team(seed_state=seed_state)
 
         if type(self.shop) == list:

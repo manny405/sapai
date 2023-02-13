@@ -15,7 +15,7 @@ class Slot:
         self.obj = obj
 
     def __repr__(self):
-        if self.obj == None:
+        if self.obj is None:
             name = "EMPTY"
         elif self.obj.name == "pet-none" or self.obj.name == "food-none":
             name = "EMPTY"
@@ -29,7 +29,7 @@ class Slot:
 
     @obj.setter
     def obj(self, obj):
-        if obj != None:
+        if obj is not None:
             if isinstance(obj, type(self)):
                 obj = obj.obj
             if (
@@ -47,7 +47,7 @@ class Slot:
         """
         Returns if the given slot is empty
         """
-        return self._obj == None
+        return self._obj is None
 
     @obj.deleter
     def obj(self):
@@ -85,7 +85,7 @@ class SAPList:
         self._slots = []
         self._nslots = None
         self.slots = slots
-        if nslots != None:
+        if nslots is not None:
             self.nslots = nslots
 
     def __len__(self):
@@ -140,7 +140,7 @@ class SAPList:
             else:
                 temp_slots.append(objs)
             self._slots = temp_slots
-        if self.nslots != None:
+        if self.nslots is not None:
             self.nslots = self._nslots
 
     @property
@@ -156,7 +156,7 @@ class SAPList:
         Sets nslots and confirms the number of Slots in _slots
         """
         self._nslots = length
-        if self._nslots == None:
+        if self._nslots is None:
             return
         if not isinstance(length, (int, np.integer)):
             raise Exception(f"SAPList nslots must be int, given {type(length)}")

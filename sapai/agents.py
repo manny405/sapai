@@ -233,7 +233,7 @@ class CombinatorialSearch:
         ### build_player_list searches shop actions and returns player list
         ###   In addition, it builds a player_state_dict which can be used for
         ###   faster lookup of redundant player states
-        if player_state_dict == None:
+        if player_state_dict is None:
             self.player_state_dict = {}
         else:
             self.player_state_dict = player_state_dict
@@ -270,7 +270,7 @@ class CombinatorialSearch:
             ### If gold is 0, then this is exit condition for the
             ### recursive function
             return []
-        if player_list == None:
+        if player_list is None:
             player_list = []
 
         player_state = player.state

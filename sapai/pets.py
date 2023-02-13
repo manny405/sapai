@@ -24,7 +24,7 @@ class Pet:
             if not name.startswith("pet-"):
                 name = "pet-{}".format(name)
         self.seed_state = seed_state
-        if self.seed_state != None:
+        if self.seed_state is not None:
             self.rs = np.random.RandomState()
             self.rs.set_state(self.seed_state)
         else:
@@ -64,20 +64,20 @@ class Pet:
         self.experience = 0
 
         #### Add pet to team if not already present
-        if self.team != None:
+        if self.team is not None:
             if self._attack != "none":
                 if self not in team:
                     team.append(self)
 
-            if self.team.shop == None:
-                if self.shop != None:
+            if self.team.shop is None:
+                if self.shop is not None:
                     self.team.shop = self.shop
 
         ### Make sure everything has been initialized together
-        if player != None:
-            if self.team != None:
+        if player is not None:
+            if self.team is not None:
                 player.team = self.team
-            if self.shop != None:
+            if self.shop is not None:
                 player.shop = self.shop
 
     @property
@@ -356,7 +356,7 @@ class Pet:
 
         ### Behavior for BuyAfterLoss
         if self.ability["trigger"] == "BuyAfterLoss":
-            if self.player == None:
+            if self.player is None:
                 return activated, targets, possible
             if self.player.lf_winner != False:
                 return activated, targets, possible
@@ -455,7 +455,7 @@ class Pet:
 
         ### Check gold for puppy and tyrannosaurus
         if self.ability["trigger"] == "EndOfTurnWith3PlusGold":
-            if self.player != None:
+            if self.player is not None:
                 if self.player.gold >= 3:
                     pass
                 else:
@@ -464,14 +464,14 @@ class Pet:
                 return activated, targets, possible
         ### Check for bison
         elif self.ability["trigger"] == "EndOfTurnWithLvl3Friend":
-            if self.team != None:
+            if self.team is not None:
                 if not self.team.check_lvl3():
                     return activated, targets, possible
             else:
                 return activated, targets, possible
         ### Check for llama
         elif self.ability["trigger"] == "EndOfTurnWith4OrLessAnimals":
-            if self.team != None:
+            if self.team is not None:
                 if len(self.team) > 4:
                     return activated, targets, possible
             else:
@@ -551,7 +551,7 @@ class Pet:
         else:
             pet_idx = te_idx
 
-        if oteam != None:
+        if oteam is not None:
             teams = [self.team, oteam]
         else:
             teams = [self.team]
@@ -856,7 +856,7 @@ class Pet:
 
         ### Supply seed_state in state dict should be optional
         if "seed_state" in state:
-            if state["seed_state"] != None:
+            if state["seed_state"] is not None:
                 pet.seed_state = state["seed_state"]
                 pet.rs = np.random.RandomState()
                 pet.rs.set_state(pet.seed_state)
@@ -867,7 +867,7 @@ class Pet:
 def tiger_func(func, te_fainted, *args):
     ### Check behind for tiger
     apet = args[0]
-    if apet.team == None:
+    if apet.team is None:
         ### Just run function
         targets, possible = func(*args)
         return targets, possible
