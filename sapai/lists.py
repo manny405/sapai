@@ -257,7 +257,7 @@ class SAPList:
         """
         Move all entries in SlotList after index i to the right
         """
-        self.move_backword()
+        self.move_backward()
 
     def move_left(self, sidx=0, eidx=-1):
         """
