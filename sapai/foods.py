@@ -8,7 +8,7 @@ from sapai.rand import MockRandomState
 
 
 class Food:
-    def __init__(self, name="food-none", shop=None, team=[], seed_state=None):
+    def __init__(self, name="food-none", shop=None, seed_state=None):
         """
         Food class definition the types of interactions that food undergoes
 

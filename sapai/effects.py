@@ -106,7 +106,6 @@ def get_target(
     apet_idx,
     teams,
     te=None,
-    te_idx=[],
     fixed_targets=[],
     get_from=False,
     test_kind="",

@@ -401,7 +401,6 @@ class Shop(SAPList):
         self.slots = keep_slots
 
         ### Order shop slots
-        keep_idx = []
         pslots = []
         fslots = []
         for iter_idx, slot in enumerate(self.slots):
@@ -927,7 +926,6 @@ class ShopSlot(Slot):
     @classmethod
     def from_state(cls, state):
         slot_type = state["slot_type"]
-        obj_state = state["obj"]
         if state["obj"]["type"] == "Pet":
             item_cls = getattr(sapai.pets, "Pet")
         elif state["obj"]["type"] == "Food":

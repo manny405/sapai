@@ -166,7 +166,7 @@ class SAPList:
         if len(self._slots) < self.nslots:
             [
                 self._slots.append(self.slot_class())
-                for x in range(self.nslots - len(self._slots))
+                for _ in range(self.nslots - len(self._slots))
             ]
         elif len(self._slots) > self.nslots:
             self._slots = self._slots[: self.nslots]
@@ -253,7 +253,7 @@ class SAPList:
         ### Dereference original position
         self[sidx] = self.slot_class()
 
-    def move_right(self, sidx=0, eidx=-1):
+    def move_right(self):
         """
         Move all entries in SlotList after index i to the right
         """

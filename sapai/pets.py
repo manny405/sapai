@@ -1,9 +1,8 @@
 #%%
-from random import seed
 import numpy as np
 from sapai.data import data
 from sapai.effects import get_effect_function, RespawnPet, SummonPet, SummonRandomPet
-from sapai.tiers import pet_tier_lookup, pet_tier_lookup_std
+from sapai.tiers import pet_tier_lookup
 from sapai.rand import MockRandomState
 from sapai import status
 

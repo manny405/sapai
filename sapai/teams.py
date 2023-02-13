@@ -30,7 +30,7 @@ class Team(SAPList):
         super().__init__(slots, 5, slot_class=TeamSlot)
         self._battle = battle
         self.seed_state = seed_state
-        self.slots = [TeamSlot(seed_state=self.seed_state) for x in range(self.nslots)]
+        self.slots = [TeamSlot(seed_state=self.seed_state) for _ in range(self.nslots)]
         for iter_idx, obj in enumerate(slots):
             self[iter_idx] = obj
             self[iter_idx]._pet.team = self
@@ -150,7 +150,6 @@ class Team(SAPList):
             found = False
             for iter_idx, temp_slot in enumerate(self.slots):
                 if temp_slot == obj:
-                    found_idx = iter_idx
                     found = True
             return found
         elif isinstance(obj, Pet):
@@ -158,7 +157,6 @@ class Team(SAPList):
             for iter_idx, temp_slot in enumerate(self.slots):
                 temp_pet = temp_slot.pet
                 if temp_pet == obj:
-                    found_idx = iter_idx
                     found = True
             return found
         else:

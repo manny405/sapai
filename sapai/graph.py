@@ -33,8 +33,6 @@ def html_table(
     if len(cell_bg_colors) != 0:
         if type(cell_bg_colors[0]) != list:
             raise Exception("Argument cell_bg_colors should be list of lists")
-        total_entries = 0
-        check_total_entires = 0
         for iter_idx, temp_entry in enumerate(cell_bg_colors):
             temp_length = len(temp_entry)
             temp_check_length = len(entries[iter_idx])
@@ -218,9 +216,7 @@ def graph_battle(f, file_name="", verbose=False):
             elif "phase_hurt_and_faint" in phase_name:
                 header = "{} Phase: Hurt and Faint".format(turn_name)
                 entries = []
-                if len(phase_entry) == 0:
-                    phase_entry = [{}]
-                else:
+                if len(phase_entry) != 0:
                     for iter_idx, temp_effect_info in enumerate(phase_entry):
                         es, ec = prep_effect(temp_effect_info)
                         if iter_idx == 0:
