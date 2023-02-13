@@ -37,7 +37,7 @@ def html_table(
             temp_length = len(temp_entry)
             temp_check_length = len(entries[iter_idx])
             if temp_length != 0:
-                raise Exception("NOT IMPLEMENTED")
+                raise NotImplementedError
             if temp_length != temp_check_length:
                 raise Exception("Must supply one cell_bg_color for every entry")
 

@@ -23,7 +23,7 @@ class Play:
     """
 
     def __init__(self, players=[], mode="tournament"):
-        raise Exception()
+        raise NotImplementedError
 
 
 #%%

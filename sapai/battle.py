@@ -353,7 +353,7 @@ class RBattle(Battle):
         ### Build initial effect queue order
         self.pet_priority = self.update_pet_priority(self.t0, self.t1)
 
-        raise Exception("Not implemented")
+        raise NotImplementedError
 
 
 def battle_phase(battle_obj, phase, teams, pet_priority, phase_dict):

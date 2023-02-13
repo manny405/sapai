@@ -777,7 +777,7 @@ def RespawnPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     spet_name = apet.name
 
     if len(fixed_targets) > 0:
-        raise Exception("Not implemented")
+        raise NotImplementedError
 
     target_team = fteam
     #### First, determine how many pets should be infront
@@ -836,7 +836,7 @@ def SummonPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     summon_idx = te_idx
 
     if len(fixed_targets) > 0:
-        raise Exception("Not implemented")
+        raise NotImplementedError
 
     if team == "Friendly":
         target_team = fteam

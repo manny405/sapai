@@ -50,11 +50,11 @@ def apply_splash_attack(value):
 
 
 def apply_honey_bee(pet, team):
-    raise Exception("Not implemented")
+    raise NotImplementedError
 
 
 def apply_extra_life(pet, team):
-    raise Exception("Not implemented")
+    raise NotImplementedError
 
 
 apply_null_dict = {
