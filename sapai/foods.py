@@ -15,7 +15,7 @@ class Food:
         """
         if len(name) != 0:
             if not name.startswith("food-"):
-                name = "food-{}".format(name)
+                name = f"food-{name}"
 
         self.eaten = False
         self.shop = shop
@@ -39,7 +39,7 @@ class Food:
 
         self.name = name
         if name not in data["foods"]:
-            raise Exception("Food {} not found".format(name))
+            raise Exception(f"Food {name} not found")
 
         self.cost = 3
         item = data["foods"][name]
@@ -115,9 +115,7 @@ class Food:
         return food
 
     def __repr__(self):
-        return "< {} {}-{} {} >".format(
-            self.name, self.attack, self.health, self.status
-        )
+        return f"< {self.name} {self.attack}-{self.health} {self.status} >"
 
 
 # %%

@@ -26,9 +26,7 @@ class TestPetTriggers(unittest.TestCase):
                 effect_target_kind_list.append("NONE")
 
         str_fmt = "{:3s}{:20s}{:15s}{:15s}{:20s}{:20s}\n"
-        print_str = str_fmt.format(
-            "N", "Pet", "Trigger", "TriggerBy", "EffectKind", "EffectTarget"
-        )
+        print_str = str_fmt.format("N", "Pet", "Trigger", "TriggerBy", "EffectKind", "EffectTarget")
         print_str += "-------------------------------------------------------------------------------\n"
         for iter_idx in range(len(pet_list)):
             print_str += str_fmt.format(

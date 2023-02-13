@@ -15,7 +15,7 @@ The ``Round_1.pt`` contains a dictionary of all possible teams that can be const
     
     >>> import torch
     >>> results = torch.load("Round_1.pt")
-    >>> print("Number of Possible Teams: {}".format(len(output_dict)))
+    >>> print(f"Number of Possible Teams: {len(output_dict)}")
     5013
     
 The key of the dictionary is a loss-less compression of the Team. The Team can be rebuilt in memory easily using ``sapai.compress.decompress``. For example, if you would like to examine the best possible teams from Round 1, the following code can be used.  
@@ -31,9 +31,9 @@ The key of the dictionary is a loss-less compression of the Team. The Team can b
     >>> sort_idx = np.argsort(win_rate)[::-1]
     >>> best_win_rate = win_rate[sort_idx[0]]
     >>> best_team = decompress(keys[sort_idx[0]])
-    >>> print("BEST WIN RATE: {:.3f}".format(best_win_rate))
+    >>> print(f"BEST WIN RATE: {best_win_rate:.3f}")
     0.910
-    >>> print("BEST TEAM: \n{}".format(best_team)) 
+    >>> print(f"BEST TEAM: \n{best_team}")
     BEST TEAM: 
     0: < Slot pet-fish 2-3 none 1-0 > 
         1: < Slot pet-ant 2-1 none 1-0 > 

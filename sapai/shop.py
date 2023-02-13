@@ -130,7 +130,7 @@ class Shop(SAPList):
             self.turn_prob_pets = turn_prob_pets_exp
             self.turn_prob_foods = turn_prob_foods_exp
         else:
-            raise Exception("Pack {} not valid".format(pack))
+            raise Exception(f"Pack {pack} not valid")
 
         ### Initialize shop based on input turn or input slots
         rules = get_shop_rules(self.turn)
@@ -182,7 +182,7 @@ class Shop(SAPList):
                     break
 
         if idx < 0:
-            raise Exception("Unrecognized Shop Object {}".format(obj))
+            raise Exception(f"Unrecognized Shop Object {obj}")
 
         del self.slots[idx]
 
@@ -195,7 +195,7 @@ class Shop(SAPList):
                 idx = iter_idx
                 break
         if idx < 0:
-            raise Exception("Unrecognized Shop Object {}".format(obj))
+            raise Exception(f"Unrecognized Shop Object {obj}")
         return idx
 
     @property
@@ -502,7 +502,7 @@ class Shop(SAPList):
     def __repr__(self):
         repr_str = ""
         for iter_idx, slot in enumerate(self.slots):
-            repr_str += "{}: {} \n    ".format(iter_idx, slot)
+            repr_str += f"{iter_idx}: {slot} \n    "
         return repr_str
 
 
@@ -568,7 +568,7 @@ class ShopLearn(Shop):
                     obj = slot
                     break
             if idx < 0:
-                raise Exception("Unrecognized Shop Object {}".format(obj))
+                raise Exception(f"Unrecognized Shop Object {obj}")
 
         if obj.slot_type == "pet":
             self.npet_bought += 1
@@ -577,7 +577,7 @@ class ShopLearn(Shop):
         elif obj.slot_type == "levelup":
             self.nlevelup_bought += 1
         else:
-            raise Exception("Unrecognized ShopSlot {}".format(obj))
+            raise Exception(f"Unrecognized ShopSlot {obj}")
 
         ### Rebuild ShopLearn to remove all levelup ShopSlots
         self.update_shop_rules()
@@ -764,7 +764,7 @@ class ShopSlot(Slot):
         self.obj = ShopSlotNoneItem(seed_state=self.seed_state)
 
         if slot_type not in ["pet", "food", "levelup", "none"]:
-            raise Exception("Unrecognized slot type {}".format(self.slot_type))
+            raise Exception(f"Unrecognized slot type {self.slot_type}")
 
         if obj is not None and type(obj) != str:
             if isinstance(obj, Pet):
@@ -792,14 +792,14 @@ class ShopSlot(Slot):
                     elif obj in data["foods"]:
                         name = obj
                         self.slot_type = "food"
-                    elif "pet-{}".format(obj) in data["pets"]:
+                    elif f"pet-{obj}" in data["pets"]:
                         name = obj
                         self.slot_type = "pet"
-                    elif "food-{}".format(obj) in data["foods"]:
+                    elif f"food-{obj}" in data["foods"]:
                         name = obj
                         self.slot_type = "food"
                     else:
-                        raise Exception("Unrecognized ShopSlot Object {}".format(obj))
+                        raise Exception(f"Unrecognized ShopSlot Object {obj}")
                 else:
                     self.slot_type = obj
                     name = "none"
@@ -824,22 +824,18 @@ class ShopSlot(Slot):
             fstr = "not-frozen"
         if self.slot_type == "pet" or self.slot_type == "levelup":
             if self.obj.name == "pet-none":
-                return "< ShopSlot-{} {} EMPTY >".format(self.slot_type, fstr)
+                return f"< ShopSlot-{self.slot_type} {fstr} EMPTY >"
             else:
                 pet_repr = str(self.obj)
                 pet_repr = pet_repr[2:-2]
-                return "< ShopSlot-{} {} {}-gold {} >".format(
-                    self.slot_type, fstr, self.cost, pet_repr
-                )
+                return f"< ShopSlot-{self.slot_type} {fstr} {self.cost}-gold {pet_repr} >"
         elif self.slot_type == "food":
             if self.obj.name == "food-none":
-                return "< ShopSlot-{} {} EMPTY >".format(self.slot_type, fstr)
+                return f"< ShopSlot-{self.slot_type} {fstr} EMPTY >"
             else:
                 food_repr = str(self.obj)
                 food_repr = food_repr[2:-2]
-                return "< ShopSlot-{} {} {}-gold {} >".format(
-                    self.slot_type, fstr, self.cost, food_repr
-                )
+                return f"< ShopSlot-{self.slot_type} {fstr} {self.cost}-gold {food_repr} >"
         elif self.slot_type == "none":
             return f"< ShopSlot-{None} {fstr} EMPTY >"
         else:
@@ -976,7 +972,7 @@ def get_shop_rules(turn, pack="StandardPack"):
         turn_prob_pets = turn_prob_pets_exp
         turn_prob_foods = turn_prob_foods_exp
     else:
-        raise Exception("Pack {} not valid".format(pack))
+        raise Exception(f"Pack {pack} not valid")
 
     if turn <= 0:
         raise Exception("Input turn must be greater than 0")
@@ -985,7 +981,7 @@ def get_shop_rules(turn, pack="StandardPack"):
     if turn > 11:
         turn = 11
 
-    td = data["turns"]["turn-{}".format(turn)]
+    td = data["turns"][f"turn-{turn}"]
     fslots = td["foodShopSlots"]
     pslots = td["animalShopSlots"]
     tier_avail = td["tiersAvailable"]

@@ -21,7 +21,7 @@ class Slot:
             name = "EMPTY"
         else:
             name = str(self._obj)[2:-2]
-        return "< Slot {} >".format(name)
+        return f"< Slot {name} >"
 
     @property
     def obj(self):
@@ -114,7 +114,7 @@ class SAPList:
     def __repr__(self):
         repr_str = ""
         for iter_idx, slot in enumerate(self.slots):
-            repr_str += "{}: {} \n    ".format(iter_idx, slot)
+            repr_str += f"{iter_idx}: {slot} \n    "
         return repr_str
 
     @property

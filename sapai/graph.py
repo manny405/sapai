@@ -23,8 +23,8 @@ def html_table(
 
     table_attr_str = ""
     for attr, value in table_attr:
-        table_attr_str += """ {}="{}" """.format(attr, value)
-    table_str = "<<table {}>".format(table_attr_str)
+        table_attr_str += f""" {attr}="{value}" """
+    table_str = f"<<table {table_attr_str}>"
 
     num_rows = 0
     if len(header) > 0:
@@ -58,17 +58,15 @@ def html_table(
 
         temp_font_attr_str = ""
         for attr, value in header_font_attr:
-            temp_font_attr_str += """ {}="{}" """.format(attr, value)
+            temp_font_attr_str += f""" {attr}="{value}" """
 
-        temp_str += """<td BGCOLOR="{}" COLSPAN="{}"><font {}>{}</font></td>""".format(
-            header_bg_color, num_columns, temp_font_attr_str, header
-        )
+        temp_str += f"""<td BGCOLOR="{header_bg_color}" COLSPAN="{num_columns}"><font {temp_font_attr_str}>{header}</font></td>"""
         temp_str += "</tr>"
         table_str += temp_str
 
     cell_font_attr_str = ""
     for attr, value in cell_font_attr:
-        cell_font_attr_str += """ {}="{}" """.format(attr, value)
+        cell_font_attr_str += f""" {attr}="{value}" """
 
     for entry in entries:
         temp_str = "<tr> "
@@ -78,9 +76,7 @@ def html_table(
             else:
                 temp_cell_str = ""
             temp_align = column_align[column_idx % len(column_align)]
-            temp_str += """<td BORDER="{}" ALIGN="{}"><font {}>{}</font></td>""".format(
-                cell_border, temp_align, cell_font_attr_str, temp_cell_str
-            )
+            temp_str += f"""<td BORDER="{cell_border}" ALIGN="{temp_align}"><font {cell_font_attr_str}>{temp_cell_str}</font></td>"""
         temp_str += "</tr>"
         table_str += temp_str
 
@@ -102,9 +98,7 @@ def prep_pet_str(pstr):
     if len(temp_pstr_list) == 2:
         temp_stats = temp_pstr_list[1]
         replace_index = temp_stats.index("-")
-        temp_pstr_list[1] = "{},{}".format(
-            temp_stats[0:replace_index], temp_stats[replace_index + 1 :]
-        )
+        temp_pstr_list[1] = f"{temp_stats[0:replace_index]},{temp_stats[replace_index + 1 :]}"
         temp_pstr = " ".join(temp_pstr_list)
     return temp_pstr
 
@@ -183,11 +177,11 @@ def graph_battle(f, file_name="", verbose=False):
         for phase_name, phase_entry in phase_dict.items():
             if "phase_move" in phase_name:
                 if phase_name == "phase_move_start":
-                    header = "{} Phase: Move-Team-Start".format(turn_name)
+                    header = f"{turn_name} Phase: Move-Team-Start"
                     if not verbose:
                         continue
                 elif phase_name == "phase_move_end":
-                    header = "{} Phase: Move-Team-End".format(turn_name)
+                    header = f"{turn_name} Phase: Move-Team-End"
                 pstr = prep_pet_str_obj(phase_entry)
                 ### Only interested in final positions
                 if len(pstr) > 0:
@@ -199,7 +193,7 @@ def graph_battle(f, file_name="", verbose=False):
                 entries = pstr
 
             elif "phase_start" == phase_name:
-                header = "{} Phase: Start Fight".format(turn_name)
+                header = f"{turn_name} Phase: Start Fight"
                 entries = []
                 for iter_idx, temp_effect_info in enumerate(phase_entry):
                     es, ec = prep_effect(temp_effect_info)
@@ -220,7 +214,7 @@ def graph_battle(f, file_name="", verbose=False):
                     )
 
             elif "phase_hurt_and_faint" in phase_name:
-                header = "{} Phase: Hurt and Faint".format(turn_name)
+                header = f"{turn_name} Phase: Hurt and Faint"
                 entries = []
                 if len(phase_entry) != 0:
                     for iter_idx, temp_effect_info in enumerate(phase_entry):
@@ -248,13 +242,13 @@ def graph_battle(f, file_name="", verbose=False):
                 "phase_knockout",
             ]:
                 if phase_name == "phase_attack_before":
-                    header = "{} Phase: Before Attack".format(turn_name)
+                    header = f"{turn_name} Phase: Before Attack"
                 elif phase_name == "phase_attack":
-                    header = "{} Phase: Attack".format(turn_name)
+                    header = f"{turn_name} Phase: Attack"
                 elif phase_name == "phase_attack_after":
-                    header = "{} Phase: Attack After".format(turn_name)
+                    header = f"{turn_name} Phase: Attack After"
                 elif phase_name == "phase_knockout":
-                    header = "{} Phase: Knockout".format(turn_name)
+                    header = f"{turn_name} Phase: Knockout"
                 entries = []
                 for temp_effect_info in phase_entry:
                     es, ec = prep_effect(temp_effect_info)

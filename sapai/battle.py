@@ -133,7 +133,7 @@ class Battle:
         t0 = self.t0
         t1 = self.t1
 
-        attack_str = "attack {}".format(battle_iter)
+        attack_str = f"attack {battle_iter}"
         phase_dict = {
             attack_str: {
                 "phase_move_start": [],
@@ -387,7 +387,7 @@ def battle_phase(battle_obj, phase, teams, pet_priority, phase_dict):
         battle_phase_knockout(battle_obj, phase, teams, pet_priority, phase_dict)
 
     else:
-        raise Exception("Phase {} not found".format(phase))
+        raise Exception(f"Phase {phase} not found")
 
 
 def append_phase_list(phase_list, p, team_idx, pet_idx, activated, targets, possible):

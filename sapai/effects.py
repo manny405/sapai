@@ -58,13 +58,9 @@ def get_effect_function(effect_kind):
     elif type(effect_kind) == str:
         pass
     else:
-        raise Exception("Unrecognized input {}".format(effect_kind))
+        raise Exception(f"Unrecognized input {effect_kind}")
     if effect_kind not in func_dict:
-        raise Exception(
-            "Input effect_kind {} not found in {}".format(
-                effect_kind, list(func_dict.keys())
-            )
-        )
+        raise Exception(f"Input effect_kind {effect_kind} not found in {list(func_dict.keys())}")
     return func_dict[effect_kind]
 
 
@@ -507,7 +503,7 @@ def get_target(
         return [], []
 
     else:
-        raise Exception("Target {} impelementation not found".format(kind))
+        raise Exception(f"Target {kind} impelementation not found")
 
 
 def AllOf(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
@@ -1037,9 +1033,7 @@ def Swallow(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
             base_health = temp_target.health
 
         summon_dict = {
-            "description": "Swallowed and summon level {} {}".format(
-                temp_target.name, output_level
-            ),
+            "description": f"Swallowed and summon level {temp_target.name} {output_level}",
             "trigger": "Faint",
             "triggeredBy": {"kind": "Self"},
             "effect": {

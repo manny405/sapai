@@ -12,7 +12,7 @@ def compress(obj, minimal=False):
     """
     state = getattr(obj, "state", False)
     if not state:
-        raise Exception("No state method found for obj {}".format(obj))
+        raise Exception(f"No state method found for obj {obj}")
     if minimal:
         state = minimal_state(obj)
     json_str = json.dumps(state)
@@ -44,7 +44,7 @@ def sapai_hash(obj):
     """
     state = getattr(obj, "state", False)
     if not state:
-        raise Exception("No state found for obj {}".format(obj))
+        raise Exception(f"No state found for obj {obj}")
     raise Exception("I can't find faster way to do this... But it would be very nice.")
 
 
@@ -94,7 +94,7 @@ def minimal_state(obj):
     elif state["type"] == "Player":
         minimal_player_state(state)
     else:
-        raise Exception("Unrecognized state type {}".format(state["type"]))
+        raise Exception(f"Unrecognized state type {state['type']}")
 
     return state
 

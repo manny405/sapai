@@ -138,18 +138,14 @@ class Player:
             pet = pet.obj
 
         if type(pet).__name__ != "Pet":
-            raise Exception("Attempted to buy_pet using object {}".format(pet))
+            raise Exception(f"Attempted to buy_pet using object {pet}")
 
         shop_idx = self.shop.index(pet)
         shop_slot = self.shop.slots[shop_idx]
         cost = shop_slot.cost
 
         if cost > self.gold:
-            raise Exception(
-                "Attempted to buy Pet of cost {} with only {} gold".format(
-                    cost, self.gold
-                )
-            )
+            raise Exception(f"Attempted to buy Pet of cost {cost} with only {self.gold} gold")
 
         ### Connect pet with current Player
         pet.team = self.team
@@ -186,7 +182,7 @@ class Player:
         if isinstance(food, ShopSlot):
             food = food.obj
         if type(food).__name__ != "Food":
-            raise Exception("Attempted to buy_food using object {}".format(food))
+            raise Exception(f"Attempted to buy_food using object {food}")
 
         if team_pet is None:
             targets, _ = get_target(food, [0, None], [self.team])
@@ -196,11 +192,9 @@ class Player:
             if isinstance(team_pet, TeamSlot):
                 team_pet = team_pet._pet
             if not self.team.check_friend(team_pet):
-                raise Exception(
-                    "Attempted to buy food for Pet not on team {}".format(team_pet)
-                )
+                raise Exception(f"Attempted to buy food for Pet not on team {team_pet}")
             if type(team_pet).__name__ != "Pet":
-                raise Exception("Attempted to buy_pet using object {}".format(team_pet))
+                raise Exception(f"Attempted to buy_pet using object {team_pet}")
             targets = [team_pet]
 
         shop_idx = self.shop.index(food)
@@ -208,11 +202,7 @@ class Player:
         cost = shop_slot.cost
 
         if cost > self.gold:
-            raise Exception(
-                "Attempted to buy Pet of cost {} with only {} gold".format(
-                    cost, self.gold
-                )
-            )
+            raise Exception(f"Attempted to buy Pet of cost {cost} with only {self.gold} gold")
 
         ### Before feeding, check for cat
         for slot in self.team:
@@ -338,7 +328,7 @@ class Player:
             pet = pet._pet
 
         if type(pet).__name__ != "Pet":
-            raise Exception("Attempted to sell Object {}".format(pet))
+            raise Exception(f"Attempted to sell Object {pet}")
 
         ### Activate sell trigger first
         for slot in self.team:
@@ -366,9 +356,9 @@ class Player:
             team_pet = team_pet._pet
 
         if type(shop_pet).__name__ != "Pet":
-            raise Exception("Attempted sell_buy with Shop item {}".format(shop_pet))
+            raise Exception(f"Attempted sell_buy with Shop item {shop_pet}")
         if type(team_pet).__name__ != "Pet":
-            raise Exception("Attempted sell_buy with Team Pet {}".format(team_pet))
+            raise Exception(f"Attempted sell_buy with Team Pet {team_pet}")
 
         ### Activate sell trigger first
         self.sell(team_pet)
@@ -454,26 +444,18 @@ class Player:
             team_pet = team_pet._pet
 
         if type(shop_pet).__name__ != "Pet":
-            raise Exception("Attempted buy_combined with Shop item {}".format(shop_pet))
+            raise Exception(f"Attempted buy_combined with Shop item {shop_pet}")
         if type(team_pet).__name__ != "Pet":
-            raise Exception("Attempted buy_combined with Team Pet {}".format(team_pet))
+            raise Exception(f"Attempted buy_combined with Team Pet {team_pet}")
         if team_pet.name != shop_pet.name:
-            raise Exception(
-                "Attempted combine for pets {} and {}".format(
-                    team_pet.name, shop_pet.name
-                )
-            )
+            raise Exception(f"Attempted combine for pets {team_pet.name} and {shop_pet.name}")
 
         shop_idx = self.shop.index(shop_pet)
         shop_slot = self.shop.slots[shop_idx]
         cost = shop_slot.cost
 
         if cost > self.gold:
-            raise Exception(
-                "Attempted to buy Pet of cost {} with only {} gold".format(
-                    cost, self.gold
-                )
-            )
+            raise Exception(f"Attempted to buy Pet of cost {cost} with only {self.gold} gold")
 
         ### Make all updates
         self.gold -= cost
@@ -503,14 +485,12 @@ class Player:
             pet2 = pet2._pet
 
         if not self.team.check_friend(pet1):
-            raise Exception("Attempted combine for Pet not on team {}".format(pet1))
+            raise Exception(f"Attempted combine for Pet not on team {pet1}")
         if not self.team.check_friend(pet2):
-            raise Exception("Attempted combine for Pet not on team {}".format(pet2))
+            raise Exception(f"Attempted combine for Pet not on team {pet2}")
 
         if pet1.name != pet2.name:
-            raise Exception(
-                "Attempted combine for pets {} and {}".format(pet1.name, pet2.name)
-            )
+            raise Exception(f"Attempted combine for pets {pet1.name} and {pet2.name}")
 
         levelup = Player.combine_pet_stats(pet1, pet2)
         if levelup:
@@ -530,7 +510,7 @@ class Player:
         unique = np.unique(idx)
 
         if len(unique) != len(self.team):
-            raise Exception("Cannot input duplicate indices to reorder: {}".format(idx))
+            raise Exception(f"Cannot input duplicate indices to reorder: {idx}")
 
         self.team = Team([self.team[x] for x in idx], seed_state=self.team.seed_state)
 
@@ -585,11 +565,11 @@ class Player:
         )
 
     def __repr__(self):
-        info_str = "PACK:  {}\n".format(self.pack)
-        info_str += "TURN:  {}\n".format(self.turn)
-        info_str += "LIVES: {}\n".format(self.lives)
-        info_str += "WINS:  {}\n".format(self.wins)
-        info_str += "GOLD:  {}\n".format(self.gold)
+        info_str = f"PACK:  {self.pack}\n"
+        info_str += f"TURN:  {self.turn}\n"
+        info_str += f"LIVES: {self.lives}\n"
+        info_str += f"WINS:  {self.wins}\n"
+        info_str += f"GOLD:  {self.gold}\n"
         print_str = "--------------\n"
         print_str += "CURRENT INFO: \n--------------\n" + info_str + "\n"
         print_str += "CURRENT TEAM: \n--------------\n" + self.team.__repr__() + "\n"

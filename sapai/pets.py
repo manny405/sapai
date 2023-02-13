@@ -21,7 +21,7 @@ class Pet:
 
         if len(name) != 0:
             if not name.startswith("pet-"):
-                name = "pet-{}".format(name)
+                name = f"pet-{name}"
         self.seed_state = seed_state
         if self.seed_state is not None:
             self.rs = np.random.RandomState()
@@ -40,7 +40,7 @@ class Pet:
 
         self.name = name
         if name not in data["pets"]:
-            raise Exception("Pet {} not found".format(name))
+            raise Exception(f"Pet {name} not found")
         fd = data["pets"][name]
         self.fd = fd
         self.override_ability = False
@@ -100,8 +100,8 @@ class Pet:
     def ability(self):
         if self.override_ability:
             return self.override_ability_dict
-        if "level{}Ability".format(self.level) in self.fd:
-            return self.fd["level{}Ability".format(self.level)]
+        if f"level{self.level}Ability" in self.fd:
+            return self.fd[f"level{self.level}Ability"]
         else:
             return empty_ability
 
@@ -346,7 +346,7 @@ class Pet:
                 if trigger == self:
                     return activated, targets, possible
             else:
-                raise Exception("Ability unrecognized for {}".format(self))
+                raise Exception(f"Ability unrecognized for {self}")
 
         ### Behavior for BuyTier1Animal
         if self.ability["trigger"] == "BuyTier1Animal":
@@ -477,9 +477,7 @@ class Pet:
                 return activated, targets, possible
         else:
             if self.ability["trigger"] != "EndOfTurn":
-                raise Exception(
-                    "Unrecognized trigger {}".format(self.ability["trigger"])
-                )
+                raise Exception(f"Unrecognized trigger {self.ability['trigger']}")
 
         if "maxTriggers" in self.ability:
             if self.ability_counter >= self.ability["maxTriggers"]:
@@ -776,14 +774,7 @@ class Pet:
         return activated, targets, possible
 
     def __repr__(self):
-        return "< {} {}-{} {} {}-{} >".format(
-            self.name,
-            self.attack,
-            self.health,
-            self.status,
-            self.level,
-            self.experience,
-        )
+        return f"< {self.name} {self.attack}-{self.health} {self.status} {self.level}-{self.experience} >"
 
     def copy(self):
         copy_pet = Pet(self.name, self.shop, seed_state=self.seed_state)

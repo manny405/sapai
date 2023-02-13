@@ -132,7 +132,7 @@ class Team(SAPList):
                     found_idx = iter_idx
                     found = True
             if not found:
-                raise Exception("Remove {} not found".format(obj))
+                raise Exception(f"Remove {obj} not found")
             self.slots[found_idx] = TeamSlot(seed_state=self.seed_state)
         elif isinstance(obj, Pet):
             found = False
@@ -142,10 +142,10 @@ class Team(SAPList):
                     found_idx = iter_idx
                     found = True
             if not found:
-                raise Exception("Remove {} not found".format(obj))
+                raise Exception(f"Remove {obj} not found")
             self.slots[found_idx] = TeamSlot(seed_state=self.seed_state)
         else:
-            raise Exception("Object of type {} not recognized".format(type(obj)))
+            raise Exception(f"Object of type {type(obj)} not recognized")
 
     def check_friend(self, obj):
         if isinstance(obj, TeamSlot):
@@ -162,7 +162,7 @@ class Team(SAPList):
                     found = True
             return found
         else:
-            raise Exception("Object of type {} not recognized".format(type(obj)))
+            raise Exception(f"Object of type {type(obj)} not recognized")
 
     def get_idx(self, obj):
         if isinstance(obj, TeamSlot):
@@ -172,7 +172,7 @@ class Team(SAPList):
                     found_idx = iter_idx
                     found = True
             if not found:
-                raise Exception("get_idx {} not found".format(obj))
+                raise Exception(f"get_idx {obj} not found")
             return found_idx
         elif isinstance(obj, Pet):
             found = False
@@ -182,7 +182,7 @@ class Team(SAPList):
                     found_idx = iter_idx
                     found = True
             if not found:
-                raise Exception("get_idx {} not found".format(obj))
+                raise Exception(f"get_idx {obj} not found")
             return found_idx
         elif type(obj) == int:
             return obj
@@ -193,7 +193,7 @@ class Team(SAPList):
             ### For numpy int
             return obj
         else:
-            raise Exception("Object of type {} not recognized".format(type(obj)))
+            raise Exception(f"Object of type {type(obj)} not recognized")
 
     def index(self, obj):
         return self.get_idx(obj)
@@ -287,14 +287,12 @@ class Team(SAPList):
         elif type(obj) == str or type(obj) == numpy.str_:
             self.slots[idx] = TeamSlot(obj, seed_state=self.seed_state)
         else:
-            raise Exception(
-                "Tried setting a team slot with type {}".format(type(obj).__name__)
-            )
+            raise Exception(f"Tried setting a team slot with type {type(obj).__name__}")
 
     def __repr__(self):
         repr_str = ""
         for iter_idx, slot in enumerate(self.slots):
-            repr_str += "{}: {} \n    ".format(iter_idx, slot)
+            repr_str += f"{iter_idx}: {slot} \n    "
         return repr_str
 
     def copy(self):
@@ -341,9 +339,7 @@ class TeamSlot(Slot):
         elif type(obj) == str or type(obj) == numpy.str_:
             self.obj = Pet(obj, seed_state=self.seed_state)
         else:
-            raise Exception(
-                "Tried initalizing TeamSlot with type {}".format(type(obj).__name__)
-            )
+            raise Exception(f"Tried initalizing TeamSlot with type {type(obj).__name__}")
 
     @property
     def _pet(self):
@@ -379,7 +375,7 @@ class TeamSlot(Slot):
         else:
             pet_repr = str(self.obj)
             pet_repr = pet_repr[2:-2]
-            return "< Slot {} >".format(pet_repr)
+            return f"< Slot {pet_repr} >"
 
     def copy(self):
         return TeamSlot(self.obj.copy(), seed_state=self.seed_state)
