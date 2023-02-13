@@ -1,4 +1,4 @@
-#%%
+# %%
 
 import json, zlib
 import sapai
@@ -99,4 +99,4 @@ def minimal_state(obj):
     return state
 
 
-#%%
+# %%

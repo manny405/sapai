@@ -1,4 +1,4 @@
-#%%
+# %%
 
 
 class Play:
@@ -28,4 +28,4 @@ class Play:
         raise NotImplementedError
 
 
-#%%
+# %%

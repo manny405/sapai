@@ -1,4 +1,4 @@
-#%%
+# %%
 
 from functools import partial
 import numpy as np
@@ -11,7 +11,7 @@ import sapai.foods
 import sapai.pets
 from sapai.rand import MockRandomState
 
-#%%
+# %%
 
 ################################################################################
 #### Building optimized datastructures for construction shop states
@@ -88,9 +88,9 @@ for key, value in data["foods"].items():
             temp_exp = temp_std
             turn_prob_foods_exp[temp_turn][key] = temp_exp
 
-#%%
+# %%
 
-#%%
+# %%
 
 
 class Shop(SAPList):
@@ -828,14 +828,18 @@ class ShopSlot(Slot):
             else:
                 pet_repr = str(self.obj)
                 pet_repr = pet_repr[2:-2]
-                return f"< ShopSlot-{self.slot_type} {fstr} {self.cost}-gold {pet_repr} >"
+                return (
+                    f"< ShopSlot-{self.slot_type} {fstr} {self.cost}-gold {pet_repr} >"
+                )
         elif self.slot_type == "food":
             if self.obj.name == "food-none":
                 return f"< ShopSlot-{self.slot_type} {fstr} EMPTY >"
             else:
                 food_repr = str(self.obj)
                 food_repr = food_repr[2:-2]
-                return f"< ShopSlot-{self.slot_type} {fstr} {self.cost}-gold {food_repr} >"
+                return (
+                    f"< ShopSlot-{self.slot_type} {fstr} {self.cost}-gold {food_repr} >"
+                )
         elif self.slot_type == "none":
             return f"< ShopSlot-{None} {fstr} EMPTY >"
         else:

@@ -1,4 +1,4 @@
-#%%
+# %%
 import numpy
 
 from sapai.pets import Pet
@@ -341,7 +341,9 @@ class TeamSlot(Slot):
         elif type(obj) == str or type(obj) == numpy.str_:
             self.obj = Pet(obj, seed_state=self.seed_state)
         else:
-            raise Exception(f"Tried initalizing TeamSlot with type {type(obj).__name__}")
+            raise Exception(
+                f"Tried initalizing TeamSlot with type {type(obj).__name__}"
+            )
 
     @property
     def _pet(self):

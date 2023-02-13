@@ -1,4 +1,4 @@
-#%%
+# %%
 import numpy as np
 from sapai.data import data
 from sapai.effects import get_effect_function, RespawnPet, SummonPet, SummonRandomPet
@@ -6,7 +6,7 @@ from sapai.tiers import pet_tier_lookup
 from sapai.rand import MockRandomState
 from sapai import status
 
-#%%
+# %%
 
 
 class Pet:
@@ -18,7 +18,6 @@ class Pet:
     def __init__(
         self, name="pet-none", shop=None, team=None, player=None, seed_state=None
     ):
-
         if len(name) != 0:
             if not name.startswith("pet-"):
                 name = f"pet-{name}"

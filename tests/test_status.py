@@ -1,4 +1,4 @@
-#%%
+# %%
 import unittest
 import numpy as np
 
@@ -6,7 +6,7 @@ from sapai import *
 from sapai.compress import compress, decompress
 from sapai.status import *
 
-#%%
+# %%
 
 MIN = -10
 MAX = 100
@@ -53,4 +53,4 @@ class TestStatus(unittest.TestCase):
             self.assertEqual(p.get_damage(i), i + 3)
 
 
-#%%
+# %%

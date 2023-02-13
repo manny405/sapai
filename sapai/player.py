@@ -65,7 +65,7 @@ class Player:
         wins=0,
     ):
         action_history = action_history or []
-        
+
         self.shop = shop
         self.team = team
         self.lives = lives
@@ -145,7 +145,9 @@ class Player:
         cost = shop_slot.cost
 
         if cost > self.gold:
-            raise Exception(f"Attempted to buy Pet of cost {cost} with only {self.gold} gold")
+            raise Exception(
+                f"Attempted to buy Pet of cost {cost} with only {self.gold} gold"
+            )
 
         ### Connect pet with current Player
         pet.team = self.team
@@ -202,7 +204,9 @@ class Player:
         cost = shop_slot.cost
 
         if cost > self.gold:
-            raise Exception(f"Attempted to buy Pet of cost {cost} with only {self.gold} gold")
+            raise Exception(
+                f"Attempted to buy Pet of cost {cost} with only {self.gold} gold"
+            )
 
         ### Before feeding, check for cat
         for slot in self.team:
@@ -448,14 +452,18 @@ class Player:
         if type(team_pet).__name__ != "Pet":
             raise Exception(f"Attempted buy_combined with Team Pet {team_pet}")
         if team_pet.name != shop_pet.name:
-            raise Exception(f"Attempted combine for pets {team_pet.name} and {shop_pet.name}")
+            raise Exception(
+                f"Attempted combine for pets {team_pet.name} and {shop_pet.name}"
+            )
 
         shop_idx = self.shop.index(shop_pet)
         shop_slot = self.shop.slots[shop_idx]
         cost = shop_slot.cost
 
         if cost > self.gold:
-            raise Exception(f"Attempted to buy Pet of cost {cost} with only {self.gold} gold")
+            raise Exception(
+                f"Attempted to buy Pet of cost {cost} with only {self.gold} gold"
+            )
 
         ### Make all updates
         self.gold -= cost

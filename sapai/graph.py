@@ -1,7 +1,8 @@
-#%%
+# %%
 
 from graphviz import Digraph
 from sapai import Pet
+
 
 def html_table(
     header="",
@@ -98,7 +99,9 @@ def prep_pet_str(pstr):
     if len(temp_pstr_list) == 2:
         temp_stats = temp_pstr_list[1]
         replace_index = temp_stats.index("-")
-        temp_pstr_list[1] = f"{temp_stats[0:replace_index]},{temp_stats[replace_index + 1 :]}"
+        temp_pstr_list[
+            1
+        ] = f"{temp_stats[0:replace_index]},{temp_stats[replace_index + 1 :]}"
         temp_pstr = " ".join(temp_pstr_list)
     return temp_pstr
 

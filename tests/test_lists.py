@@ -1,4 +1,4 @@
-#%%
+# %%
 import unittest
 import numpy as np
 
@@ -309,9 +309,9 @@ class TestLists(unittest.TestCase):
         self.assertRaises(Exception, l.append, Pet(pet_names[5]))
 
 
-#%%
+# %%
 
 # test = TestLists()
 # test.test_remove()
 
-#%%
+# %%

@@ -1,10 +1,10 @@
-#%%
+# %%
 import numpy as np
 
 from sapai.data import data
 from sapai.rand import MockRandomState
 
-#%%
+# %%
 
 
 class Food:

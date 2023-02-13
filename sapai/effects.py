@@ -60,7 +60,9 @@ def get_effect_function(effect_kind):
     else:
         raise Exception(f"Unrecognized input {effect_kind}")
     if effect_kind not in func_dict:
-        raise Exception(f"Input effect_kind {effect_kind} not found in {list(func_dict.keys())}")
+        raise Exception(
+            f"Input effect_kind {effect_kind} not found in {list(func_dict.keys())}"
+        )
     return func_dict[effect_kind]
 
 

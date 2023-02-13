@@ -1,4 +1,4 @@
-#%%
+# %%
 
 import os, json, itertools, torch
 import numpy as np
@@ -587,7 +587,10 @@ class PairwiseBattles:
                 winner_list.append(temp_winner)
                 iter_idx += 1
                 if iter_idx % 1000 == 0:
-                    print(f"{'FINISHED':16s}: {iter_idx * self.size} of {len(pair_idx)}", flush=True)
+                    print(
+                        f"{'FINISHED':16s}: {iter_idx * self.size} of {len(pair_idx)}",
+                        flush=True,
+                    )
 
         winner_list = np.array(winner_list).astype(int)
 
