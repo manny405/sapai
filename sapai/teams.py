@@ -329,8 +329,7 @@ class Team(SAPList):
 
 class TeamSlot(Slot):
     def __init__(self, obj=None, seed_state=None):
-        super().__init__(obj)
-
+        super().__init__()
         self.seed_state = seed_state
         if isinstance(obj, Pet):
             self.obj = obj
