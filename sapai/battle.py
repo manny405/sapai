@@ -1,12 +1,8 @@
-import copy
 import numpy as np
 
 from sapai.data import data
-from sapai.pets import Pet
-from sapai.teams import Team
 from sapai.effects import (
     get_effect_function,
-    get_pet,
     get_teams,
     RespawnPet,
     SummonPet,
@@ -81,7 +77,7 @@ class Battle:
             ### Then attack
             result = self.attack(battle_iter)
             battle_iter += 1
-            if result == False:
+            if not result:
                 break
 
         ### Check winner and return 0 for t0 win, 1 for t1 win, 2 for draw
@@ -137,7 +133,7 @@ class Battle:
         t0 = self.t0
         t1 = self.t1
 
-        attack_str = "attack {}".format(battle_iter)
+        attack_str = f"attack {battle_iter}"
         phase_dict = {
             attack_str: {
                 "phase_move_start": [],
@@ -163,9 +159,9 @@ class Battle:
             if not temp_slot.empty:
                 found1 = True
                 break
-        if found0 == False:
+        if not found0:
             return False
-        if found1 == False:
+        if not found1:
             return False
 
         teams = [t0, t1]
@@ -227,10 +223,9 @@ class Battle:
 
         """
         ### Build all data types to determine effect order
-        pets = [x for x in t0] + [x for x in t1]
         attack = [x.attack for x in t0] + [x.attack for x in t1]
         health = [x.health for x in t0] + [x.health for x in t1]
-        teams = [0 for x in t0] + [1 for x in t1]
+        teams = [0 for _ in t0] + [1 for _ in t1]
         idx = [x for x in range(5)] + [x for x in range(5)]
 
         for iter_idx, value in enumerate(attack):
@@ -299,7 +294,6 @@ class Battle:
 
         ### Finish sorting by max attack
         attack = np.array([attack[x] for x in sort_idx])
-        health = np.array([health[x] for x in sort_idx])
         teams = np.array([teams[x] for x in sort_idx])
         idx = np.array([idx[x] for x in sort_idx])
 
@@ -312,7 +306,7 @@ class Battle:
         ### Build final queue
         pet_priority = []
         for t, i in zip(teams, idx):
-            if [t0, t1][t][i].empty == True:
+            if [t0, t1][t][i].empty:
                 continue
             pet_priority.append((t, i))
 
@@ -340,6 +334,7 @@ class RBattle(Battle):
         Performs the battle between the input teams t1 and t2.
 
         """
+        super(RBattle, self).__init__(t0, t1)
         ### Make copy each team to cary out the battle so that the original
         ### pets are not modified in any way after the battle
         self.t0 = t0.copy()
@@ -353,7 +348,7 @@ class RBattle(Battle):
         ### Build initial effect queue order
         self.pet_priority = self.update_pet_priority(self.t0, self.t1)
 
-        raise Exception("Not implemented")
+        raise NotImplementedError
 
 
 def battle_phase(battle_obj, phase, teams, pet_priority, phase_dict):
@@ -363,8 +358,6 @@ def battle_phase(battle_obj, phase, teams, pet_priority, phase_dict):
     indentation.
     s
     """
-    ### Parse inputs and collect info
-    pp = pet_priority
 
     ##### Trigger logic for starting battle
     if phase.startswith("phase_move"):
@@ -395,7 +388,7 @@ def battle_phase(battle_obj, phase, teams, pet_priority, phase_dict):
         battle_phase_knockout(battle_obj, phase, teams, pet_priority, phase_dict)
 
     else:
-        raise Exception("Phase {} not found".format(phase))
+        raise Exception(f"Phase {phase} not found")
 
 
 def append_phase_list(phase_list, p, team_idx, pet_idx, activated, targets, possible):
@@ -430,7 +423,7 @@ def append_phase_list(phase_list, p, team_idx, pet_idx, activated, targets, poss
 def check_summon_triggers(
     phase_list, p, team_idx, pet_idx, fteam, activated, targets, possible
 ):
-    if activated == False:
+    if not activated:
         return 0
 
     func = get_effect_function(p)
@@ -727,7 +720,6 @@ def battle_phase_attack_after(battle_obj, phase, teams, pet_priority, phase_dict
 
 def battle_phase_knockout(battle_obj, phase, teams, pet_priority, phase_dict):
     phase_list = phase_dict[phase]
-    pp = pet_priority
 
     #### Get knockout list from the end of the phase_attack info and remove
     ####   the knockout list from phase attack
@@ -749,7 +741,7 @@ def battle_phase_knockout(battle_obj, phase, teams, pet_priority, phase_dict):
                     phase_list, apet, team_idx, pet_idx, activated, targets, possible
                 )
 
-                if activated == False:
+                if not activated:
                     ### Easy breaking condition
                     break
 

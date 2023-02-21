@@ -10,7 +10,7 @@ from sapai.effects import (
 )
 
 import sapai.shop
-from sapai.shop import Shop
+from sapai.shop import Shop, ShopSlot
 from sapai.teams import Team, TeamSlot
 
 
@@ -20,7 +20,7 @@ def storeaction(func):
         action_name = str(func.__name__).split(".")[-1]
         targets = func(*args, **kwargs)
         store_targets = []
-        if targets != None:
+        if targets is not None:
             for entry in targets:
                 if getattr(entry, "state", False):
                     store_targets.append(entry.state)
@@ -59,11 +59,13 @@ class Player:
         gold=10,
         turn=1,
         lf_winner=None,
-        action_history=[],
+        action_history=None,
         pack="StandardPack",
         seed_state=None,
         wins=0,
     ):
+        action_history = action_history or []
+
         self.shop = shop
         self.team = team
         self.lives = lives
@@ -80,9 +82,9 @@ class Player:
         self.lf_winner = lf_winner
 
         ### Initialize shop and team if not provided
-        if self.shop == None:
+        if self.shop is None:
             self.shop = Shop(pack=self.pack, seed_state=seed_state)
-        if self.team == None:
+        if self.team is None:
             self.team = Team(seed_state=seed_state)
 
         if type(self.shop) == list:
@@ -132,11 +134,11 @@ class Player:
         if type(pet) == int:
             pet = self.shop[pet]
 
-        if type(pet).__name__ == "ShopSlot":
+        if isinstance(pet, ShopSlot):
             pet = pet.obj
 
         if type(pet).__name__ != "Pet":
-            raise Exception("Attempted to buy_pet using object {}".format(pet))
+            raise Exception(f"Attempted to buy_pet using object {pet}")
 
         shop_idx = self.shop.index(pet)
         shop_slot = self.shop.slots[shop_idx]
@@ -144,9 +146,7 @@ class Player:
 
         if cost > self.gold:
             raise Exception(
-                "Attempted to buy Pet of cost {} with only {} gold".format(
-                    cost, self.gold
-                )
+                f"Attempted to buy Pet of cost {cost} with only {self.gold} gold"
             )
 
         ### Connect pet with current Player
@@ -181,24 +181,22 @@ class Player:
             food = self.shop[food]
             if food.slot_type != "food":
                 raise Exception("Shop slot not food")
-        if type(food).__name__ == "ShopSlot":
+        if isinstance(food, ShopSlot):
             food = food.obj
         if type(food).__name__ != "Food":
-            raise Exception("Attempted to buy_food using object {}".format(food))
+            raise Exception(f"Attempted to buy_food using object {food}")
 
         if team_pet is None:
             targets, _ = get_target(food, [0, None], [self.team])
         else:
             if type(team_pet) == int:
                 team_pet = self.team[team_pet]
-            if type(team_pet).__name__ == "TeamSlot":
+            if isinstance(team_pet, TeamSlot):
                 team_pet = team_pet._pet
             if not self.team.check_friend(team_pet):
-                raise Exception(
-                    "Attempted to buy food for Pet not on team {}".format(team_pet)
-                )
+                raise Exception(f"Attempted to buy food for Pet not on team {team_pet}")
             if type(team_pet).__name__ != "Pet":
-                raise Exception("Attempted to buy_pet using object {}".format(team_pet))
+                raise Exception(f"Attempted to buy_pet using object {team_pet}")
             targets = [team_pet]
 
         shop_idx = self.shop.index(food)
@@ -207,9 +205,7 @@ class Player:
 
         if cost > self.gold:
             raise Exception(
-                "Attempted to buy Pet of cost {} with only {} gold".format(
-                    cost, self.gold
-                )
+                f"Attempted to buy Pet of cost {cost} with only {self.gold} gold"
             )
 
         ### Before feeding, check for cat
@@ -306,7 +302,7 @@ class Player:
         return (food, targets)
 
     def check_summon_triggers(self, fainted_pet, pet_idx, activated, targets, possible):
-        if activated == False:
+        if not activated:
             return
         func = get_effect_function(fainted_pet)
         if func not in [RespawnPet, SummonPet, SummonRandomPet]:
@@ -332,11 +328,11 @@ class Player:
         if type(pet) == int:
             pet = self.team[pet]
 
-        if type(pet).__name__ == "TeamSlot":
+        if isinstance(pet, TeamSlot):
             pet = pet._pet
 
         if type(pet).__name__ != "Pet":
-            raise Exception("Attempted to sell Object {}".format(pet))
+            raise Exception(f"Attempted to sell Object {pet}")
 
         ### Activate sell trigger first
         for slot in self.team:
@@ -358,15 +354,15 @@ class Player:
         if type(team_pet) == int:
             team_pet = self.team[team_pet]
 
-        if type(shop_pet).__name__ == "ShopSlot":
+        if isinstance(shop_pet, ShopSlot):
             shop_pet = shop_pet.obj
-        if type(team_pet).__name__ == "TeamSlot":
+        if isinstance(team_pet, TeamSlot):
             team_pet = team_pet._pet
 
         if type(shop_pet).__name__ != "Pet":
-            raise Exception("Attempted sell_buy with Shop item {}".format(shop_pet))
+            raise Exception(f"Attempted sell_buy with Shop item {shop_pet}")
         if type(team_pet).__name__ != "Pet":
-            raise Exception("Attempted sell_buy with Team Pet {}".format(team_pet))
+            raise Exception(f"Attempted sell_buy with Team Pet {team_pet}")
 
         ### Activate sell trigger first
         self.sell(team_pet)
@@ -378,7 +374,7 @@ class Player:
 
     def freeze(self, obj):
         """Freeze one pet or food in the shop"""
-        if type(obj).__name__ == "ShopSlot":
+        if isinstance(obj, ShopSlot):
             obj = obj.obj
             shop_idx = self.shop.index(obj)
         elif type(obj) == int:
@@ -389,7 +385,7 @@ class Player:
 
     def unfreeze(self, obj):
         """Unfreeze one pet or food in the shop"""
-        if type(obj).__name__ == "ShopSlot":
+        if isinstance(obj, ShopSlot):
             obj = obj.obj
             shop_idx = self.shop.index(obj)
         elif type(obj) == int:
@@ -446,20 +442,18 @@ class Player:
         if type(team_pet) == int:
             team_pet = self.team[team_pet]
 
-        if type(shop_pet).__name__ == "ShopSlot":
+        if isinstance(shop_pet, ShopSlot):
             shop_pet = shop_pet.obj
-        if type(team_pet).__name__ == "TeamSlot":
+        if isinstance(team_pet, TeamSlot):
             team_pet = team_pet._pet
 
         if type(shop_pet).__name__ != "Pet":
-            raise Exception("Attempted buy_combined with Shop item {}".format(shop_pet))
+            raise Exception(f"Attempted buy_combined with Shop item {shop_pet}")
         if type(team_pet).__name__ != "Pet":
-            raise Exception("Attempted buy_combined with Team Pet {}".format(team_pet))
+            raise Exception(f"Attempted buy_combined with Team Pet {team_pet}")
         if team_pet.name != shop_pet.name:
             raise Exception(
-                "Attempted combine for pets {} and {}".format(
-                    team_pet.name, shop_pet.name
-                )
+                f"Attempted combine for pets {team_pet.name} and {shop_pet.name}"
             )
 
         shop_idx = self.shop.index(shop_pet)
@@ -468,9 +462,7 @@ class Player:
 
         if cost > self.gold:
             raise Exception(
-                "Attempted to buy Pet of cost {} with only {} gold".format(
-                    cost, self.gold
-                )
+                f"Attempted to buy Pet of cost {cost} with only {self.gold} gold"
             )
 
         ### Make all updates
@@ -495,20 +487,18 @@ class Player:
         if type(pet2) == int:
             pet2 = self.team[pet2]
 
-        if type(pet1).__name__ == "TeamSlot":
+        if isinstance(pet1, TeamSlot):
             pet1 = pet1._pet
-        if type(pet2).__name__ == "TeamSlot":
+        if isinstance(pet2, TeamSlot):
             pet2 = pet2._pet
 
         if not self.team.check_friend(pet1):
-            raise Exception("Attempted combine for Pet not on team {}".format(pet1))
+            raise Exception(f"Attempted combine for Pet not on team {pet1}")
         if not self.team.check_friend(pet2):
-            raise Exception("Attempted combine for Pet not on team {}".format(pet2))
+            raise Exception(f"Attempted combine for Pet not on team {pet2}")
 
         if pet1.name != pet2.name:
-            raise Exception(
-                "Attempted combine for pets {} and {}".format(pet1.name, pet2.name)
-            )
+            raise Exception(f"Attempted combine for pets {pet1.name} and {pet2.name}")
 
         levelup = Player.combine_pet_stats(pet1, pet2)
         if levelup:
@@ -528,7 +518,7 @@ class Player:
         unique = np.unique(idx)
 
         if len(unique) != len(self.team):
-            raise Exception("Cannot input duplicate indices to reorder: {}".format(idx))
+            raise Exception(f"Cannot input duplicate indices to reorder: {idx}")
 
         self.team = Team([self.team[x] for x in idx], seed_state=self.team.seed_state)
 
@@ -583,11 +573,11 @@ class Player:
         )
 
     def __repr__(self):
-        info_str = "PACK:  {}\n".format(self.pack)
-        info_str += "TURN:  {}\n".format(self.turn)
-        info_str += "LIVES: {}\n".format(self.lives)
-        info_str += "WINS:  {}\n".format(self.wins)
-        info_str += "GOLD:  {}\n".format(self.gold)
+        info_str = f"PACK:  {self.pack}\n"
+        info_str += f"TURN:  {self.turn}\n"
+        info_str += f"LIVES: {self.lives}\n"
+        info_str += f"WINS:  {self.wins}\n"
+        info_str += f"GOLD:  {self.gold}\n"
         print_str = "--------------\n"
         print_str += "CURRENT INFO: \n--------------\n" + info_str + "\n"
         print_str += "CURRENT TEAM: \n--------------\n" + self.team.__repr__() + "\n"

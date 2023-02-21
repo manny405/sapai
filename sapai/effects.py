@@ -1,9 +1,8 @@
 import sys, inspect
 import itertools
 import numpy as np
-
-from sapai import pets
 import sapai
+
 from sapai.data import data
 from sapai.tiers import pet_tier_lookup, pet_tier_lookup_std
 from sapai.foods import Food
@@ -52,19 +51,17 @@ This module implements all effects in the game. API description is as follows:
 
 
 def get_effect_function(effect_kind):
-    if type(effect_kind).__name__ == "Pet":
+    if isinstance(effect_kind, sapai.Pet):
         effect_kind = effect_kind.ability["effect"]["kind"]
-    elif type(effect_kind).__name__ == "TeamSlot":
+    elif isinstance(effect_kind, sapai.TeamSlot):
         effect_kind = effect_kind.pet.ability["effect"]["kind"]
     elif type(effect_kind) == str:
         pass
     else:
-        raise Exception("Unrecognized input {}".format(effect_kind))
+        raise Exception(f"Unrecognized input {effect_kind}")
     if effect_kind not in func_dict:
         raise Exception(
-            "Input effect_kind {} not found in {}".format(
-                effect_kind, list(func_dict.keys())
-            )
+            f"Input effect_kind {effect_kind} not found in {list(func_dict.keys())}"
         )
     return func_dict[effect_kind]
 
@@ -79,11 +76,11 @@ def get_pet(pet_idx, teams, fainted_pet=None, te=None):
         raise Exception("Team idx greater than provided number of teams")
     if team_pet_idx >= 5:
         raise Exception("Team pet idx greater than 5")
-    if fainted_pet == None:
+    if fainted_pet is None:
         pet = teams[team_idx][team_pet_idx].pet
     else:
         pet = fainted_pet
-    if te != None:
+    if te is not None:
         pet = te
     return pet
 
@@ -107,8 +104,7 @@ def get_target(
     apet_idx,
     teams,
     te=None,
-    te_idx=[],
-    fixed_targets=[],
+    fixed_targets=None,
     get_from=False,
     test_kind="",
 ):
@@ -133,9 +129,11 @@ def get_target(
     te: Pet
         Triggering entity
     """
-    if type(apet).__name__ == "Pet":
+    fixed_targets = fixed_targets or []
+
+    if isinstance(apet, sapai.Pet):
         effect = apet.ability["effect"]
-    elif type(apet).__name__ == "Food":
+    elif isinstance(apet, Food):
         effect = apet.effect
 
     if len(teams) == 1:
@@ -214,7 +212,7 @@ def get_target(
 
         ret_pets = []
         for temp_slot in [left_slot, right_slot]:
-            if temp_slot == None:
+            if temp_slot is None:
                 continue
             if temp_slot.empty:
                 continue
@@ -241,7 +239,7 @@ def get_target(
 
         ret_pets = []
         for temp_slot in [left_slot, right_slot]:
-            if temp_slot == None:
+            if temp_slot is None:
                 continue
             if temp_slot.empty:
                 continue
@@ -300,7 +298,7 @@ def get_target(
 
     elif kind == "EachShopAnimal":
         shop = apet.shop
-        if shop == None:
+        if shop is None:
             return [], []
         else:
             return shop.pets, [shop.pets]
@@ -481,7 +479,7 @@ def get_target(
         return ret_pets, all_possible
 
     elif kind == "TriggeringEntity":
-        if te != None:
+        if te is not None:
             return [te], [[te]]
         else:
             return [], []
@@ -507,11 +505,13 @@ def get_target(
         return [], []
 
     else:
-        raise Exception("Target {} impelementation not found".format(kind))
+        raise Exception(f"Target {kind} impelementation not found")
 
 
-def AllOf(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def AllOf(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     """AllOf will return list of lists"""
+    fixed_targets = fixed_targets or []
+
     original_effect = apet.ability["effect"]
     effects = apet.ability["effect"]["effects"]
     target = []
@@ -527,7 +527,9 @@ def AllOf(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return target, possible_targets
 
 
-def ApplyStatus(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def ApplyStatus(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
     if len(fixed_targets) == 0:
         target, possible = get_target(apet, apet_idx, teams, te=te)
     else:
@@ -539,7 +541,9 @@ def ApplyStatus(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return target, possible
 
 
-def DealDamage(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def DealDamage(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
     if len(fixed_targets) == 0:
         target, possible = get_target(apet, apet_idx, teams, te=te)
     else:
@@ -569,7 +573,9 @@ def DealDamage(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return target, possible
 
 
-def GainExperience(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def GainExperience(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
     if len(fixed_targets) == 0:
         target, possible = get_target(apet, apet_idx, teams, te=te)
     else:
@@ -581,27 +587,31 @@ def GainExperience(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
         if level_up:
             target_pet.levelup_trigger(target_pet)
             player = apet.player
-            if player != None:
+            if player is not None:
                 apet.player.shop.levelup()
     return target, possible
 
 
-def GainGold(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def GainGold(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
     amount = apet.ability["effect"]["amount"]
     player = apet.player
-    if player != None:
+    if player is not None:
         apet.player.gold += amount
     return player, [player]
 
 
-def Evolve(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def Evolve(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
     if len(fixed_targets) == 0:
         target, possible = get_target(apet, apet_idx, teams, te=te)
     else:
         target = fixed_targets
         possible = [fixed_targets]
     fteam, oteam = get_teams(apet_idx, teams)
-    spet = pets.Pet(target[0].ability["effect"]["into"])
+    spet = sapai.Pet(target[0].ability["effect"]["into"])
     try:
         fteam.remove(target[0])
     except Exception:
@@ -611,8 +621,10 @@ def Evolve(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return target, possible
 
 
-def FoodMultiplier(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
-    if te == None:
+def FoodMultiplier(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
+    if te is None:
         raise Exception("Must input purchased food to FoodMultiplier")
 
     mult = int(apet.ability["effect"]["amount"])
@@ -626,13 +638,14 @@ def FoodMultiplier(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return food_list, [food_list]
 
 
-def ModifyStats(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def ModifyStats(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     # print("CALLED ModifyStats")
     # print("----------------")
     # print(apet)
     # print(apet_idx)
     # print(teams)
     # print(te)
+    fixed_targets = fixed_targets or []
 
     if len(fixed_targets) == 0:
         target, possible = get_target(apet, apet_idx, teams, te=te)
@@ -679,7 +692,7 @@ def ModifyStats(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return target, possible
 
 
-def OneOf(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def OneOf(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     """
     Dog is only one with OneOf anyways
     However, OneOf current not returning possible correctly because I haven't
@@ -690,8 +703,8 @@ def OneOf(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     # else:
     #     target = fixed_targets
     #     possible = [fixed_targets]
+    fixed_targets = fixed_targets or []
 
-    target = [apet]
     possible = [[apet]]
     original_effect = apet.ability["effect"]
     effects = apet.ability["effect"]["effects"]
@@ -707,7 +720,9 @@ def OneOf(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return target, possible
 
 
-def ReduceHealth(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def ReduceHealth(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
     if len(fixed_targets) == 0:
         target, possible = get_target(apet, apet_idx, teams, te=te)
     else:
@@ -723,11 +738,13 @@ def ReduceHealth(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return target, possible
 
 
-def RefillShops(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def RefillShops(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     """
     Only Cow has refill shop in newest patch anyways...
 
     """
+    fixed_targets = fixed_targets or []
+
     if apet.name != "pet-cow":
         raise Exception("Only cow implemented for RefillShops")
     shop = apet.shop
@@ -743,11 +760,13 @@ def RefillShops(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return targets, [targets]
 
 
-def RepeatAbility(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def RepeatAbility(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     """
     Tiger implementation.
 
     """
+    fixed_targets = fixed_targets or []
+
     ### First, modify te by the level of the tiger
     original_level = te.level
     te.level = apet.level
@@ -757,7 +776,7 @@ def RepeatAbility(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
 
     ### Call will te as apet
     if len(fixed_targets) == 0:
-        targets, possible = func(te, apet_idx, teams, te=None, fixed_targets=[])
+        targets, possible = func(te, apet_idx, teams, te=None, fixed_targets=None)
     else:
         ### Use fixed_targets if the repeated function is supposed to target
         ### exactly the same pets again
@@ -767,11 +786,14 @@ def RepeatAbility(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return targets, possible
 
 
-def RespawnPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def RespawnPet(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     """
     Only for Mushroom food at the moment
 
     """
+    te_idx = te_idx or []
+    fixed_targets = fixed_targets or []
+
     if len(te_idx) == 0:
         raise Exception("Indices of triggering entity must be provided as te_idx")
 
@@ -779,7 +801,7 @@ def RespawnPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     spet_name = apet.name
 
     if len(fixed_targets) > 0:
-        raise Exception("Not implemented")
+        raise NotImplementedError
 
     target_team = fteam
     #### First, determine how many pets should be infront
@@ -821,7 +843,7 @@ def RespawnPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return target, [target]
 
 
-def SummonPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def SummonPet(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     """ """
     # print("CALLED SUMMON")
     # print("----------------")
@@ -829,16 +851,18 @@ def SummonPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     # print(teams)
     # print(fainted_pet)
     # print(te)
+    te_idx = te_idx or []
+    fixed_targets = fixed_targets or []
+
     if len(te_idx) == 0:
         raise Exception("Indices of triggering entity must be provided as te_idx")
 
     fteam, oteam = get_teams(apet_idx, teams)
     spet_name = apet.ability["effect"]["pet"]
     team = apet.ability["effect"]["team"]
-    summon_idx = te_idx
 
     if len(fixed_targets) > 0:
-        raise Exception("Not implemented")
+        raise NotImplementedError
 
     if team == "Friendly":
         target_team = fteam
@@ -901,10 +925,12 @@ def SummonPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return target, [target]
 
 
-def SummonRandomPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def SummonRandomPet(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     """ """
+    te_idx = te_idx or []
+    fixed_targets = fixed_targets or []
+
     fteam, oteam = get_teams(apet_idx, teams)
-    summon_idx = te_idx
 
     if len(fixed_targets) > 0:
         chosen = fixed_targets[0]
@@ -968,7 +994,9 @@ def SummonRandomPet(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[])
     return [spet], [[x] for x in possible]
 
 
-def Swallow(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def Swallow(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
     fteam, oteam = get_teams(apet_idx, teams)
     if len(fixed_targets) == 0:
         target, possible = get_target(apet, apet_idx, teams, te=te)
@@ -996,7 +1024,6 @@ def Swallow(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
 
     ### Remove target from team and shop this pet as the given level as a
     ### Summon ability
-    faint_target = []
     for temp_target in target:
         if data["pets"][temp_target.name]["baseAttack"] != "?":
             base_attack = data["pets"][temp_target.name]["baseAttack"]
@@ -1008,9 +1035,7 @@ def Swallow(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
             base_health = temp_target.health
 
         summon_dict = {
-            "description": "Swallowed and summon level {} {}".format(
-                temp_target.name, output_level
-            ),
+            "description": f"Swallowed and summon level {temp_target.name} {output_level}",
             "trigger": "Faint",
             "triggeredBy": {"kind": "Self"},
             "effect": {
@@ -1023,14 +1048,15 @@ def Swallow(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
             },
         }
         apet.set_ability(summon_dict)
-        faint_idx = fteam.get_idx(temp_target)
         temp_target._health = -1
 
     fteam.move_forward()
     return target, possible
 
 
-def TransferAbility(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def TransferAbility(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
     fteam, oteam = get_teams(apet_idx, teams)
     if len(fixed_targets) == 0:
         target, possible = get_target(apet, apet_idx, teams, te=te, get_from=True)
@@ -1044,7 +1070,9 @@ def TransferAbility(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[])
     return target, possible
 
 
-def TransferStats(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def TransferStats(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
     fteam, oteam = get_teams(apet_idx, teams)
     if len(fixed_targets) == 0:
         target, possible = get_target(apet, apet_idx, teams, te=te)
@@ -1081,9 +1109,11 @@ def TransferStats(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return target, possible
 
 
-def DiscountFood(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def DiscountFood(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
     shop = apet.shop
-    if shop == None:
+    if shop is None:
         raise Exception("No shop found to discount food")
     amount = apet.ability["effect"]["amount"]
     targets = []
@@ -1094,16 +1124,20 @@ def DiscountFood(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
     return targets, [targets]
 
 
-def GainAbility(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def GainAbility(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     """
     Only Octopus has GainAbility. Also, within programming framework,
     GainAbility is not necessary because the ability is automatically
     updated with levelup.
     """
+    fixed_targets = fixed_targets or []
+
     return [apet], [[apet]]
 
 
-def none(apet, apet_idx, teams, te=None, te_idx=[], fixed_targets=[]):
+def none(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
     return [], []
 
 

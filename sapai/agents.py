@@ -1,10 +1,10 @@
-#%%
+# %%
 
-import os, json, zlib, itertools, torch
+import os, json, itertools, torch
 import numpy as np
 from sapai import Player
 from sapai.battle import Battle
-from sapai.compress import compress, decompress, minimal_state
+from sapai.compress import compress, decompress
 
 ### Pets with a random component
 ###   Random component in the future should just be handled in an exact way
@@ -233,7 +233,7 @@ class CombinatorialSearch:
         ### build_player_list searches shop actions and returns player list
         ###   In addition, it builds a player_state_dict which can be used for
         ###   faster lookup of redundant player states
-        if player_state_dict == None:
+        if player_state_dict is None:
             self.player_state_dict = {}
         else:
             self.player_state_dict = player_state_dict
@@ -270,7 +270,7 @@ class CombinatorialSearch:
             ### If gold is 0, then this is exit condition for the
             ### recursive function
             return []
-        if player_list == None:
+        if player_list is None:
             player_list = []
 
         player_state = player.state
@@ -391,11 +391,11 @@ class CombinatorialSearch:
         return team_dict
 
     def print_message(self, message_type, info):
-        if self.verbose == False:
+        if not self.verbose:
             return
 
         if message_type not in ["start", "size", "player_list_done", "done"]:
-            raise Exception("Unrecognized message type {}".format(message_type))
+            raise Exception(f"Unrecognized message type {message_type}")
 
         if message_type == "start":
             print("---------------------------------------------------------")
@@ -409,25 +409,21 @@ class CombinatorialSearch:
             temp_size = len(info)
             if temp_size < (self.current_print_number + 100):
                 return
-            print(
-                "RUNNING MESSAGE: Current Number of Unique Players is {}".format(
-                    len(info)
-                )
-            )
+            print(f"RUNNING MESSAGE: Current Number of Unique Players is {len(info)}")
             self.current_print_number = temp_size
 
         elif message_type == "player_list_done":
             print("---------------------------------------------------------")
             print("DONE BUILDING PLAYER LIST")
-            print("NUMBER OF PLAYERS IN PLAYER LIST: {}".format(len(info)))
+            print(f"NUMBER OF PLAYERS IN PLAYER LIST: {len(info)}")
 
             print("BEGINNING TO SEARCH FOR ALL POSSIBLE TEAM ORDERS")
 
         elif message_type == "done":
             print("---------------------------------------------------------")
             print("DONE WITH CombinatorialSearch")
-            print("NUMBER OF PLAYERS IN PLAYER LIST: {}".format(len(info[0])))
-            print("NUMBER OF UNIQUE TEAMS: {}".format(len(info[1])))
+            print(f"NUMBER OF PLAYERS IN PLAYER LIST: {len(info[0])}")
+            print(f"NUMBER OF UNIQUE TEAMS: {len(info[1])}")
 
 
 class DatabaseLookupRanker:
@@ -444,7 +440,7 @@ class DatabaseLookupRanker:
         self.path = path
 
         if os.path.exists(path):
-            with open(path, "r") as f:
+            with open(path) as f:
                 self.database = json.loads(f)
         else:
             self.database = {}
@@ -525,7 +521,7 @@ class PairwiseBattles:
         except:
             parallel_check = False
 
-        if parallel_check == False:
+        if not parallel_check:
             raise Exception("MPI parallelization not available")
 
         self.comm = MPI.COMM_WORLD
@@ -547,15 +543,15 @@ class PairwiseBattles:
 
             print("------------------------------------", flush=True)
             print("RUNNING PAIRWISE BATTLES", flush=True)
-            print("{:16s}: {}".format("INFO", "NUMBER"), flush=True)
-            print("{:16s}: {}".format("NUM RANKS", self.size), flush=True)
-            print("{:16s}: {}".format("INPUT TEAMS", len(obj)), flush=True)
+            print(f"{'NUM':16s}: NUMBER", flush=True)
+            print(f"{'NUM RANKS':16s}: {self.size}", flush=True)
+            print(f"{'INPUT TEAMS':16s}: {len(obj)}", flush=True)
 
             ### Easier for indexing
             team_array = np.zeros((len(team_list),), dtype=object)
             team_array[:] = team_list[:]
             pair_idx = self._get_pair_idx(team_list)
-            print("{:16s}: {}".format("NUMBER BATTLES", len(pair_idx)), flush=True)
+            print(f"{'NUMBER BATTLES':16s}: {len(pair_idx)}", flush=True)
             ### Should I send just index and read in files on all ranks...
             ###   or should Teams be sent to ranks...
             ### Well, I don't think this function will every have >2 GB sized
@@ -567,7 +563,7 @@ class PairwiseBattles:
 
             my_idx = pair_idx[0 :: self.size]
             my_teams = np.take(team_array, my_idx)
-            print("{:16s}: {}".format("BATTLES PER RANK", len(my_teams)), flush=True)
+            print(f"{'BATTLES PER RANK':16s}: {len(my_teams)}", flush=True)
 
         else:
             ### Wait for info from rank 0
@@ -592,9 +588,7 @@ class PairwiseBattles:
                 iter_idx += 1
                 if iter_idx % 1000 == 0:
                     print(
-                        "{:16s}: {} of {}".format(
-                            "FINISHED", iter_idx * self.size, len(pair_idx)
-                        ),
+                        f"{'FINISHED':16s}: {iter_idx * self.size} of {len(pair_idx)}",
                         flush=True,
                     )
 
@@ -653,7 +647,7 @@ class PairwiseBattles:
                 temp_frac = frac[iter_idx]
                 results[compress(temp_team, minimal=True)] = temp_frac
 
-            print("WRITING OUTPUTS AT: {}".format(self.output), flush=True)
+            print(f"WRITING OUTPUTS AT: {self.output}", flush=True)
             torch.save(results, self.output)
 
             print("------------------------------------", flush=True)

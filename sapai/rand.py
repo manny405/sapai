@@ -18,11 +18,11 @@ class MockRandomState:
     def __init__(self):
         pass
 
-    def set_state(self, *args, **kwargs):
+    def set_state(self):
         """Doesn't do anything"""
         return None
 
-    def get_state(self, *args, **kwargs):
+    def get_state(self):
         return None
 
     def choice(self, *args, **kwargs):

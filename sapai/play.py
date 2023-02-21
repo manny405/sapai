@@ -1,4 +1,4 @@
-#%%
+# %%
 
 
 class Play:
@@ -22,8 +22,10 @@ class Play:
 
     """
 
-    def __init__(self, players=[], mode="tournament"):
-        raise Exception()
+    def __init__(self, players=None, mode="tournament"):
+        players = players or []
+
+        raise NotImplementedError
 
 
-#%%
+# %%

@@ -10,18 +10,18 @@ class Slot:
     """
 
     def __init__(self, obj=None):
-        if type(obj).__name__ == "Slot":
+        if isinstance(obj, Slot):
             obj = obj.obj
         self.obj = obj
 
     def __repr__(self):
-        if self.obj == None:
+        if self.obj is None:
             name = "EMPTY"
         elif self.obj.name == "pet-none" or self.obj.name == "food-none":
             name = "EMPTY"
         else:
             name = str(self._obj)[2:-2]
-        return "< Slot {} >".format(name)
+        return f"< Slot {name} >"
 
     @property
     def obj(self):
@@ -29,7 +29,7 @@ class Slot:
 
     @obj.setter
     def obj(self, obj):
-        if obj != None:
+        if obj is not None:
             if isinstance(obj, type(self)):
                 obj = obj.obj
             if (
@@ -47,7 +47,7 @@ class Slot:
         """
         Returns if the given slot is empty
         """
-        return self._obj == None
+        return self._obj is None
 
     @obj.deleter
     def obj(self):
@@ -80,12 +80,14 @@ class SAPList:
 
     """
 
-    def __init__(self, slots=[], nslots=None, slot_class=Slot):
+    def __init__(self, slots=None, nslots=None, slot_class=Slot):
+        slots = slots or []
+
         self.slot_class = slot_class
         self._slots = []
         self._nslots = None
         self.slots = slots
-        if nslots != None:
+        if nslots is not None:
             self.nslots = nslots
 
     def __len__(self):
@@ -112,7 +114,7 @@ class SAPList:
     def __repr__(self):
         repr_str = ""
         for iter_idx, slot in enumerate(self.slots):
-            repr_str += "{}: {} \n    ".format(iter_idx, slot)
+            repr_str += f"{iter_idx}: {slot} \n    "
         return repr_str
 
     @property
@@ -140,7 +142,7 @@ class SAPList:
             else:
                 temp_slots.append(objs)
             self._slots = temp_slots
-        if self.nslots != None:
+        if self.nslots is not None:
             self.nslots = self._nslots
 
     @property
@@ -156,7 +158,7 @@ class SAPList:
         Sets nslots and confirms the number of Slots in _slots
         """
         self._nslots = length
-        if self._nslots == None:
+        if self._nslots is None:
             return
         if not isinstance(length, (int, np.integer)):
             raise Exception(f"SAPList nslots must be int, given {type(length)}")
@@ -166,7 +168,7 @@ class SAPList:
         if len(self._slots) < self.nslots:
             [
                 self._slots.append(self.slot_class())
-                for x in range(self.nslots - len(self._slots))
+                for _ in range(self.nslots - len(self._slots))
             ]
         elif len(self._slots) > self.nslots:
             self._slots = self._slots[: self.nslots]
@@ -253,11 +255,11 @@ class SAPList:
         ### Dereference original position
         self[sidx] = self.slot_class()
 
-    def move_right(self, sidx=0, eidx=-1):
+    def move_right(self):
         """
         Move all entries in SlotList after index i to the right
         """
-        self.move_backword()
+        self.move_backward()
 
     def move_left(self, sidx=0, eidx=-1):
         """

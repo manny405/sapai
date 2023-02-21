@@ -1,4 +1,4 @@
-#%%
+# %%
 import unittest
 import numpy as np
 
@@ -15,9 +15,9 @@ class TestLists(unittest.TestCase):
         l = Team([Pet(pet_names[x]) for x in range(3)])
 
 
-#%%
+# %%
 
 # test = TestLists()
 # test.test_remove()
 
-#%%
+# %%

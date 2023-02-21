@@ -1,13 +1,12 @@
-#%%
-from random import seed
+# %%
 import numpy as np
 from sapai.data import data
 from sapai.effects import get_effect_function, RespawnPet, SummonPet, SummonRandomPet
-from sapai.tiers import pet_tier_lookup, pet_tier_lookup_std
+from sapai.tiers import pet_tier_lookup
 from sapai.rand import MockRandomState
 from sapai import status
 
-#%%
+# %%
 
 
 class Pet:
@@ -19,12 +18,11 @@ class Pet:
     def __init__(
         self, name="pet-none", shop=None, team=None, player=None, seed_state=None
     ):
-
         if len(name) != 0:
             if not name.startswith("pet-"):
-                name = "pet-{}".format(name)
+                name = f"pet-{name}"
         self.seed_state = seed_state
-        if self.seed_state != None:
+        if self.seed_state is not None:
             self.rs = np.random.RandomState()
             self.rs.set_state(self.seed_state)
         else:
@@ -41,7 +39,7 @@ class Pet:
 
         self.name = name
         if name not in data["pets"]:
-            raise Exception("Pet {} not found".format(name))
+            raise Exception(f"Pet {name} not found")
         fd = data["pets"][name]
         self.fd = fd
         self.override_ability = False
@@ -64,20 +62,20 @@ class Pet:
         self.experience = 0
 
         #### Add pet to team if not already present
-        if self.team != None:
+        if self.team is not None:
             if self._attack != "none":
                 if self not in team:
                     team.append(self)
 
-            if self.team.shop == None:
-                if self.shop != None:
+            if self.team.shop is None:
+                if self.shop is not None:
                     self.team.shop = self.shop
 
         ### Make sure everything has been initialized together
-        if player != None:
-            if self.team != None:
+        if player is not None:
+            if self.team is not None:
                 player.team = self.team
-            if self.shop != None:
+            if self.shop is not None:
                 player.shop = self.shop
 
     @property
@@ -101,8 +99,8 @@ class Pet:
     def ability(self):
         if self.override_ability:
             return self.override_ability_dict
-        if "level{}Ability".format(self.level) in self.fd:
-            return self.fd["level{}Ability".format(self.level)]
+        if f"level{self.level}Ability" in self.fd:
+            return self.fd[f"level{self.level}Ability"]
         else:
             return empty_ability
 
@@ -347,7 +345,7 @@ class Pet:
                 if trigger == self:
                     return activated, targets, possible
             else:
-                raise Exception("Ability unrecognized for {}".format(self))
+                raise Exception(f"Ability unrecognized for {self}")
 
         ### Behavior for BuyTier1Animal
         if self.ability["trigger"] == "BuyTier1Animal":
@@ -356,7 +354,7 @@ class Pet:
 
         ### Behavior for BuyAfterLoss
         if self.ability["trigger"] == "BuyAfterLoss":
-            if self.player == None:
+            if self.player is None:
                 return activated, targets, possible
             if self.player.lf_winner != False:
                 return activated, targets, possible
@@ -455,7 +453,7 @@ class Pet:
 
         ### Check gold for puppy and tyrannosaurus
         if self.ability["trigger"] == "EndOfTurnWith3PlusGold":
-            if self.player != None:
+            if self.player is not None:
                 if self.player.gold >= 3:
                     pass
                 else:
@@ -464,23 +462,21 @@ class Pet:
                 return activated, targets, possible
         ### Check for bison
         elif self.ability["trigger"] == "EndOfTurnWithLvl3Friend":
-            if self.team != None:
+            if self.team is not None:
                 if not self.team.check_lvl3():
                     return activated, targets, possible
             else:
                 return activated, targets, possible
         ### Check for llama
         elif self.ability["trigger"] == "EndOfTurnWith4OrLessAnimals":
-            if self.team != None:
+            if self.team is not None:
                 if len(self.team) > 4:
                     return activated, targets, possible
             else:
                 return activated, targets, possible
         else:
             if self.ability["trigger"] != "EndOfTurn":
-                raise Exception(
-                    "Unrecognized trigger {}".format(self.ability["trigger"])
-                )
+                raise Exception(f"Unrecognized trigger {self.ability['trigger']}")
 
         if "maxTriggers" in self.ability:
             if self.ability_counter >= self.ability["maxTriggers"]:
@@ -495,7 +491,7 @@ class Pet:
         activated = True
         return activated, targets, possible
 
-    def faint_trigger(self, trigger=None, te_idx=[], oteam=None):
+    def faint_trigger(self, trigger=None, te_idx=None, oteam=None):
         """
         Apply pet's ability associated with a friend (or self) fainting
 
@@ -504,6 +500,8 @@ class Pet:
              "ox", "sheep", "turtle", "deer", "rooster", "microbe",
              "eagle", "shark", "fly", "mammoth"]
         """
+        te_idx = te_idx or []
+
         activated = False
         targets = []
         possible = []
@@ -551,7 +549,7 @@ class Pet:
         else:
             pet_idx = te_idx
 
-        if oteam != None:
+        if oteam is not None:
             teams = [self.team, oteam]
         else:
             teams = [self.team]
@@ -775,14 +773,7 @@ class Pet:
         return activated, targets, possible
 
     def __repr__(self):
-        return "< {} {}-{} {} {}-{} >".format(
-            self.name,
-            self.attack,
-            self.health,
-            self.status,
-            self.level,
-            self.experience,
-        )
+        return f"< {self.name} {self.attack}-{self.health} {self.status} {self.level}-{self.experience} >"
 
     def copy(self):
         copy_pet = Pet(self.name, self.shop, seed_state=self.seed_state)
@@ -803,7 +794,7 @@ class Pet:
 
         #### Ensure that state can be JSON serialized
         if getattr(self, "rs", False):
-            if type(self.rs).__name__ == "MockRandomState":
+            if isinstance(self.rs, MockRandomState):
                 seed_state = None
             else:
                 seed_state = list(self.rs.get_state())
@@ -856,7 +847,7 @@ class Pet:
 
         ### Supply seed_state in state dict should be optional
         if "seed_state" in state:
-            if state["seed_state"] != None:
+            if state["seed_state"] is not None:
                 pet.seed_state = state["seed_state"]
                 pet.rs = np.random.RandomState()
                 pet.rs.set_state(pet.seed_state)
@@ -867,7 +858,7 @@ class Pet:
 def tiger_func(func, te_fainted, *args):
     ### Check behind for tiger
     apet = args[0]
-    if apet.team == None:
+    if apet.team is None:
         ### Just run function
         targets, possible = func(*args)
         return targets, possible
@@ -896,7 +887,7 @@ def tiger_func(func, te_fainted, *args):
     targets, possible = func(*args)
 
     ### If not in a battle, then tiger doesnt trigger
-    if apet.team.battle == False:
+    if not apet.team.battle:
         return targets, possible
 
     ### If there's no pet behind, then return
@@ -909,12 +900,12 @@ def tiger_func(func, te_fainted, *args):
         return targets, possible
     if pet_behind.health <= 0:
         ### If tiger died and has been removed don't run function again
-        if apet.team.check_friend(pet_behind) == False:
+        if not apet.team.check_friend(pet_behind):
             return targets, possible
 
     ### Reset activiting pet's original ability because that's what should
     ###  be duplicated. This is important for Whale.
-    if te_fainted == False:
+    if not te_fainted:
         apet.override_ability = False
     if len(args) == 5:
         te_idx = [0, args[4][1] + len(targets)]
