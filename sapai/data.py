@@ -3216,7 +3216,7 @@ data = {
             "tier": 2,
             "baseAttack": 2,
             "baseHealth": 3,
-            "packs": ["StandardPack", "ExpansionPack1"],
+            "packs": ["ExpansionPack1"],
             "level1Ability": {
                 "description": "Friend sold: Give a random friend +1 Health.",
                 "trigger": "Sell",
@@ -3255,11 +3255,9 @@ data = {
                     "kind": "shop",
                     "turn": "turn-3",
                     "perShop": {
-                        "StandardPack": 0.14973028138212574,
                         "ExpansionPack1": 0.14973028138212574,
                     },
                     "perSlot": {
-                        "StandardPack": 0.05263157894736842,
                         "ExpansionPack1": 0.05263157894736842,
                     },
                 },
@@ -3267,11 +3265,9 @@ data = {
                     "kind": "shop",
                     "turn": "turn-4",
                     "perShop": {
-                        "StandardPack": 0.14973028138212574,
                         "ExpansionPack1": 0.14973028138212574,
                     },
                     "perSlot": {
-                        "StandardPack": 0.05263157894736842,
                         "ExpansionPack1": 0.05263157894736842,
                     },
                 },
@@ -3279,11 +3275,9 @@ data = {
                     "kind": "shop",
                     "turn": "turn-5",
                     "perShop": {
-                        "StandardPack": 0.12681358024691358,
                         "ExpansionPack1": 0.12681358024691358,
                     },
                     "perSlot": {
-                        "StandardPack": 0.03333333333333333,
                         "ExpansionPack1": 0.03333333333333333,
                     },
                 },
@@ -3291,11 +3285,9 @@ data = {
                     "kind": "shop",
                     "turn": "turn-6",
                     "perShop": {
-                        "StandardPack": 0.12681358024691358,
                         "ExpansionPack1": 0.12681358024691358,
                     },
                     "perSlot": {
-                        "StandardPack": 0.03333333333333333,
                         "ExpansionPack1": 0.03333333333333333,
                     },
                 },
@@ -3303,11 +3295,9 @@ data = {
                     "kind": "shop",
                     "turn": "turn-7",
                     "perShop": {
-                        "StandardPack": 0.09404935520024527,
                         "ExpansionPack1": 0.09404935520024527,
                     },
                     "perSlot": {
-                        "StandardPack": 0.024390243902439025,
                         "ExpansionPack1": 0.024390243902439025,
                     },
                 },
@@ -3315,11 +3305,9 @@ data = {
                     "kind": "shop",
                     "turn": "turn-8",
                     "perShop": {
-                        "StandardPack": 0.09404935520024527,
                         "ExpansionPack1": 0.09404935520024527,
                     },
                     "perSlot": {
-                        "StandardPack": 0.024390243902439025,
                         "ExpansionPack1": 0.024390243902439025,
                     },
                 },
@@ -3327,11 +3315,9 @@ data = {
                     "kind": "shop",
                     "turn": "turn-9",
                     "perShop": {
-                        "StandardPack": 0.09796001985292535,
                         "ExpansionPack1": 0.09796001985292535,
                     },
                     "perSlot": {
-                        "StandardPack": 0.02040816326530612,
                         "ExpansionPack1": 0.02040816326530612,
                     },
                 },
@@ -3339,11 +3325,9 @@ data = {
                     "kind": "shop",
                     "turn": "turn-10",
                     "perShop": {
-                        "StandardPack": 0.09796001985292535,
                         "ExpansionPack1": 0.09796001985292535,
                     },
                     "perSlot": {
-                        "StandardPack": 0.02040816326530612,
                         "ExpansionPack1": 0.02040816326530612,
                     },
                 },
@@ -3351,11 +3335,9 @@ data = {
                     "kind": "shop",
                     "turn": "turn-11",
                     "perShop": {
-                        "StandardPack": 0.08328505725105906,
                         "ExpansionPack1": 0.08328505725105906,
                     },
                     "perSlot": {
-                        "StandardPack": 0.017241379310344827,
                         "ExpansionPack1": 0.017241379310344827,
                     },
                 },
