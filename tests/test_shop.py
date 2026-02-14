@@ -175,19 +175,47 @@ class TestShop(unittest.TestCase):
         player.buy_food(1)
 
         ### check immediate result
-        self.assertEqual(player.shop[0].obj.attack, 4)  # fish 2/2
+        self.assertEqual(player.shop[0].obj.attack, 3)  # fish 2/2
         self.assertEqual(player.shop[0].obj.health, 3)
 
         ### check result after 1 roll
         player.roll()
-        self.assertEqual(player.shop[0].obj.attack, 4)  # duck 2/3
+        self.assertEqual(player.shop[0].obj.attack, 3)  # duck 2/3
         self.assertEqual(player.shop[0].obj.health, 4)
 
         ### check result in a new turn
         player.end_turn()
         player.start_turn()
-        self.assertEqual(player.shop[0].obj.attack, 4)  # mosquito 2/2
+        self.assertEqual(player.shop[0].obj.attack, 3)  # mosquito 2/2
         self.assertEqual(player.shop[0].obj.health, 3)
+
+    def test_canned_food_future_buff_applies_once_with_multiple_current_targets(self):
+        state = np.random.RandomState(seed=1).get_state()
+        player = Player(shop=Shop(["fish", "ant", "canned-food"], seed_state=state))
+
+        player.buy_food(2)
+        player.roll()
+
+        for slot in player.shop.slots:
+            if slot.slot_type != "pet":
+                continue
+            self.assertEqual(slot.obj.attack, slot.obj.fd["baseAttack"] + 1)
+            self.assertEqual(slot.obj.health, slot.obj.fd["baseHealth"] + 1)
+
+    def test_canned_food_future_buff_applies_when_no_current_shop_pets(self):
+        state = np.random.RandomState(seed=1).get_state()
+        player = Player(shop=Shop(["fish", "ant", "canned-food"], seed_state=state))
+
+        player.buy_pet(0)
+        player.buy_pet(0)
+        player.buy_food(0)
+        player.roll()
+
+        for slot in player.shop.slots:
+            if slot.slot_type != "pet":
+                continue
+            self.assertEqual(slot.obj.attack, slot.obj.fd["baseAttack"] + 1)
+            self.assertEqual(slot.obj.health, slot.obj.fd["baseHealth"] + 1)
 
 
 # %%

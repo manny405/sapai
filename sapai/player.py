@@ -217,6 +217,10 @@ class Player:
         ### Make all updates
         self.gold -= cost
         self.shop.buy(food)
+        if food.name == "food-canned-food":
+            ### Canned food boosts future shop pets once per purchase
+            self.shop.shop_attack += food.attack
+            self.shop.shop_health += food.health
         for pet in targets:
             levelup = pet.eat(food)
             ### Check for levelup triggers if appropriate

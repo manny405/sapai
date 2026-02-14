@@ -399,5 +399,27 @@ class TestBattles(unittest.TestCase):
         ### Implement later with others
         pass
 
+    def test_steak_not_consumed_when_hit_by_splash(self):
+        splash_attacker = Pet("fish")
+        splash_attacker.status = "status-splash-attack"
+        splash_attacker._attack = 1
+        splash_attacker._health = 1
+
+        front_enemy = Pet("ant")
+        front_enemy._attack = 50
+        front_enemy._health = 50
+
+        back_enemy = Pet("pig")
+        back_enemy.status = "status-steak-attack"
+        back_enemy._health = 50
+
+        battle = Battle(Team([splash_attacker]), Team([front_enemy, back_enemy]))
+        battle.battle()
+
+        # Back enemy was splashed but never attacked, so steak should remain.
+        self.assertEqual(battle.t1[1].pet.status, "status-steak-attack")
+        # Chili splash should deal exactly 5 damage to the second enemy.
+        self.assertEqual(battle.t1[1].pet.health, 45)
+
 
 # %%

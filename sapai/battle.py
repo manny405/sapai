@@ -808,8 +808,9 @@ def battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict):
         p0._until_end_of_battle_attack_buff = 0
         if len(nidx[1]) != 0:
             pn1 = teams[1][nidx[1][1]].pet
-            p0a, p1a = get_attack(p0, pn1)
-            pn1.hurt(p0a)
+            # Splash is one-sided damage: defender does not attack back.
+            splash_damage = pn1.get_damage(p0.attack)
+            pn1.hurt(splash_damage)
             phase_list.append(["splash", (aidx[0]), (str(p0)), [str(pn1)]])
 
             if pn1.health <= 0:
@@ -827,8 +828,9 @@ def battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict):
         p1._until_end_of_battle_attack_buff = 0
         if len(nidx[0]) != 0:
             pn0 = teams[0][nidx[0][1]].pet
-            p0a, p1a = get_attack(pn0, p1)
-            pn0.hurt(p1a)
+            # Splash is one-sided damage: defender does not attack back.
+            splash_damage = pn0.get_damage(p1.attack)
+            pn0.hurt(splash_damage)
             phase_list.append(["splash", (aidx[1]), (str(p1)), [str(pn0)]])
 
             if pn0.health <= 0:

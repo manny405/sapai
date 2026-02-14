@@ -9939,13 +9939,13 @@ data = {
             "tier": 4,
             "packs": ["StandardPack", "ExpansionPack1"],
             "ability": {
-                "description": "Give all current and future shop animals +2/+1.",
+                "description": "Give all current and future shop pets +1/+1.",
                 "triggeredBy": {"kind": "Self"},
                 "trigger": "Buy",
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "EachShopAnimal", "includingFuture": True},
-                    "attackAmount": 2,
+                    "attackAmount": 1,
                     "healthAmount": 1,
                     "untilEndOfBattle": False,
                 },
@@ -10481,12 +10481,12 @@ data = {
                 "unicodeCodePoint": "🍖",
             },
             "ability": {
-                "description": "Attack for 5 more damage.",
+                "description": "Attack for 3 more damage.",
                 "triggeredBy": {"kind": "Self"},
                 "trigger": "WhenAttacking",
                 "effect": {
                     "kind": "ModifyDamage",
-                    "damageModifier": 5,
+                    "damageModifier": 3,
                     "appliesOnce": False,
                 },
             },

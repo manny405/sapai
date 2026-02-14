@@ -52,5 +52,12 @@ class TestStatus(unittest.TestCase):
         for i in range(1, MAX):
             self.assertEqual(p.get_damage(i), i + 3)
 
+    def test_bone_attack_damage(self):
+        p = Pet("fish")
+        p.eat(Food("meat-bone"))
+        fish_base_attack = p.fd["baseAttack"]
+        bone_attack_bonus = data["statuses"]["status-bone-attack"]["ability"]["effect"]["damageModifier"]
+        self.assertEqual(p.attack, fish_base_attack + bone_attack_bonus)
+
 
 # %%
