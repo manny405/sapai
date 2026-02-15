@@ -185,6 +185,7 @@ class Shop(SAPList):
             raise Exception(f"Unrecognized Shop Object {obj}")
 
         del self.slots[idx]
+        self.nslots = len(self.slots)
 
     def index(self, obj):
         if isinstance(obj, ShopSlot):
@@ -278,8 +279,19 @@ class Shop(SAPList):
         with a new pet
 
         """
-        new_slot = ShopSlot("levelup", pack=self.pack, turn=self.turn)
-        self.append(new_slot)
+        first_slot = ShopSlot("levelup", pack=self.pack, turn=self.turn, seed_state=self.seed_state)
+        self.append(first_slot)
+        self.seed_state = first_slot.seed_state
+
+        second_slot = ShopSlot(
+            "levelup",
+            pack=self.pack,
+            turn=self.turn,
+            seed_state=self.seed_state,
+            not_allowed_pets={first_slot.obj.name},
+        )
+        self.append(second_slot)
+        self.seed_state = second_slot.seed_state
 
     def update_shop_rules(self, turn=-1, roll_only_empty=False):
         if turn < 0:
@@ -446,7 +458,7 @@ class Shop(SAPList):
         pslots = []
         fslots = []
         for iter_idx, slot in enumerate(self.slots):
-            if slot.slot_type == "pet":
+            if slot.slot_type == "pet" or slot.slot_type == "levelup":
                 pslots.append(slot)
             if slot.slot_type == "food":
                 fslots.append(slot)
@@ -747,6 +759,7 @@ class ShopSlot(Slot):
         cost=3,
         pack="StandardPack",
         seed_state=None,
+        not_allowed_pets=None,
     ):
         self.seed_state = seed_state
         if self.seed_state is not None:
@@ -759,6 +772,7 @@ class ShopSlot(Slot):
         self.slot_type = slot_type
         self.turn = turn
         self.pack = pack
+        self.not_allowed_pets = set(not_allowed_pets or [])
         self.frozen = frozen
         self.cost = cost
         self.obj = ShopSlotNoneItem(seed_state=self.seed_state)
@@ -778,6 +792,7 @@ class ShopSlot(Slot):
                 self.slot_type = obj.slot_type
                 self.turn = obj.turn
                 self.pack = obj.pack
+                self.not_allowed_pets = set(obj.not_allowed_pets)
                 self.frozen = obj.frozen
                 self.cost = obj.cost
                 if self.slot_type == "food":
@@ -903,6 +918,7 @@ class ShopSlot(Slot):
             avail_pets = pet_tier_lookup_std[levelup_tier]
         else:
             avail_pets = pet_tier_lookup[levelup_tier]
+        avail_pets = [pet for pet in avail_pets if pet not in self.not_allowed_pets]
         pet_choice = self.rs.choice(avail_pets, size=(1,), replace=True)[0]
         self.seed_state = self.rs.get_state()
         self.obj = Pet(pet_choice, seed_state=self.seed_state)

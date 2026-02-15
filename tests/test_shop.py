@@ -289,7 +289,53 @@ class TestShop(unittest.TestCase):
         player = Player(shop=Shop(["fish", "fish"]), team=Team([Pet("fish")]))
         player.buy_combine(1, 0)
         player.buy_combine(0, 0)
-        self.assertEqual(len(player.shop), 1)
+        self.assertEqual(len(player.shop), 2)
+
+    def test_no_levelup_reward_from_level2_plus_level2_combine(self):
+        fish1 = Pet("fish")
+        fish2 = Pet("fish")
+        fish1.level = 2
+        fish2.level = 2
+        player = Player(shop=Shop([]), team=Team([fish1, fish2]))
+
+        levelup_slots = [s for s in player.shop.slots if s.slot_type == "levelup"]
+        self.assertEqual(len(levelup_slots), 0)
+
+        player.combine(0, 1)
+
+        levelup_slots = [s for s in player.shop.slots if s.slot_type == "levelup"]
+        self.assertEqual(player.team[0].pet.level, 3)
+        self.assertEqual(len(levelup_slots), 0)
+
+    def test_levelup_reward_choices_are_without_replacement(self):
+        for _ in range(1000):
+            shop = Shop([])
+            shop.levelup()
+            choices = [s.obj.name for s in shop.slots if s.slot_type == "levelup"]
+            self.assertEqual(len(choices), 2)
+            self.assertEqual(len(set(choices)), 2)
+
+    def test_levelup_rewards_are_independent_between_events(self):
+        found_overlap_between_reward_sets = False
+        max_attempts = 1000
+
+        for _ in range(max_attempts):
+            shop = Shop(slots=[], fixed_rules=True)
+            shop.levelup()
+            shop.levelup()
+
+            reward_names = [s.obj.name for s in shop.slots if s.slot_type == "levelup"]
+            self.assertEqual(len(reward_names), 4)
+            self.assertNotEqual(reward_names[0], reward_names[1])
+            self.assertNotEqual(reward_names[2], reward_names[3])
+
+            first_set = set(reward_names[:2])
+            second_set = set(reward_names[2:])
+            if len(first_set.intersection(second_set)) > 0:
+                found_overlap_between_reward_sets = True
+                break
+
+        self.assertTrue(found_overlap_between_reward_sets)
 
     def test_shop_levelup_from_ability(self):
         pet = Pet("caterpillar")

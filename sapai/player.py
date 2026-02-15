@@ -518,8 +518,9 @@ class Player:
         if pet1.level == 3 or pet2.level == 3:
             raise Exception("Attempted to combine with level 3 pet")
 
+        skip_levelup_reward = pet1.level == 2 and pet2.level == 2
         levelup = Player.combine_pet_stats(pet1, pet2)
-        if levelup:
+        if levelup and not skip_levelup_reward:
             self.shop.levelup()
 
         ### Remove pet2 from team
