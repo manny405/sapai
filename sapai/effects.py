@@ -692,6 +692,21 @@ def ModifyStats(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None)
     return target, possible
 
 
+def ModifySellValue(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
+    fixed_targets = fixed_targets or []
+
+    if len(fixed_targets) == 0:
+        target, possible = get_target(apet, apet_idx, teams, te=te)
+    else:
+        target = fixed_targets
+        possible = [fixed_targets]
+
+    amount = apet.ability["effect"]["amount"]
+    for target_pet in target:
+        target_pet.sell_value += amount
+    return target, possible
+
+
 def OneOf(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     """
     Dog is only one with OneOf anyways

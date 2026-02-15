@@ -97,6 +97,194 @@ class TestShop(unittest.TestCase):
         self.assertEqual(player.team[0].attack, 4)
         self.assertEqual(player.team[0].health, 3)
 
+    def test_cake_in_food_data(self):
+        cake = Food("cake")
+        self.assertEqual(cake.name, "food-cake")
+        self.assertEqual(cake.cost, 3)
+        self.assertEqual(cake.fd["effect"]["status"], "status-cake")
+
+    def test_cake_increases_sell_value_each_end_turn(self):
+        player = Player(shop=Shop(["cake"]), team=Team([Pet("fish")]))
+
+        player.buy_food(0, 0)
+        self.assertEqual(player.gold, 7)
+        self.assertEqual(player.team[0].pet.sell_value, 1)
+
+        player.end_turn()
+        self.assertEqual(player.team[0].pet.sell_value, 2)
+
+        player.end_turn()
+        self.assertEqual(player.team[0].pet.sell_value, 3)
+
+        player.start_turn()
+        player.sell(0)
+        self.assertEqual(player.gold, 13)
+
+    def test_sell_value_increases_on_level_up(self):
+        player = Player(shop=Shop(["chocolate", "chocolate"]), team=Team([Pet("fish")]))
+        self.assertEqual(player.team[0].pet.level, 1)
+        self.assertEqual(player.team[0].pet.sell_value, 1)
+
+        player.buy_food(0, 0)
+        player.buy_food(0, 0)
+
+        self.assertEqual(player.team[0].pet.level, 2)
+        self.assertEqual(player.team[0].pet.sell_value, 2)
+
+    def test_sell_value_level2_merge_to_level3(self):
+        fish1 = Pet("fish")
+        fish2 = Pet("fish")
+        fish1.level = 2
+        fish1.sell_value = 2
+        fish2.level = 2
+        fish2.sell_value = 2
+        player = Player(team=Team([fish1, fish2]))
+
+        player.combine(0, 1)
+        self.assertEqual(player.team[0].pet.level, 3)
+        self.assertEqual(player.team[0].pet.sell_value, 3)
+
+    def test_combine_two_level1_pets_with_one_exp_each_keeps_level2_progress(self):
+        fish1 = Pet("fish")
+        fish2 = Pet("fish")
+        fish1.experience = 1
+        fish2.experience = 1
+        player = Player(team=Team([fish1, fish2]))
+
+        player.combine(0, 1)
+        self.assertEqual(player.team[0].pet.level, 2)
+        self.assertEqual(player.team[0].pet.experience, 1)
+        self.assertEqual(player.team[0].pet.sell_value, 2)
+
+    def _assert_combine_stat_bonus(self, flip_order=False):
+        ant1 = Pet("ant")
+        ant1.level = 1
+        ant1.experience = 1
+        ant1._attack = 3
+        ant1._health = 3
+        ant2 = Pet("ant")
+        ant2.level = 2
+        ant2.experience = 1
+        ant2._attack = 5
+        ant2._health = 5
+        player = Player(team=Team([ant1, ant2]))
+
+        if flip_order:
+            player.combine(1, 0)
+            combined = player.team[1].pet
+        else:
+            player.combine(0, 1)
+            combined = player.team[0].pet
+
+        self.assertEqual(combined.level, 3)
+        self.assertEqual(combined.attack, 7)
+        self.assertEqual(combined.health, 7)
+
+    def _assert_combine_stat_bonus_over_leveled(self, flip_order=False):
+        ant1 = Pet("ant")
+        ant1.level = 1
+        ant1.experience = 1
+        ant1._attack = 3
+        ant1._health = 3
+        ant2 = Pet("ant")
+        ant2.level = 2
+        ant2.experience = 2
+        ant2._attack = 6
+        ant2._health = 6
+        player = Player(team=Team([ant1, ant2]))
+
+        if flip_order:
+            player.combine(1, 0)
+            combined = player.team[1].pet
+        else:
+            player.combine(0, 1)
+            combined = player.team[0].pet
+
+        self.assertEqual(combined.level, 3)
+        self.assertEqual(combined.attack, 8)
+        self.assertEqual(combined.health, 8)
+
+    def _assert_combine_stat_bonus_both_pets_level_2(self, flip_order=False):
+        ant1 = Pet("ant")
+        ant1.level = 2
+        ant1._attack = 4
+        ant1._health = 4
+        ant2 = Pet("ant")
+        ant2.level = 2
+        ant2._attack = 4
+        ant2._health = 4
+        player = Player(team=Team([ant1, ant2]))
+
+        if flip_order:
+            player.combine(1, 0)
+            combined = player.team[1].pet
+        else:
+            player.combine(0, 1)
+            combined = player.team[0].pet
+
+        self.assertEqual(combined.level, 3)
+        self.assertEqual(combined.attack, 7)
+        self.assertEqual(combined.health, 7)
+
+    def test_combine_stat_bonus(self):
+        self._assert_combine_stat_bonus(flip_order=False)
+
+    def test_combine_stat_bonus_flipped(self):
+        self._assert_combine_stat_bonus(flip_order=True)
+
+    def test_combine_stat_bonus_over_leveled(self):
+        self._assert_combine_stat_bonus_over_leveled(flip_order=False)
+
+    def test_combine_stat_bonus_over_leveled_flipped(self):
+        self._assert_combine_stat_bonus_over_leveled(flip_order=True)
+
+    def test_combine_stat_bonus_both_pets_level_2(self):
+        self._assert_combine_stat_bonus_both_pets_level_2(flip_order=False)
+
+    def test_combine_stat_bonus_both_pets_level_2_flipped(self):
+        self._assert_combine_stat_bonus_both_pets_level_2(flip_order=True)
+
+
+    def test_level3_combine_not_allowed(self):
+        fish1 = Pet("fish")
+        fish2 = Pet("fish")
+        fish1.level = 3
+        player = Player(team=Team([fish1, fish2]))
+
+        with self.assertRaises(Exception):
+            player.combine(0, 1)
+
+    def test_level3_buy_combine_not_allowed(self):
+        fish1 = Pet("fish")
+        fish1.level = 3
+        player = Player(shop=Shop(["fish"]), team=Team([fish1]))
+
+        with self.assertRaises(Exception):
+            player.buy_combine(0, 0)
+
+    def test_cake_sell_value_with_end_turn_and_levelup(self):
+        player = Player(
+            shop=Shop(["cake", "chocolate", "chocolate"]),
+            team=Team([Pet("fish")]),
+        )
+
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].pet.sell_value, 1)
+
+        player.end_turn()
+        self.assertEqual(player.team[0].pet.sell_value, 2)
+
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].pet.level, 1)
+        self.assertEqual(player.team[0].pet.sell_value, 2)
+
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].pet.level, 2)
+        self.assertEqual(player.team[0].pet.sell_value, 3)
+
+        player.end_turn()
+        self.assertEqual(player.team[0].pet.sell_value, 4)
+
     def test_shop_levelup_from_combine(self):
         player = Player(shop=Shop(["fish", "fish"]), team=Team([Pet("fish")]))
         player.buy_combine(1, 0)

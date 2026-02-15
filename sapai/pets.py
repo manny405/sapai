@@ -60,6 +60,7 @@ class Pet:
 
         self.level = 1
         self.experience = 0
+        self.sell_value = 1
 
         #### Add pet to team if not already present
         if self.team is not None:
@@ -152,6 +153,7 @@ class Pet:
         if self.level == 1:
             if self.experience >= 2:
                 self.level += 1
+                self.sell_value += 1
                 self.experience -= 2
                 ### Call recursive incase multiple level-ups occuring
                 self.gain_experience(0)
@@ -159,6 +161,7 @@ class Pet:
         elif self.level == 2:
             if self.experience >= 3:
                 self.level += 1
+                self.sell_value += 1
                 self.experience -= 3
                 self.gain_experience(0)
                 level_up = True
@@ -445,47 +448,68 @@ class Pet:
         activated = False
         targets = []
         possible = []
-        if not self.ability["trigger"].startswith("EndOfTurn"):
+        pet_has_eot = self.ability["trigger"].startswith("EndOfTurn")
+        status_ability = None
+        status_has_eot = False
+        if self.status in data["statuses"]:
+            status_ability = data["statuses"][self.status]["ability"]
+            status_has_eot = status_ability["trigger"].startswith("EndOfTurn")
+        if not pet_has_eot and not status_has_eot:
             return activated, targets, possible
 
-        ### Check gold for puppy and tyrannosaurus
-        if self.ability["trigger"] == "EndOfTurnWith3PlusGold":
-            if self.player is not None:
-                if self.player.gold >= 3:
-                    pass
+        if status_has_eot:
+            previous_override = self.override_ability
+            previous_override_dict = self.override_ability_dict
+            self.set_ability(status_ability)
+            func = get_effect_function(self)
+            pet_idx = self.team.get_idx(self)
+            temp_targets, temp_possible = func(self, [0, pet_idx], [self.team], te=trigger)
+            targets += temp_targets
+            possible += temp_possible
+            self.override_ability = previous_override
+            self.override_ability_dict = previous_override_dict
+            activated = True
+
+        if pet_has_eot:
+            ### Check gold for puppy and tyrannosaurus
+            if self.ability["trigger"] == "EndOfTurnWith3PlusGold":
+                if self.player is not None:
+                    if self.player.gold >= 3:
+                        pass
+                    else:
+                        return activated, targets, possible
+                else:
+                    return activated, targets, possible
+            ### Check for bison
+            elif self.ability["trigger"] == "EndOfTurnWithLvl3Friend":
+                if self.team is not None:
+                    if not self.team.check_lvl3():
+                        return activated, targets, possible
+                else:
+                    return activated, targets, possible
+            ### Check for llama
+            elif self.ability["trigger"] == "EndOfTurnWith4OrLessAnimals":
+                if self.team is not None:
+                    if len(self.team) > 4:
+                        return activated, targets, possible
                 else:
                     return activated, targets, possible
             else:
-                return activated, targets, possible
-        ### Check for bison
-        elif self.ability["trigger"] == "EndOfTurnWithLvl3Friend":
-            if self.team is not None:
-                if not self.team.check_lvl3():
+                if self.ability["trigger"] != "EndOfTurn":
+                    raise Exception(f"Unrecognized trigger {self.ability['trigger']}")
+
+            if "maxTriggers" in self.ability:
+                if self.ability_counter >= self.ability["maxTriggers"]:
                     return activated, targets, possible
-            else:
-                return activated, targets, possible
-        ### Check for llama
-        elif self.ability["trigger"] == "EndOfTurnWith4OrLessAnimals":
-            if self.team is not None:
-                if len(self.team) > 4:
-                    return activated, targets, possible
-            else:
-                return activated, targets, possible
-        else:
-            if self.ability["trigger"] != "EndOfTurn":
-                raise Exception(f"Unrecognized trigger {self.ability['trigger']}")
+                else:
+                    self.ability_counter += 1
 
-        if "maxTriggers" in self.ability:
-            if self.ability_counter >= self.ability["maxTriggers"]:
-                return activated, targets, possible
-            else:
-                self.ability_counter += 1
+            func = get_effect_function(self)
+            pet_idx = self.team.get_idx(self)
+            targets, possible = func(self, [0, pet_idx], [self.team], te=trigger)
 
-        func = get_effect_function(self)
-        pet_idx = self.team.get_idx(self)
-        targets, possible = func(self, [0, pet_idx], [self.team], te=trigger)
+            activated = True
 
-        activated = True
         return activated, targets, possible
 
     def faint_trigger(self, trigger=None, te_idx=None, oteam=None):
@@ -816,6 +840,7 @@ class Pet:
             "status": self.status,
             "level": self.level,
             "experience": self.experience,
+            "sell_value": self.sell_value,
             "seed_state": seed_state,
         }
 
@@ -841,6 +866,10 @@ class Pet:
         pet.status = state["status"]
         pet.level = state["level"]
         pet.experience = state["experience"]
+        if "sell_value" in state:
+            pet.sell_value = state["sell_value"]
+        else:
+            pet.sell_value = state["level"]
 
         ### Supply seed_state in state dict should be optional
         if "seed_state" in state:

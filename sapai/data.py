@@ -9928,6 +9928,100 @@ data = {
                 },
             ],
         },
+        "food-cake": {
+            "name": "Cake",
+            "id": "food-cake",
+            "image": {
+                "source": "twemoji",
+                "commit": "793a6a93f303c08877dd6eb589b2fabb3d1c45ee",
+                "unicodeCodePoint": "🎂",
+            },
+            "tier": 3,
+            "packs": ["StandardPack"],
+            "cost": 3,
+            "ability": {
+                "description": "Give an animal Cake.",
+                "triggeredBy": {"kind": "Self"},
+                "trigger": "Buy",
+                "effect": {
+                    "kind": "ApplyStatus",
+                    "to": {"kind": "PurchaseTarget"},
+                    "status": "status-cake",
+                },
+            },
+            "probabilities": [
+                {
+                    "kind": "shop",
+                    "turn": "turn-5",
+                    "perShop": {
+                        "StandardPack": 0.26530612244897966,
+                    },
+                    "perSlot": {
+                        "StandardPack": 0.14285714285714285,
+                    },
+                },
+                {
+                    "kind": "shop",
+                    "turn": "turn-6",
+                    "perShop": {
+                        "StandardPack": 0.26530612244897966,
+                    },
+                    "perSlot": {
+                        "StandardPack": 0.14285714285714285,
+                    },
+                },
+                {
+                    "kind": "shop",
+                    "turn": "turn-7",
+                    "perShop": {
+                        "StandardPack": 0.2098765432098766,
+                    },
+                    "perSlot": {
+                        "StandardPack": 0.1111111111111111,
+                    },
+                },
+                {
+                    "kind": "shop",
+                    "turn": "turn-8",
+                    "perShop": {
+                        "StandardPack": 0.2098765432098766,
+                    },
+                    "perSlot": {
+                        "StandardPack": 0.1111111111111111,
+                    },
+                },
+                {
+                    "kind": "shop",
+                    "turn": "turn-9",
+                    "perShop": {
+                        "StandardPack": 0.15972222222222232,
+                    },
+                    "perSlot": {
+                        "StandardPack": 0.08333333333333333,
+                    },
+                },
+                {
+                    "kind": "shop",
+                    "turn": "turn-10",
+                    "perShop": {
+                        "StandardPack": 0.15972222222222232,
+                    },
+                    "perSlot": {
+                        "StandardPack": 0.08333333333333333,
+                    },
+                },
+                {
+                    "kind": "shop",
+                    "turn": "turn-11",
+                    "perShop": {
+                        "StandardPack": 0.12109375,
+                    },
+                    "perSlot": {
+                        "StandardPack": 0.0625,
+                    },
+                },
+            ],
+        },
         "food-canned-food": {
             "name": "Canned Food",
             "id": "food-canned-food",
@@ -10489,6 +10583,21 @@ data = {
                     "damageModifier": 3,
                     "appliesOnce": False,
                 },
+            },
+        },
+        "status-cake": {
+            "name": "Cake",
+            "id": "status-cake",
+            "image": {
+                "source": "twemoji",
+                "commit": "793a6a93f303c08877dd6eb589b2fabb3d1c45ee",
+                "unicodeCodePoint": "🎂",
+            },
+            "ability": {
+                "description": "End turn: Increase sell value by 1 gold.",
+                "triggeredBy": {"kind": "Self"},
+                "trigger": "EndOfTurn",
+                "effect": {"kind": "ModifySellValue", "target": {"kind": "Self"}, "amount": 1},
             },
         },
         "status-garlic-armor": {
