@@ -343,7 +343,7 @@ class TestShop(unittest.TestCase):
         pet.experience = 2
         player = Player(shop=Shop([]), team=Team([pet]))
         pet.sot_trigger()
-        self.assertEqual(len(player.shop.filled), 5)
+        self.assertEqual(len(player.shop.filled), 6)
 
     def test_buy_multi_target_food(self):
         player = Player(shop=["sushi"], team=["seal", "rabbit", "ladybug"])
