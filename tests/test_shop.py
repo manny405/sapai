@@ -391,15 +391,15 @@ class TestShop(unittest.TestCase):
 
         ### check result after 1 roll
         player.roll()
-        self.assertEqual(player.shop[0].obj.attack, 3)  # duck 2/3
-        self.assertEqual(player.shop[0].obj.health, 4)
+        self.assertEqual(player.shop[0].obj.attack, player.shop[0].obj.fd["baseAttack"] + 1)
+        self.assertEqual(player.shop[0].obj.health, player.shop[0].obj.fd["baseHealth"] + 1)
 
         ### check result in a new turn
         player.end_turn()
         player.start_turn()
 
-        self.assertEqual(player.shop[0].obj.attack, 3)  # mosquito 2/2
-        self.assertEqual(player.shop[0].obj.health, 3)
+        self.assertEqual(player.shop[0].obj.attack, player.shop[0].obj.fd["baseAttack"] + 1)
+        self.assertEqual(player.shop[0].obj.health, player.shop[0].obj.fd["baseHealth"] + 1)
 
     def test_canned_food(self):
         state = np.random.RandomState(seed=1).get_state()
@@ -414,14 +414,14 @@ class TestShop(unittest.TestCase):
 
         ### check result after 1 roll
         player.roll()
-        self.assertEqual(player.shop[0].obj.attack, 3)  # duck 2/3
-        self.assertEqual(player.shop[0].obj.health, 4)
+        self.assertEqual(player.shop[0].obj.attack, player.shop[0].obj.fd["baseAttack"] + 1)
+        self.assertEqual(player.shop[0].obj.health, player.shop[0].obj.fd["baseHealth"] + 1)
 
         ### check result in a new turn
         player.end_turn()
         player.start_turn()
-        self.assertEqual(player.shop[0].obj.attack, 3)  # mosquito 2/2
-        self.assertEqual(player.shop[0].obj.health, 3)
+        self.assertEqual(player.shop[0].obj.attack, player.shop[0].obj.fd["baseAttack"] + 1)
+        self.assertEqual(player.shop[0].obj.health, player.shop[0].obj.fd["baseHealth"] + 1)
 
     def test_canned_food_future_buff_applies_once_with_multiple_current_targets(self):
         state = np.random.RandomState(seed=1).get_state()
