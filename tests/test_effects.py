@@ -190,3 +190,86 @@ class TestEffects(unittest.TestCase):
         t = Team(["dragon", hc])
         hc.sot_trigger(t)
         self.assertEqual(t[0].pet.experience, 1)
+
+    def test_armadillo_start_of_battle_targets_all(self):
+        friendly = Team([Pet("armadillo"), Pet("fish")], battle=True)
+        enemy = Team([Pet("pig"), Pet("ant")], battle=True)
+
+        base_health = {
+            "armadillo": friendly[0].pet.health,
+            "fish": friendly[1].pet.health,
+            "pig": enemy[0].pet.health,
+            "ant": enemy[1].pet.health,
+        }
+
+        activated, targets, _ = friendly[0].pet.sob_trigger(enemy)
+        self.assertTrue(activated)
+        self.assertEqual(len(targets), 4)
+
+        self.assertEqual(friendly[0].pet.health, base_health["armadillo"] + 8)
+        self.assertEqual(friendly[1].pet.health, base_health["fish"] + 8)
+        self.assertEqual(enemy[0].pet.health, base_health["pig"] + 8)
+        self.assertEqual(enemy[1].pet.health, base_health["ant"] + 8)
+
+    def test_armadillo_start_of_battle_level_scaling(self):
+        for level, bonus in [(1, 8), (2, 16), (3, 24)]:
+            friendly = Team([Pet("armadillo"), Pet("fish")], battle=True)
+            enemy = Team([Pet("pig"), Pet("ant")], battle=True)
+            friendly[0].pet.level = level
+
+            base_health = [friendly[0].pet.health, friendly[1].pet.health]
+            base_enemy_health = [enemy[0].pet.health, enemy[1].pet.health]
+
+            activated, _, _ = friendly[0].pet.sob_trigger(enemy)
+            self.assertTrue(activated)
+
+            self.assertEqual(friendly[0].pet.health, base_health[0] + bonus)
+            self.assertEqual(friendly[1].pet.health, base_health[1] + bonus)
+            self.assertEqual(enemy[0].pet.health, base_enemy_health[0] + bonus)
+            self.assertEqual(enemy[1].pet.health, base_enemy_health[1] + bonus)
+
+    def test_armadillo_start_of_battle_health_is_capped_at_50(self):
+        friendly = Team([Pet("armadillo"), Pet("fish")], battle=True)
+        enemy = Team([Pet("pig"), Pet("ant")], battle=True)
+
+        friendly[0].pet._health = 49
+        friendly[1].pet._health = 48
+        enemy[0].pet._health = 50
+        enemy[1].pet._health = 47
+
+        activated, _, _ = friendly[0].pet.sob_trigger(enemy)
+        self.assertTrue(activated)
+
+        self.assertEqual(friendly[0].pet.health, 50)
+        self.assertEqual(friendly[1].pet.health, 50)
+        self.assertEqual(enemy[0].pet.health, 50)
+        self.assertEqual(enemy[1].pet.health, 50)
+
+    def test_armadillo_happens_before_skunk_when_higher_attack(self):
+        t0 = Team([Pet("armadillo")], battle=True)
+        t1 = Team([Pet("skunk")], battle=True)
+
+        battle = Battle(t0, t1)
+        battle.start()
+
+        ### Armadillo (4 attack) acts before Skunk (3 attack):
+        ### Armadillo health goes 8 -> 16, then Skunk reduces by 33% to 11.
+        self.assertEqual(battle.t0[0].pet.health, 11)
+        self.assertEqual(battle.t1[0].pet.health, 13)
+
+    def test_armadillo_battle_health_boost_does_not_persist_after_battle(self):
+        friendly = Team([Pet("armadillo"), Pet("fish")], battle=True)
+        enemy = Team([Pet("pig"), Pet("ant")], battle=True)
+
+        base_friendly_health = [friendly[0].pet.health, friendly[1].pet.health]
+        base_enemy_health = [enemy[0].pet.health, enemy[1].pet.health]
+
+        battle = Battle(friendly, enemy)
+        battle.start()
+
+        ### Battle runs on cloned teams, so start-of-battle health changes should
+        ### not persist back to the original teams passed into Battle.
+        self.assertEqual(friendly[0].pet.health, base_friendly_health[0])
+        self.assertEqual(friendly[1].pet.health, base_friendly_health[1])
+        self.assertEqual(enemy[0].pet.health, base_enemy_health[0])
+        self.assertEqual(enemy[1].pet.health, base_enemy_health[1])

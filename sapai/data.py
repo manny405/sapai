@@ -103,6 +103,47 @@ data = {
                 },
             },
         },
+        "pet-armadillo": {
+            "name": "Armadillo",
+            "id": "pet-armadillo",
+            "tier": 5,
+            "baseAttack": 4,
+            "baseHealth": 8,
+            "packs": ["StandardPack"],
+            "level1Ability": {
+                "description": "Start of battle: Give ALL pets +8 health.",
+                "trigger": "StartOfBattle",
+                "triggeredBy": {"kind": "Player"},
+                "effect": {
+                    "kind": "ModifyStats",
+                    "healthAmount": 8,
+                    "target": {"kind": "All"},
+                    "untilEndOfBattle": False,
+                },
+            },
+            "level2Ability": {
+                "description": "Start of battle: Give ALL pets +16 health.",
+                "trigger": "StartOfBattle",
+                "triggeredBy": {"kind": "Player"},
+                "effect": {
+                    "kind": "ModifyStats",
+                    "healthAmount": 16,
+                    "target": {"kind": "All"},
+                    "untilEndOfBattle": False,
+                },
+            },
+            "level3Ability": {
+                "description": "Start of battle: Give ALL pets +24 health.",
+                "trigger": "StartOfBattle",
+                "triggeredBy": {"kind": "Player"},
+                "effect": {
+                    "kind": "ModifyStats",
+                    "healthAmount": 24,
+                    "target": {"kind": "All"},
+                    "untilEndOfBattle": False,
+                },
+            },
+        },
         "pet-beaver": {
             "name": "Beaver",
             "id": "pet-beaver",

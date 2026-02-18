@@ -396,6 +396,7 @@ class TestPetTriggers(unittest.TestCase):
         test_pet_names = [
             "mosquito",
             "bat",
+            "armadillo",
             "crab",
             "whale",
             "dolphin",
