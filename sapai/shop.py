@@ -114,7 +114,9 @@ class Shop(SAPList):
         else:
             self.rs = MockRandomState()
 
-        self.max_slots = 7
+        self.max_pet_slots = 7
+        self.max_food_slots = 5
+        self.max_slots = self.max_pet_slots + self.max_food_slots
         self.turn = turn
         self.pack = pack
         self.shop_attack = shop_attack  ### Keep track of can/chicken stats
@@ -448,10 +450,6 @@ class Shop(SAPList):
         """
         Append should be used when adding an animal from a levelup
         """
-        if len(self.slots) >= self.max_slots:
-            ### Max slots already reached so cannot be added
-            return
-
         add_slot = ShopSlot(
             obj, pack=self.pack, turn=self.turn, seed_state=self.seed_state
         )
@@ -462,6 +460,16 @@ class Shop(SAPList):
                 pslots.append(slot)
             if slot.slot_type == "food":
                 fslots.append(slot)
+
+        if add_slot.slot_type == "food":
+            if len(fslots) >= self.max_food_slots:
+                return
+        else:
+            if len(pslots) >= self.max_pet_slots:
+                return
+
+        if len(self.slots) >= self.max_slots:
+            return
 
         new_slots = []
         new_slots += [x for x in pslots]

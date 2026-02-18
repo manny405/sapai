@@ -753,25 +753,49 @@ def ReduceHealth(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None
     return target, possible
 
 
-def RefillShops(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
-    """
-    Only Cow has refill shop in newest patch anyways...
-
-    """
+def StockShopFood(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     fixed_targets = fixed_targets or []
 
-    if apet.name != "pet-cow":
-        raise Exception("Only cow implemented for RefillShops")
+    effect = apet.ability["effect"]
+    shop_kind = effect["shop"]
+    if shop_kind != "Food":
+        raise Exception(f"Unsupported shop kind for StockShopFood: {shop_kind}")
+
     shop = apet.shop
-    level = apet.level
+    if shop is None:
+        raise Exception("No shop found to stock food")
+
+    if apet.name == "pet-cow":
+        ### Cow replaces all shop food
+        non_food_slots = [slot for slot in shop.slots if slot.slot_type != "food"]
+        shop.slots = non_food_slots
+        shop.nslots = len(non_food_slots)
+
+    food_name = effect["food"]
+    amount = effect["amount"]
+    with_attack = effect.get("withAttack")
+    with_health = effect.get("withHealth")
+
     targets = []
-    for slot in shop:
-        if slot.slot_type == "food":
-            temp_food = Food("milk")
-            temp_food.attack *= level
-            temp_food.health *= level
-            slot.item = temp_food
-            targets.append(slot)
+    max_food_slots = shop.max_food_slots
+    for _ in range(amount):
+        food_slot_count = sum(1 for slot in shop.slots if slot.slot_type == "food")
+        if food_slot_count >= max_food_slots:
+            break
+        temp_food = Food(food_name)
+        if with_attack is not None:
+            temp_food.attack = with_attack
+        if with_health is not None:
+            temp_food.health = with_health
+        shop.append(temp_food)
+        added_slot = None
+        for slot in shop.slots:
+            if slot.obj is temp_food:
+                added_slot = slot
+                break
+        if added_slot is None:
+            break
+        targets.append(added_slot)
     return targets, [targets]
 
 

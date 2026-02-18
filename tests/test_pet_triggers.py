@@ -59,7 +59,7 @@ class TestPetTriggers(unittest.TestCase):
     def test_sell_triggers_self(self):
         test_team = Team([Pet("dragon"), Pet("cat"), Pet("horse")])
 
-        test_pet_names = ["beaver", "duck", "pig", "shrimp", "owl"]
+        test_pet_names = ["beaver", "duck", "pig", "shrimp", "owl", "pigeon"]
         test_pet_list = [
             Pet(x, shop=Shop(), team=test_team.copy(), player=Player())
             for x in test_pet_names
@@ -67,20 +67,20 @@ class TestPetTriggers(unittest.TestCase):
         self.print_pet_list(test_pet_list)
 
         # Sell Self
-        test_bool_list = [True, True, True, False, True]
+        test_bool_list = [True, True, True, False, True, True]
         for iter_idx, pet in enumerate(test_pet_list):
             activated_bool, targets, possible = pet.sell_trigger(pet)
             self.assertEqual(activated_bool, test_bool_list[iter_idx])
 
     def test_sell_triggers_other(self):
         test_team = Team([Pet("dragon"), Pet("cat"), Pet("horse")])
-        test_pet_names = ["beaver", "duck", "pig", "shrimp", "owl"]
+        test_pet_names = ["beaver", "duck", "pig", "shrimp", "owl", "pigeon"]
 
         # Sell Other
         test_pet_list = [
             Pet(x, shop=Shop(), team=test_team.copy()) for x in test_pet_names
         ]
-        test_bool_list = [False, False, False, True, False]
+        test_bool_list = [False, False, False, True, False, False]
         for iter_idx, pet in enumerate(test_pet_list):
             activated_bool, targets, possible = pet.sell_trigger(pet.team[0].pet)
             self.assertEqual(activated_bool, test_bool_list[iter_idx])

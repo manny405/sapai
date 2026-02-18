@@ -273,3 +273,21 @@ class TestEffects(unittest.TestCase):
         self.assertEqual(friendly[1].pet.health, base_friendly_health[1])
         self.assertEqual(enemy[0].pet.health, base_enemy_health[0])
         self.assertEqual(enemy[1].pet.health, base_enemy_health[1])
+
+    def test_stock_shop_food_targets_new_slots_with_duplicate_foods(self):
+        player = Player(shop=Shop(["bread-crumbs", "bread-crumbs"]), team=Team([Pet("pigeon")]))
+        player.team[0].pet.level = 2
+
+        existing_slots = [slot for slot in player.shop.slots if slot.slot_type == "food"]
+        existing_slot_ids = {id(slot) for slot in existing_slots}
+        existing_obj_ids = {id(slot.obj) for slot in existing_slots}
+
+        activated, targets, _ = player.team[0].pet.sell_trigger(player.team[0].pet)
+        self.assertTrue(activated)
+        self.assertEqual(len(targets), 2)
+
+        for slot in targets:
+            self.assertEqual(slot.slot_type, "food")
+            self.assertEqual(slot.obj.name, "food-bread-crumbs")
+            self.assertNotIn(id(slot), existing_slot_ids)
+            self.assertNotIn(id(slot.obj), existing_obj_ids)

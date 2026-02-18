@@ -382,6 +382,98 @@ class TestShop(unittest.TestCase):
         self.assertEqual(player.team[2].attack, 3)  # 1 + seal + ladybug
         self.assertEqual(player.team[2].health, 5)  # 3 + seal + ladybug
 
+    def test_cow_replaces_food_shop_then_stocks_two_milk(self):
+        player = Player(shop=Shop(["apple", "pear", "cow"]), team=Team())
+        player.buy_pet(2)
+
+        shop_food_names = [slot.obj.name for slot in player.shop.slots if slot.slot_type == "food"]
+        self.assertNotIn("food-apple", shop_food_names)
+        self.assertNotIn("food-pear", shop_food_names)
+        self.assertEqual(shop_food_names.count("food-milk"), 2)
+
+    def test_cow_stocked_milk_after_buy_combine_levelup(self):
+        team_cow = Pet("cow")
+        team_cow.level = 2
+        team_cow.experience = 2
+        shop_cow = Pet("cow")
+        player = Player(shop=Shop([shop_cow]), team=Team([team_cow]))
+
+        player.buy_combine(0, 0)
+        self.assertEqual(player.team[0].pet.level, 3)
+
+        milk_slots = [slot for slot in player.shop.slots if slot.obj.name == "food-milk"]
+        self.assertEqual(len(milk_slots), 2)
+        for slot in milk_slots:
+            self.assertEqual(slot.cost, 0)
+            self.assertEqual(slot.obj.attack, 3)
+            self.assertEqual(slot.obj.health, 6)
+
+    def test_pigeon_sell_stocks_bread_crumbs_by_level(self):
+        for level, expected in [(1, 1), (2, 2), (3, 3)]:
+            pigeon = Pet("pigeon")
+            pigeon.level = level
+            player = Player(shop=Shop(["apple"]), team=Team([pigeon]))
+
+            player.sell(0)
+            crumb_slots = [
+                slot for slot in player.shop.slots if slot.slot_type == "food" and slot.obj.name == "food-bread-crumbs"
+            ]
+            self.assertEqual(len(crumb_slots), expected)
+            for slot in crumb_slots:
+                self.assertEqual(slot.cost, 0)
+
+    def test_bread_crumbs_buy_gives_plus_one_attack(self):
+        player = Player(shop=Shop(["bread-crumbs"]), team=Team([Pet("fish")]))
+        base_attack = player.team[0].pet.attack
+        base_health = player.team[0].pet.health
+
+        player.buy_food(0, 0)
+        self.assertEqual(player.team[0].pet.attack, base_attack + 1)
+        self.assertEqual(player.team[0].pet.health, base_health)
+
+    def test_stock_shop_food_respects_capacity(self):
+        player = Player(
+            shop=Shop(
+                [
+                    "apple",
+                    "pear",
+                    "honey",
+                    "cupcake",
+                    "salad-bowl",
+                ]
+            ),
+            team=Team([Pet("pigeon")]),
+        )
+
+        player.sell(0)
+        self.assertEqual(len(player.shop.slots), 5)
+        crumb_count = sum(1 for slot in player.shop.slots if slot.obj.name == "food-bread-crumbs")
+        self.assertEqual(crumb_count, 0)
+
+    def test_stock_shop_food_partial_capacity(self):
+        pigeon = Pet("pigeon")
+        pigeon.level = 3
+        player = Player(
+            shop=Shop(["apple", "pear", "honey", "cupcake"]),
+            team=Team([pigeon]),
+        )
+
+        player.sell(0)
+        food_count = sum(1 for slot in player.shop.slots if slot.slot_type == "food")
+        self.assertEqual(food_count, 5)
+        crumb_count = sum(
+            1 for slot in player.shop.slots if slot.slot_type == "food" and slot.obj.name == "food-bread-crumbs"
+        )
+        self.assertEqual(crumb_count, 1)
+
+    def test_shop_pet_cap_prevents_eighth_pet_slot(self):
+        shop = Shop(["ant", "beaver", "cricket", "fish", "mosquito", "otter", "pig"])
+
+        shop.append(Pet("horse"))
+
+        self.assertEqual(sum(1 for slot in shop.slots if slot.slot_type in ["pet", "levelup"]), 7)
+        self.assertNotIn("pet-horse", [slot.obj.name for slot in shop.slots if slot.slot_type == "pet"])
+
     def test_chicken(self):
         state = np.random.RandomState(seed=1).get_state()
         player = Player(shop=Shop(["fish", "fish"], seed_state=state), team=["chicken"])
