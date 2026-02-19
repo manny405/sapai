@@ -743,13 +743,23 @@ def ReduceHealth(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None
     else:
         target = fixed_targets
         possible = [fixed_targets]
-    per = apet.ability["effect"]["percentage"] * 0.01
-    for temp_pet in target:
-        if temp_pet.health > 0:
-            temp_pet._health = temp_pet.health - int(np.round(temp_pet.health * per))
-            if temp_pet._health == 0:
-                ### Floor health of 1
-                temp_pet._health = 1
+
+    effect = apet.ability["effect"]
+    if "percentage" in effect:
+        per = effect["percentage"] * 0.01
+        for temp_pet in target:
+            if temp_pet.health > 0:
+                temp_pet._health = temp_pet.health - int(np.round(temp_pet.health * per))
+                if temp_pet._health == 0:
+                    ### Floor health of 1
+                    temp_pet._health = 1
+    elif "amount" in effect:
+        amount = effect["amount"]
+        for temp_pet in target:
+            if temp_pet.health > 0:
+                temp_pet._health = temp_pet.health - amount
+    else:
+        raise Exception("ReduceHealth requires either percentage or amount")
     return target, possible
 
 

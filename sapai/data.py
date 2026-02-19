@@ -3831,6 +3831,49 @@ data = {
                 },
             },
         },
+        "pet-wolverine": {
+            "name": "Wolverine",
+            "id": "pet-wolverine",
+            "image": {
+                "source": "noto-emoji",
+                "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
+                "unicodeCodePoint": "🐺",
+            },
+            "tier": 6,
+            "baseAttack": 5,
+            "baseHealth": 7,
+            "packs": ["StandardPack"],
+            "level1Ability": {
+                "description": "Four friends hurt: Remove 3 health from all enemies.",
+                "trigger": "FriendHurt",
+                "triggeredBy": {"kind": "EachFriend", "n": 4, "excludeSelf": True},
+                "effect": {
+                    "kind": "ReduceHealth",
+                    "target": {"kind": "EachEnemy"},
+                    "amount": 3,
+                },
+            },
+            "level2Ability": {
+                "description": "Four friends hurt: Remove 6 health from all enemies.",
+                "trigger": "FriendHurt",
+                "triggeredBy": {"kind": "EachFriend", "n": 4, "excludeSelf": True},
+                "effect": {
+                    "kind": "ReduceHealth",
+                    "target": {"kind": "EachEnemy"},
+                    "amount": 6,
+                },
+            },
+            "level3Ability": {
+                "description": "Four friends hurt: Remove 9 health from all enemies.",
+                "trigger": "FriendHurt",
+                "triggeredBy": {"kind": "EachFriend", "n": 4, "excludeSelf": True},
+                "effect": {
+                    "kind": "ReduceHealth",
+                    "target": {"kind": "EachEnemy"},
+                    "amount": 9,
+                },
+            },
+        },
         "pet-zombie-cricket": {
             "name": "Zombie Cricket",
             "id": "pet-zombie-cricket",

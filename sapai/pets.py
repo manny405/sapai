@@ -54,6 +54,7 @@ class Pet:
         self._until_end_of_battle_attack_buff = 0
         self._until_end_of_battle_health_buff = 0
         self._hurt = 0
+        self._friend_hurt_counter = 0
         self.status = "none"
         if "status" in self.fd:
             self.status = self.fd["status"]
@@ -751,6 +752,59 @@ class Pet:
         )
 
         activated = True
+        return activated, targets, possible
+
+    def friend_hurt_trigger(self, trigger, oteam):
+        """
+        Apply pet's ability after friendly hurt events.
+
+        Pets:
+            ["wolverine"]
+        """
+        activated = False
+        targets = []
+        possible = []
+
+        if self.ability["trigger"] != "FriendHurt":
+            return activated, targets, possible
+
+        if type(trigger).__name__ != "Pet":
+            raise Exception("Trigger must be a Pet")
+
+        if type(oteam).__name__ != "Team":
+            raise Exception("Trigger must include opponent Team")
+
+        if not self.team.check_friend(self):
+            return activated, targets, possible
+
+        if self.ability["triggeredBy"]["kind"] != "EachFriend":
+            raise Exception("Only EachFriend trigger available for friend_hurt_trigger")
+
+        if trigger == self:
+            return activated, targets, possible
+
+        if not self.team.check_friend(trigger):
+            return activated, targets, possible
+
+        n_hurt = self.ability["triggeredBy"].get("n", 1)
+        if n_hurt < 1:
+            raise Exception(f"Invalid friend hurt threshold: {n_hurt}")
+
+        self._friend_hurt_counter += 1
+        if self._friend_hurt_counter < n_hurt:
+            return activated, targets, possible
+
+        func = get_effect_function(self)
+        pet_idx = self.team.get_idx(self)
+        while self._friend_hurt_counter >= n_hurt:
+            self._friend_hurt_counter -= n_hurt
+            temp_targets, temp_possible = tiger_func(
+                func, False, self, [0, pet_idx], [self.team, oteam], trigger
+            )
+            targets += temp_targets
+            possible += temp_possible
+            activated = True
+
         return activated, targets, possible
 
     def knockout_trigger(self, trigger):

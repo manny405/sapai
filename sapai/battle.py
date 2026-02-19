@@ -527,6 +527,25 @@ def battle_phase_hurt_and_faint(battle_obj, phase, teams, pet_priority, phase_di
         for team_idx, pet_idx in fainted_list:
             fteam, oteam = get_teams([team_idx, pet_idx], teams)
             fainted_pet = fteam[pet_idx].pet
+            while fainted_pet._hurt > 0:
+                fainted_pet._hurt -= 1
+                for te_team_idx, te_pet_idx in pp:
+                    if te_team_idx != team_idx:
+                        continue
+                    other_pet = teams[te_team_idx][te_pet_idx].pet
+                    tempa, tempt, tempp = other_pet.friend_hurt_trigger(
+                        fainted_pet, oteam
+                    )
+                    append_phase_list(
+                        phase_list,
+                        other_pet,
+                        te_team_idx,
+                        te_pet_idx,
+                        tempa,
+                        tempt,
+                        tempp,
+                    )
+
             ### Check for all pets that trigger off this fainted pet (including self)
             for te_team_idx, te_pet_idx in pp:
                 other_pet = teams[te_team_idx][te_pet_idx].pet
@@ -596,6 +615,20 @@ def battle_phase_hurt_and_faint(battle_obj, phase, teams, pet_priority, phase_di
                 append_phase_list(
                     phase_list, p, team_idx, pet_idx, activated, targets, possible
                 )
+                for te_team_idx, te_pet_idx in pp:
+                    if te_team_idx != team_idx:
+                        continue
+                    other_pet = teams[te_team_idx][te_pet_idx].pet
+                    tempa, tempt, tempp = other_pet.friend_hurt_trigger(p, oteam)
+                    append_phase_list(
+                        phase_list,
+                        other_pet,
+                        te_team_idx,
+                        te_pet_idx,
+                        tempa,
+                        tempt,
+                        tempp,
+                    )
 
         battle_obj.pet_priority = battle_obj.update_pet_priority(
             battle_obj.t0, battle_obj.t1

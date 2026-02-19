@@ -5,6 +5,7 @@ from torch import seed
 
 from sapai import *
 from sapai.compress import compress, decompress
+from sapai.battle import Battle, battle_phase_hurt_and_faint
 
 
 class TestPetTriggers(unittest.TestCase):
@@ -477,6 +478,84 @@ class TestPetTriggers(unittest.TestCase):
             trigger = decompress(cteam)
             activated_bool, targets, possible = pet.hurt_trigger(trigger)
             self.assertTrue(activated_bool)
+
+    def test_wolverine_friend_hurt_trigger_threshold(self):
+        friendly_team = Team(
+            [Pet("wolverine"), Pet("fish"), Pet("fish"), Pet("fish")], battle=True
+        )
+        enemy_team = Team([Pet("pig"), Pet("ant")], battle=True)
+        wolverine = friendly_team[0].pet
+
+        ### Self hurt should not count towards trigger threshold
+        activated_bool, targets, possible = wolverine.friend_hurt_trigger(
+            wolverine, enemy_team
+        )
+        self.assertFalse(activated_bool)
+        self.assertEqual(wolverine._friend_hurt_counter, 0)
+
+        for n in range(3):
+            activated_bool, targets, possible = wolverine.friend_hurt_trigger(
+                friendly_team[n + 1].pet, enemy_team
+            )
+            self.assertFalse(activated_bool)
+            self.assertEqual(wolverine._friend_hurt_counter, n + 1)
+
+        ### 4th non-self friend hurt should trigger ability once
+        start_enemy_health = [enemy_team[0].pet.health, enemy_team[1].pet.health]
+        activated_bool, targets, possible = wolverine.friend_hurt_trigger(
+            friendly_team[1].pet, enemy_team
+        )
+        self.assertTrue(activated_bool)
+        self.assertEqual(wolverine._friend_hurt_counter, 0)
+        self.assertEqual(enemy_team[0].pet.health, start_enemy_health[0] - 3)
+        self.assertEqual(enemy_team[1].pet.health, start_enemy_health[1] - 3)
+
+    def test_wolverine_friend_hurt_trigger_repeats_every_four(self):
+        friendly_team = Team([Pet("wolverine"), Pet("fish"), Pet("fish")], battle=True)
+        enemy_team = Team([Pet("pig"), Pet("ant")], battle=True)
+        enemy_team[0].pet._health = 20
+        enemy_team[1].pet._health = 20
+        wolverine = friendly_team[0].pet
+        start_enemy_health = [enemy_team[0].pet.health, enemy_team[1].pet.health]
+
+        for _ in range(8):
+            wolverine.friend_hurt_trigger(friendly_team[1].pet, enemy_team)
+
+        ### Two activations at level 1 should remove 6 health from each enemy
+        self.assertEqual(enemy_team[0].pet.health, start_enemy_health[0] - 6)
+        self.assertEqual(enemy_team[1].pet.health, start_enemy_health[1] - 6)
+        self.assertEqual(wolverine._friend_hurt_counter, 0)
+
+    def test_wolverine_counts_lethal_hurt_in_battle_hurt_loop(self):
+        battle = Battle(Team([Pet("wolverine"), Pet("fish")]), Team([Pet("pig")]))
+
+        wolverine = battle.t0[0].pet
+        hurt_friend = battle.t0[1].pet
+        enemy = battle.t1[0].pet
+
+        hurt_friend._health = 4
+        for _ in range(4):
+            hurt_friend.hurt(1)
+
+        start_enemy_health = enemy.health
+        phase_dict = {"phase_hurt_and_faint": []}
+        battle_phase_hurt_and_faint(
+            battle,
+            "phase_hurt_and_faint",
+            [battle.t0, battle.t1],
+            battle.pet_priority,
+            phase_dict,
+        )
+
+        reduce_health_events = [
+            entry
+            for entry in phase_dict["phase_hurt_and_faint"]
+            if type(entry) == tuple and entry[0] == "ReduceHealth" and "pet-wolverine" in entry[2]
+        ]
+
+        self.assertEqual(len(reduce_health_events), 1)
+        self.assertEqual(wolverine._friend_hurt_counter, 0)
+        self.assertEqual(enemy.health, start_enemy_health - 3)
 
     def test_knockout_triggers(self):
         test_team = Team([Pet("fish")], battle=True)

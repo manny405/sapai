@@ -291,3 +291,15 @@ class TestEffects(unittest.TestCase):
             self.assertEqual(slot.obj.name, "food-bread-crumbs")
             self.assertNotIn(id(slot), existing_slot_ids)
             self.assertNotIn(id(slot.obj), existing_obj_ids)
+
+    def test_reduce_health_amount_reduces_each_enemy(self):
+        friendly = Team([Pet("wolverine")], battle=True)
+        enemy = Team([Pet("pig"), Pet("ant")], battle=True)
+
+        enemy[0].pet._health = 9
+        enemy[1].pet._health = 4
+
+        targets, _ = ReduceHealth(friendly[0].pet, [0, 0], [friendly, enemy])
+        self.assertEqual(len(targets), 2)
+        self.assertEqual(enemy[0].pet.health, 6)
+        self.assertEqual(enemy[1].pet.health, 1)
