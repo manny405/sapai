@@ -241,7 +241,7 @@ class Battle:
         # idx = np.array([idx[x] for x in sort_idx])
         sort_idx = np.arange(0, len(attack))
         attack = np.array(attack)
-        health = np.array(attack)
+        health = np.array(health)
         teams = np.array(teams)
         idx = np.array(idx)
 
@@ -289,7 +289,7 @@ class Battle:
 
             ### Dereference temp_sort_idx and store in sort_idx
             end_idx = start_idx + len(temp_idx)
-            sort_idx[start_idx:end_idx] = temp_idx
+            sort_idx[start_idx:end_idx] = temp_idx[temp_sort_idx]
             start_idx = end_idx
 
         ### Finish sorting by max attack
@@ -511,7 +511,33 @@ def battle_phase_hurt_and_faint(battle_obj, phase, teams, pet_priority, phase_di
     pp = pet_priority
     status_list = []
     while True:
-        ### Get a list of fainted pets
+        ### Hurt triggers resolve before fainted pets are removed
+        hurt_list = []
+        for team_idx, pet_idx in pp:
+            fteam, oteam = get_teams([team_idx, pet_idx], teams)
+            p = fteam[pet_idx].pet
+            while p._hurt > 0:
+                hurt_list.append([team_idx, pet_idx])
+                activated, targets, possible = p.hurt_trigger(oteam)
+                append_phase_list(
+                    phase_list, p, team_idx, pet_idx, activated, targets, possible
+                )
+                for te_team_idx, te_pet_idx in pp:
+                    if te_team_idx != team_idx:
+                        continue
+                    other_pet = teams[te_team_idx][te_pet_idx].pet
+                    tempa, tempt, tempp = other_pet.friend_hurt_trigger(p, oteam)
+                    append_phase_list(
+                        phase_list,
+                        other_pet,
+                        te_team_idx,
+                        te_pet_idx,
+                        tempa,
+                        tempt,
+                        tempp,
+                    )
+
+        ### Get a list of fainted pets after all queued hurt events resolved
         fainted_list = []
         for team_idx, pet_idx in pp:
             p = teams[team_idx][pet_idx].pet
@@ -527,25 +553,6 @@ def battle_phase_hurt_and_faint(battle_obj, phase, teams, pet_priority, phase_di
         for team_idx, pet_idx in fainted_list:
             fteam, oteam = get_teams([team_idx, pet_idx], teams)
             fainted_pet = fteam[pet_idx].pet
-            while fainted_pet._hurt > 0:
-                fainted_pet._hurt -= 1
-                for te_team_idx, te_pet_idx in pp:
-                    if te_team_idx != team_idx:
-                        continue
-                    other_pet = teams[te_team_idx][te_pet_idx].pet
-                    tempa, tempt, tempp = other_pet.friend_hurt_trigger(
-                        fainted_pet, oteam
-                    )
-                    append_phase_list(
-                        phase_list,
-                        other_pet,
-                        te_team_idx,
-                        te_pet_idx,
-                        tempa,
-                        tempt,
-                        tempp,
-                    )
-
             ### Check for all pets that trigger off this fainted pet (including self)
             for te_team_idx, te_pet_idx in pp:
                 other_pet = teams[te_team_idx][te_pet_idx].pet
@@ -735,9 +742,9 @@ def battle_phase_attack_after(battle_obj, phase, teams, pet_priority, phase_dict
     t1_pidx = attack_history[0][1][1]
 
     for team_idx, pet_idx in pp:
-        ### Check if current pet is directly behind the pet that just attacked
-        test_idx = [t0_pidx, t1_pidx][team_idx] + 1
-        if pet_idx != test_idx:
+        attacker_idx = [t0_pidx, t1_pidx][team_idx]
+        behind_idx = attacker_idx + 1
+        if pet_idx not in [attacker_idx, behind_idx]:
             continue
 
         ### If it is, then the after_attack ability can be activated

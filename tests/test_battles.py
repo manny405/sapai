@@ -145,8 +145,8 @@ class TestBattles(unittest.TestCase):
 
         test_battle = Battle(team1, team2)
         result = test_battle.battle()
-        self.assertEqual(test_battle.t0.empty, [0, 1, 2, 3, 4])
-        self.assertEqual(test_battle.t1[0].health, 1)
+        self.assertEqual(test_battle.t0.empty, [1, 2, 3, 4])
+        self.assertEqual(test_battle.t1.empty, [0, 1, 2, 3, 4])
 
     def test_horse_with_bee_in_battle(self):
         cricket = Pet("cricket")
@@ -185,17 +185,17 @@ class TestBattles(unittest.TestCase):
         )  # they attack eachother, then keep using hurt_triggers until one of them dies, should never reach a 2nd attack phase
 
     def test_elephant_blowfish(self):
-        # blowfish snipes first fish in 'before-attack' phase of elephant, leaving elephant without a target to attack normally
-        # then snipes second fish in next turn's 'before attack'
+        # Blowfish triggers on both the splash hurt and the lethal elephant
+        # ability, so the second and third fish are sniped before both teams faint
         state = np.random.RandomState(seed=1).get_state()
 
         e1 = Pet("elephant")
         e1._attack = 1
-        e1._health = 5
+        e1._health = 6
 
         b1 = Pet("blowfish", seed_state=state)
         b1._attack = 1
-        b1._health = 5
+        b1._health = 6
 
         f1 = Pet("fish")
         f1._attack = 50
@@ -207,9 +207,14 @@ class TestBattles(unittest.TestCase):
         f2._health = 1
         f2.status = "status-splash-attack"
 
-        b = Battle(Team([e1, b1]), Team([f1, f2]))
+        f3 = Pet("fish")
+        f3._attack = 50
+        f3._health = 1
+        f3.status = "status-splash-attack"
+
+        b = Battle(Team([e1, b1]), Team([f1, f2, f3]))
         r = b.battle()
-        self.assertEqual(r, 0)
+        self.assertEqual(r, 2)
 
     def test_wolverine_triggers_once_at_four_friendly_hurts(self):
         elephant = Pet("elephant")
@@ -378,7 +383,7 @@ class TestBattles(unittest.TestCase):
 
         ### Both teams' faint abilities should still execute in this chain
         self.assertEqual(len(hedgehog_faint_entries), 2)
-        self.assertEqual(len(reduce_entries), 1)
+        self.assertEqual(len(reduce_entries), 2)
 
         reduce_targets = reduce_entries[0][3]
         self.assertTrue(any("pet-cricket" in target for target in reduce_targets))
@@ -386,7 +391,7 @@ class TestBattles(unittest.TestCase):
         self.assertFalse(any("pet-zombie-cricket" in target for target in reduce_targets))
         self.assertFalse(any("pet-hedgehog" in target for target in reduce_targets))
 
-        self.assertEqual(b.t0[0].pet._friend_hurt_counter, 2)
+        self.assertEqual(b.t0[0].pet._friend_hurt_counter, 0)
 
         ### Lethal-hurt counting occurs before faint-ability chain resolution
         self.assertLess(phase_entries.index(reduce_entries[0]), phase_entries.index(hedgehog_faint_entries[0]))
@@ -428,8 +433,8 @@ class TestBattles(unittest.TestCase):
         hh4 = Pet("hedgehog")
 
         b = Battle(Team([hh1, hh2, c1, bf1]), Team([hh3, hh4, c2, bf2]))
-        r = b.battle()
-        self.assertEqual(r, 2)
+
+        self.assertEqual(b.battle(), 2)
 
     def test_hedgehog_vs_honey(self):
         hh1 = Pet("hedgehog")
@@ -517,7 +522,7 @@ class TestBattles(unittest.TestCase):
         # badger with less attack can kill zombie-cricket
         b1 = Pet("badger")
         c1 = Pet("cricket")
-        c1._attack = 6
+        c1._attack = 7
         b = Battle(Team([b1]), Team([c1]))
         r = b.battle()
         self.assertEqual(r, 2)
@@ -552,7 +557,7 @@ class TestBattles(unittest.TestCase):
         hb1 = Pet("badger")
         hb1.status = "status-honey-bee"
         c1 = Pet("cricket")
-        c1._attack = 6
+        c1._attack = 7
         b = Battle(Team([hb1]), Team([c1]))
         r = b.battle()
         self.assertEqual(r, 0)

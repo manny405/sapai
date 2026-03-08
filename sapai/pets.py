@@ -186,11 +186,17 @@ class Pet:
 
         ### Reset ability_counter for goat at sot_trigger
         self.ability_counter = 0
+        ### Parrot copies an ability until the next turn; expire override after
+        ### this start-of-turn processing completes.
+        parrot_override = self.name == "pet-parrot" and self.override_ability
 
         activated = False
         targets = []
         possible = []
         if self.ability["trigger"] != "StartOfTurn":
+            if parrot_override:
+                self.override_ability = False
+                self.override_ability_dict = {}
             return activated, targets, possible
 
         func = get_effect_function(self)
@@ -198,6 +204,9 @@ class Pet:
         targets, possible = func(self, [0, pet_idx], [self.team], trigger)
 
         activated = True
+        if parrot_override:
+            self.override_ability = False
+            self.override_ability_dict = {}
         return activated, targets, possible
 
     def cat_trigger(self, trigger=None):
@@ -495,6 +504,15 @@ class Pet:
                         return activated, targets, possible
                 else:
                     return activated, targets, possible
+            ### Check for snail
+            elif self.ability["trigger"] == "EndOfTurnAfterLoss":
+                if self.player is not None:
+                    if self.player.lf_winner == False:
+                        pass
+                    else:
+                        return activated, targets, possible
+                else:
+                    return activated, targets, possible
             else:
                 if self.ability["trigger"] != "EndOfTurn":
                     raise Exception(f"Unrecognized trigger {self.ability['trigger']}")
@@ -660,7 +678,7 @@ class Pet:
         opponent's Team.
 
         Pets:
-            ["kangaroo","snake"]
+            ["elephant", "kangaroo", "snake"]
 
         """
         activated = False
@@ -672,18 +690,21 @@ class Pet:
         if type(trigger).__name__ != "Team":
             raise Exception("Trigger must be a Team")
 
-        if self.ability["triggeredBy"]["kind"] != "FriendAhead":
+        if self.ability["triggeredBy"]["kind"] == "FriendAhead":
+            ### Check that self is behind the front friend which should have just
+            ###   attacked
+            slot_ahead = self.team.get_ahead(self, n=1)
+            if len(slot_ahead) == 0:
+                return activated, targets, possible
+            if self.team.index(slot_ahead[0]) != 0:
+                return activated, targets, possible
+        elif self.ability["triggeredBy"]["kind"] == "Self":
+            if self.team.get_idx(self) != 0:
+                return activated, targets, possible
+        else:
             raise Exception(
-                "Only triggeredBy FriendAhead implemented for after_attack_trigger"
+                "Only triggeredBy FriendAhead and Self implemented for after_attack_trigger"
             )
-
-        ### Check that self is behind the front friend which should have just
-        ###   attacked
-        slot_ahead = self.team.get_ahead(self, n=1)
-        if len(slot_ahead) == 0:
-            return activated, targets, possible
-        if self.team.index(slot_ahead[0]) != 0:
-            return activated, targets, possible
 
         if "maxTriggers" in self.ability:
             if self.ability_counter >= self.ability["maxTriggers"]:
@@ -705,8 +726,7 @@ class Pet:
     def hurt_trigger(self, trigger):
         """
         Apply pet's ability after being hurt attacking. Input trigger is the
-        opponent's Team. Only activate hurt trigger if the pet has health above
-        0.
+        opponent's Team.
 
         There is no way to test if hurt_trigger should be activated within this
         function. Therefore, only call hurt trigger where appropriate during
@@ -734,10 +754,6 @@ class Pet:
             pass
         else:
             raise Exception("Only Self trigger available for hurt_trigger")
-
-        ### Cannot call if health is less than zero because fainted
-        if self._health <= 0:
-            return activated, targets, possible
 
         if "maxTriggers" in self.ability:
             if self.ability_counter >= self.ability["maxTriggers"]:

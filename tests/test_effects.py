@@ -74,6 +74,57 @@ class TestEffects(unittest.TestCase):
                 continue
             slot.pet.faint_trigger(slot.pet, [0, t.index(slot)])
 
+    def test_rat_faint_summon_count_scales_with_level(self):
+        for level in [1, 2, 3]:
+            rat = Pet("rat")
+            rat.level = level
+            Team([rat], battle=True)
+
+            front_fish = Pet("fish")
+            front_fish._attack = 7
+            back_fish = Pet("fish")
+            back_fish._attack = 9
+            enemy = Team([front_fish, back_fish], battle=True)
+
+            rat.faint_trigger(rat, [0, 0], oteam=enemy)
+
+            self.assertEqual(
+                [slot.pet.name if not slot.empty else "empty" for slot in enemy],
+                ["pet-dirty-rat"] * level + ["pet-fish", "pet-fish"] + ["empty"] * (3 - level),
+            )
+            self.assertEqual(enemy[level].pet.name, "pet-fish")
+            self.assertEqual(enemy[level].pet.attack, 7)
+            self.assertEqual(enemy[level + 1].pet.name, "pet-fish")
+            self.assertEqual(enemy[level + 1].pet.attack, 9)
+
+    def test_rat_faint_summon_respects_limited_board_space(self):
+        rat = Pet("rat")
+        rat.level = 3
+        Team([rat], battle=True)
+
+        enemy_with_one_slot = Team(
+            [Pet("fish"), Pet("pig"), Pet("ant"), Pet("beaver")], battle=True
+        )
+        rat.faint_trigger(rat, [0, 0], oteam=enemy_with_one_slot)
+        self.assertEqual(
+            [slot.pet.name if not slot.empty else "empty" for slot in enemy_with_one_slot],
+            ["pet-dirty-rat", "pet-fish", "pet-pig", "pet-ant", "pet-beaver"],
+        )
+
+        rat_full = Pet("rat")
+        rat_full.level = 3
+        Team([rat_full], battle=True)
+
+        enemy_full = Team(
+            [Pet("fish"), Pet("pig"), Pet("ant"), Pet("beaver"), Pet("otter")],
+            battle=True,
+        )
+        rat_full.faint_trigger(rat_full, [0, 0], oteam=enemy_full)
+        self.assertEqual(
+            [slot.pet.name if not slot.empty else "empty" for slot in enemy_full],
+            ["pet-fish", "pet-pig", "pet-ant", "pet-beaver", "pet-otter"],
+        )
+
     def test_eagle_stats(self):
         # seed for Snake 6/6
         state = np.random.RandomState(seed=4).get_state()
@@ -83,10 +134,11 @@ class TestEffects(unittest.TestCase):
         t = Team([pet], battle=True)
         t[0].pet.faint_trigger(t[0].pet, [0, t.index(t[0])])
 
-        # should spawn Snake Lvl3 18/18 since Eagle was lvl 3
+        # should spawn Snake Lvl3 with 3 times base stats
+        snake = Pet("snake")
         self.assertEqual(t[0].level, 3)
-        self.assertEqual(t[0].attack, 18)
-        self.assertEqual(t[0].health, 18)
+        self.assertEqual(t[0].attack, snake.fd["baseAttack"] * 3)
+        self.assertEqual(t[0].health, snake.fd["baseHealth"] * 3)
 
     def test_multiple_cats(self):
         player = Player(shop=Shop(["pear"]), team=Team([Pet("cat")]))
@@ -142,10 +194,10 @@ class TestEffects(unittest.TestCase):
         t = Team(["dolphin", "otter", "mosquito"], battle=True)
         t2 = Team([fish], battle=True)
         t[0].pet.sob_trigger(t2)
-        self.assertEqual(fish.health, 47)  # 5 damage, -2 garlic
+        self.assertEqual(fish.health, 48)  # 4 damage, -2 garlic
 
         t[2].pet.sob_trigger(t2)
-        self.assertEqual(fish.health, 46)  # should still do 1 damage
+        self.assertEqual(fish.health, 47)  # should still do 1 damage
 
         attack_phase = get_attack(t[0].pet, fish)
         self.assertEqual(attack_phase[0], 2)  # dolphin 4/6
@@ -155,13 +207,14 @@ class TestEffects(unittest.TestCase):
 
     def test_coconut(self):
         gorilla = Pet("gorilla")
+        base_health = gorilla.health
         gorilla.status = "status-coconut-shield"
         t = Team([gorilla], battle=True)
         t2 = Team(["crocodile"], battle=True)
         t3 = Team(["dragon"], battle=True)
 
         t2[0].pet.sob_trigger(t)
-        self.assertEqual(gorilla.health, 9)  # unchanged
+        self.assertEqual(gorilla.health, base_health)  # unchanged
         self.assertEqual(gorilla.status, "none")
 
         gorilla.status = "status-coconut-shield"
@@ -179,10 +232,10 @@ class TestEffects(unittest.TestCase):
         t3 = Team(["dragon"], battle=True)
 
         t2[0].pet.sob_trigger(t)
-        self.assertEqual(fish.health, 42)  # 5 + 3
+        self.assertEqual(fish.health, 43)  # 4 + 3
 
         attack_phase = get_attack(fish, t3[0].pet)
-        self.assertEqual(attack_phase[1], 9)  # 6/8 + 3
+        self.assertEqual(attack_phase[1], t3[0].pet.attack + 3)
 
     def test_hatching_chick_level_3(self):
         hc = Pet("hatching-chick")
@@ -303,3 +356,18 @@ class TestEffects(unittest.TestCase):
         self.assertEqual(len(targets), 2)
         self.assertEqual(enemy[0].pet.health, 6)
         self.assertEqual(enemy[1].pet.health, 1)
+
+    def test_rhino_knockout_damage_doubles_against_tier_1_only(self):
+        rhino = Pet("rhino")
+        friendly = Team([rhino], battle=True)
+        rhino.team = friendly
+
+        tier_1_enemy = Team([Pet("pig")], battle=True)
+        base_tier_1_health = tier_1_enemy[0].pet.health
+        DealDamage(rhino, [0, 0], [friendly, tier_1_enemy])
+        self.assertEqual(tier_1_enemy[0].pet.health, base_tier_1_health - 8)
+
+        non_tier_1_enemy = Team([Pet("camel")], battle=True)
+        base_non_tier_1_health = non_tier_1_enemy[0].pet.health
+        DealDamage(rhino, [0, 0], [friendly, non_tier_1_enemy])
+        self.assertEqual(non_tier_1_enemy[0].pet.health, base_non_tier_1_health - 4)

@@ -79,16 +79,17 @@ class TestShop(unittest.TestCase):
 
     def test_cupcake(self):
         player = Player(shop=Shop(["cupcake"]), team=Team([Pet("fish")]))
+        fish = Pet("fish")
 
         player.buy_food(0, 0)
-        self.assertEqual(player.team[0].attack, 5)  # fish 2/2
-        self.assertEqual(player.team[0].health, 5)
+        self.assertEqual(player.team[0].attack, fish.attack + 3)
+        self.assertEqual(player.team[0].health, fish.health + 3)
 
         player.end_turn()
         player.start_turn()
 
-        self.assertEqual(player.team[0].attack, 2)
-        self.assertEqual(player.team[0].health, 2)
+        self.assertEqual(player.team[0].attack, fish.attack)
+        self.assertEqual(player.team[0].health, fish.health)
 
     def test_apple(self):
         player = Player(shop=Shop(["apple"]), team=Team([Pet("beaver")]))
@@ -346,41 +347,51 @@ class TestShop(unittest.TestCase):
         self.assertEqual(len(player.shop.filled), 6)
 
     def test_buy_multi_target_food(self):
+        base_seal = Pet("seal")
+        base_rabbit = Pet("rabbit")
+        base_ladybug = Pet("ladybug")
+
         player = Player(shop=["sushi"], team=["seal", "rabbit", "ladybug"])
         player.buy_food(0)
-        self.assertEqual(player.team[0].attack, 4)  # 3 + sushi
-        self.assertEqual(player.team[0].health, 10)  # 8 + sushi + rabbit
-        self.assertEqual(player.team[1].attack, 3)  # 1 + sushi + seal
-        self.assertEqual(player.team[1].health, 5)  # 2 + sushi + seal + rabbit
-        self.assertEqual(player.team[2].attack, 4)  # 1 + sushi + seal + ladybug
-        self.assertEqual(
-            player.team[2].health, 7
-        )  # 3 + sushi + seal + rabbit + ladybug
+        self.assertEqual(player.team[0].attack, base_seal.attack + 1)  # sushi
+        self.assertEqual(player.team[0].health, base_seal.health + 1 + 1)  # sushi + rabbit
+        self.assertEqual(player.team[1].attack, base_rabbit.attack + 1 + 1)  # sushi + seal
+        self.assertEqual(player.team[1].health, base_rabbit.health + 1 + 1)  # sushi + rabbit
+        self.assertEqual(player.team[2].attack, base_ladybug.attack + 1 + 1 + 1)  # sushi + ladybug + seal
+        self.assertEqual(player.team[2].health, base_ladybug.health + 1 + 1 + 1)  # sushi + rabbit + ladybug
 
     def test_buy_multi_target_food_empty_team(self):
         player = Player(shop=["sushi"], team=[])
         player.buy_food(0)
 
     def test_buy_chocolate(self):
+        base_seal = Pet("seal")
+        base_rabbit = Pet("rabbit")
+        base_ladybug = Pet("ladybug")
+
         player = Player(shop=["chocolate"], team=["seal", "rabbit", "ladybug"])
         player.buy_food(0, 0)
         self.assertEqual(player.team[0].pet.experience, 1)
-        self.assertEqual(player.team[0].attack, 3)  # 3
-        self.assertEqual(player.team[0].health, 9)  # 8 + rabbit
-        self.assertEqual(player.team[1].attack, 2)  # 1 + seal
-        self.assertEqual(player.team[1].health, 3)  # 2 + seal
-        self.assertEqual(player.team[2].attack, 3)  # 1 + seal + ladybug
-        self.assertEqual(player.team[2].health, 5)  # 3 + seal + ladybug
+        self.assertEqual(player.team[0].attack, base_seal.attack)
+        self.assertEqual(player.team[0].health, base_seal.health + 1)  # rabbit
+        self.assertEqual(player.team[1].attack, base_rabbit.attack + 1) #seal
+        self.assertEqual(player.team[1].health, base_rabbit.health)
+        self.assertEqual(player.team[2].attack, base_ladybug.attack + 1 + 1)  # ladybug + seal
+        self.assertEqual(player.team[2].health, base_ladybug.health + 1)  # ladybug
 
     def test_buy_apple(self):
+        base_seal = Pet("seal")
+        base_rabbit = Pet("rabbit")
+        base_ladybug = Pet("ladybug")
+
         player = Player(shop=["apple"], team=["seal", "rabbit", "ladybug"])
         player.buy_food(0, 0)
-        self.assertEqual(player.team[0].attack, 4)  # 3 + apple
-        self.assertEqual(player.team[0].health, 10)  # 8 + apple + rabbit
-        self.assertEqual(player.team[1].attack, 2)  # 1 + seal
-        self.assertEqual(player.team[1].health, 3)  # 2 + seal
-        self.assertEqual(player.team[2].attack, 3)  # 1 + seal + ladybug
-        self.assertEqual(player.team[2].health, 5)  # 3 + seal + ladybug
+        self.assertEqual(player.team[0].attack, base_seal.attack + 1)  # apple
+        self.assertEqual(player.team[0].health, base_seal.health + 1 + 1)  # apple + rabbit
+        self.assertEqual(player.team[1].attack, base_rabbit.attack + 1) # seal
+        self.assertEqual(player.team[1].health, base_rabbit.health)
+        self.assertEqual(player.team[2].attack, base_ladybug.attack + 1 + 1)  # ladybug + seal
+        self.assertEqual(player.team[2].health, base_ladybug.health + 1)  # ladybug
 
     def test_cow_replaces_food_shop_then_stocks_two_milk(self):
         player = Player(shop=Shop(["apple", "pear", "cow"]), team=Team())
@@ -421,6 +432,23 @@ class TestShop(unittest.TestCase):
             self.assertEqual(len(crumb_slots), expected)
             for slot in crumb_slots:
                 self.assertEqual(slot.cost, 0)
+
+    def test_worm_start_turn_stocks_two_gold_apple_by_level(self):
+        for level, expected in [(1, (1, 1)), (2, (2, 2)), (3, (3, 3))]:
+            worm = Pet("worm")
+            worm.level = level
+            player = Player(shop=Shop(["fish"]), team=Team([worm]))
+
+            activated, targets, _ = player.team[0].pet.sot_trigger()
+            self.assertTrue(activated)
+            self.assertEqual(len(targets), 1)
+
+            stocked_slot = targets[0]
+            self.assertEqual(stocked_slot.slot_type, "food")
+            self.assertEqual(stocked_slot.obj.name, "food-apple")
+            self.assertEqual(stocked_slot.cost, 2)
+            self.assertEqual(stocked_slot.obj.attack, expected[0])
+            self.assertEqual(stocked_slot.obj.health, expected[1])
 
     def test_bread_crumbs_buy_gives_plus_one_attack(self):
         player = Player(shop=Shop(["bread-crumbs"]), team=Team([Pet("fish")]))
@@ -478,8 +506,8 @@ class TestShop(unittest.TestCase):
         state = np.random.RandomState(seed=1).get_state()
         player = Player(shop=Shop(["fish", "fish"], seed_state=state), team=["chicken"])
         player.buy_pet(0)
-        self.assertEqual(player.shop[0].obj.attack, 3)  # fish 2/2
-        self.assertEqual(player.shop[0].obj.health, 3)
+        self.assertEqual(player.shop[0].obj.attack, player.shop[0].obj.fd["baseAttack"] + 1)
+        self.assertEqual(player.shop[0].obj.health, player.shop[0].obj.fd["baseHealth"] + 1)
 
         ### check result after 1 roll
         player.roll()
@@ -501,8 +529,8 @@ class TestShop(unittest.TestCase):
         player.buy_food(1)
 
         ### check immediate result
-        self.assertEqual(player.shop[0].obj.attack, 3)  # fish 2/2
-        self.assertEqual(player.shop[0].obj.health, 3)
+        self.assertEqual(player.shop[0].obj.attack, player.shop[0].obj.fd["baseAttack"] + 1)
+        self.assertEqual(player.shop[0].obj.health, player.shop[0].obj.fd["baseHealth"] + 1)
 
         ### check result after 1 roll
         player.roll()

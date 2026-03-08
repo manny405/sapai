@@ -360,19 +360,27 @@ def get_target(
         return [fteam[max_idx].pet], [[fteam[max_idx].pet]]
 
     elif kind == "Level2And3Friends":
-        level_list = []
+        keep_fidx = []
         for temp_idx in fidx:
-            level_list.append(fteam[temp_idx].pet.level)
-        if len(level_list) > 0:
-            keep_idx = np.where(np.array(level_list) > 1)[0]
-            ret_pets = []
-            for temp_idx in keep_idx:
-                ### Dereference idx
-                temp_idx = fidx[temp_idx]
-                ret_pets.append(fteam[temp_idx].pet)
-            return ret_pets, [ret_pets]
-        else:
+            if temp_idx == apet_idx[1]:
+                continue
+            if fteam[temp_idx].pet.level > 1:
+                keep_fidx.append(temp_idx)
+        if len(keep_fidx) == 0:
             return [], []
+        if len(keep_fidx) < n:
+            n = len(keep_fidx)
+        all_idx = [x for x in itertools.combinations(keep_fidx, n)]
+        all_possible = []
+        for temp_idx in all_idx:
+            temp_chosen = [fteam[x].pet for x in temp_idx]
+            all_possible.append(temp_chosen)
+        crange = np.arange(0, len(all_possible))
+        cidx = apet.rs.choice(crange, (1,), replace=False)[0]
+        ### Update internal state of random generator
+        apet.seed_state = apet.rs.get_state()
+        ret_pets = all_possible[cidx]
+        return ret_pets, all_possible
 
     elif kind == "LowestHealthEnemy":
         health_list = []
@@ -414,15 +422,16 @@ def get_target(
         ret_pets = []
         all_possible = []
         if len(fidx) > 0:
-            if len(fidx) < n:
-                n = len(fidx)
             keep_fidx = []
             for temp_entry in fidx:
                 if temp_entry == apet_idx[1]:
                     continue
                 keep_fidx.append(temp_entry)
-            fidx = keep_fidx
-            all_idx = [x for x in itertools.combinations(fidx, n)]
+            if len(keep_fidx) == 0:
+                return [], []
+            if len(keep_fidx) < n:
+                n = len(keep_fidx)
+            all_idx = [x for x in itertools.combinations(keep_fidx, n)]
             all_possible = []
             for temp_idx in all_idx:
                 temp_chosen = [fteam[x].pet for x in temp_idx]
@@ -558,18 +567,25 @@ def DealDamage(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
         else:
             raise Exception()
     for target_pet in target:
+        temp_health_amount = health_amount
+        if (
+            apet.name == "pet-rhino"
+            and apet.ability["trigger"] == "KnockOut"
+            and target_pet.tier == 1
+        ):
+            temp_health_amount *= 2
         if target_pet.status == "status-melon-armor":
-            health_amount = max(0, health_amount - 20)
+            temp_health_amount = max(0, temp_health_amount - 20)
             target_pet.status = "none"
         elif target_pet.status == "status-garlic-armor":
-            health_amount = max(1, health_amount - 2)
+            temp_health_amount = max(1, temp_health_amount - 2)
         elif target_pet.status == "status-coconut-shield":
-            health_amount = 0
+            temp_health_amount = 0
             target_pet.status = "none"
         elif target_pet.status == "status-weak":
-            health_amount += 3
+            temp_health_amount += 3
 
-        target_pet.hurt(health_amount)
+        target_pet.hurt(temp_health_amount)
     return target, possible
 
 
@@ -785,6 +801,7 @@ def StockShopFood(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=Non
     amount = effect["amount"]
     with_attack = effect.get("withAttack")
     with_health = effect.get("withHealth")
+    with_cost = effect.get("withCost")
 
     targets = []
     max_food_slots = shop.max_food_slots
@@ -797,6 +814,8 @@ def StockShopFood(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=Non
             temp_food.attack = with_attack
         if with_health is not None:
             temp_food.health = with_health
+        if with_cost is not None:
+            temp_food.cost = with_cost
         shop.append(temp_food)
         added_slot = None
         for slot in shop.slots:
@@ -933,11 +952,7 @@ def SummonPet(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=None):
     else:
         raise Exception(apet.ability["effect"]["team"])
 
-    n = 1
-    if apet.name == "pet-sheep":
-        n = 2
-    elif apet.name == "pet-rooster":
-        n = apet.level
+    n = apet.ability["effect"].get("amount", 1)
 
     target = []
     for _ in range(n):
