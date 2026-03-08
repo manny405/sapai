@@ -241,7 +241,7 @@ class Battle:
         # idx = np.array([idx[x] for x in sort_idx])
         sort_idx = np.arange(0, len(attack))
         attack = np.array(attack)
-        health = np.array(attack)
+        health = np.array(health)
         teams = np.array(teams)
         idx = np.array(idx)
 
@@ -289,7 +289,7 @@ class Battle:
 
             ### Dereference temp_sort_idx and store in sort_idx
             end_idx = start_idx + len(temp_idx)
-            sort_idx[start_idx:end_idx] = temp_idx
+            sort_idx[start_idx:end_idx] = temp_idx[temp_sort_idx]
             start_idx = end_idx
 
         ### Finish sorting by max attack
@@ -511,7 +511,33 @@ def battle_phase_hurt_and_faint(battle_obj, phase, teams, pet_priority, phase_di
     pp = pet_priority
     status_list = []
     while True:
-        ### Get a list of fainted pets
+        ### Hurt triggers resolve before fainted pets are removed
+        hurt_list = []
+        for team_idx, pet_idx in pp:
+            fteam, oteam = get_teams([team_idx, pet_idx], teams)
+            p = fteam[pet_idx].pet
+            while p._hurt > 0:
+                hurt_list.append([team_idx, pet_idx])
+                activated, targets, possible = p.hurt_trigger(oteam)
+                append_phase_list(
+                    phase_list, p, team_idx, pet_idx, activated, targets, possible
+                )
+                for te_team_idx, te_pet_idx in pp:
+                    if te_team_idx != team_idx:
+                        continue
+                    other_pet = teams[te_team_idx][te_pet_idx].pet
+                    tempa, tempt, tempp = other_pet.friend_hurt_trigger(p, oteam)
+                    append_phase_list(
+                        phase_list,
+                        other_pet,
+                        te_team_idx,
+                        te_pet_idx,
+                        tempa,
+                        tempt,
+                        tempp,
+                    )
+
+        ### Get a list of fainted pets after all queued hurt events resolved
         fainted_list = []
         for team_idx, pet_idx in pp:
             p = teams[team_idx][pet_idx].pet
@@ -596,6 +622,20 @@ def battle_phase_hurt_and_faint(battle_obj, phase, teams, pet_priority, phase_di
                 append_phase_list(
                     phase_list, p, team_idx, pet_idx, activated, targets, possible
                 )
+                for te_team_idx, te_pet_idx in pp:
+                    if te_team_idx != team_idx:
+                        continue
+                    other_pet = teams[te_team_idx][te_pet_idx].pet
+                    tempa, tempt, tempp = other_pet.friend_hurt_trigger(p, oteam)
+                    append_phase_list(
+                        phase_list,
+                        other_pet,
+                        te_team_idx,
+                        te_pet_idx,
+                        tempa,
+                        tempt,
+                        tempp,
+                    )
 
         battle_obj.pet_priority = battle_obj.update_pet_priority(
             battle_obj.t0, battle_obj.t1
@@ -702,9 +742,9 @@ def battle_phase_attack_after(battle_obj, phase, teams, pet_priority, phase_dict
     t1_pidx = attack_history[0][1][1]
 
     for team_idx, pet_idx in pp:
-        ### Check if current pet is directly behind the pet that just attacked
-        test_idx = [t0_pidx, t1_pidx][team_idx] + 1
-        if pet_idx != test_idx:
+        attacker_idx = [t0_pidx, t1_pidx][team_idx]
+        behind_idx = attacker_idx + 1
+        if pet_idx not in [attacker_idx, behind_idx]:
             continue
 
         ### If it is, then the after_attack ability can be activated
@@ -808,8 +848,9 @@ def battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict):
         p0._until_end_of_battle_attack_buff = 0
         if len(nidx[1]) != 0:
             pn1 = teams[1][nidx[1][1]].pet
-            p0a, p1a = get_attack(p0, pn1)
-            pn1.hurt(p0a)
+            # Splash is one-sided damage: defender does not attack back.
+            splash_damage = pn1.get_damage(p0.attack)
+            pn1.hurt(splash_damage)
             phase_list.append(["splash", (aidx[0]), (str(p0)), [str(pn1)]])
 
             if pn1.health <= 0:
@@ -827,8 +868,9 @@ def battle_phase_attack(battle_obj, phase, teams, pet_priority, phase_dict):
         p1._until_end_of_battle_attack_buff = 0
         if len(nidx[0]) != 0:
             pn0 = teams[0][nidx[0][1]].pet
-            p0a, p1a = get_attack(pn0, p1)
-            pn0.hurt(p1a)
+            # Splash is one-sided damage: defender does not attack back.
+            splash_damage = pn0.get_damage(p1.attack)
+            pn0.hurt(splash_damage)
             phase_list.append(["splash", (aidx[1]), (str(p1)), [str(pn0)]])
 
             if pn0.health <= 0:

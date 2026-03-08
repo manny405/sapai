@@ -64,178 +64,85 @@ data = {
             },
             "tier": 1,
             "baseAttack": 2,
-            "baseHealth": 1,
+            "baseHealth": 2,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Faint: Give a random friend +2/+1",
+                "description": "Faint: Give one random friend +1 attack and +1 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "attackAmount": 2,
+                    "attackAmount": 1,
                     "healthAmount": 1,
                     "target": {"kind": "RandomFriend", "n": 1},
                     "untilEndOfBattle": False,
                 },
             },
             "level2Ability": {
-                "description": "Faint: Give a random friend +4/+2",
+                "description": "Faint: Give one random friend +2 attack and +2 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "attackAmount": 4,
+                    "attackAmount": 2,
                     "healthAmount": 2,
                     "target": {"kind": "RandomFriend", "n": 1},
                     "untilEndOfBattle": False,
                 },
             },
             "level3Ability": {
-                "description": "Faint: Give a random friend +6/+3",
+                "description": "Faint: Give one random friend +3 attack and +3 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "attackAmount": 6,
+                    "attackAmount": 3,
                     "healthAmount": 3,
                     "target": {"kind": "RandomFriend", "n": 1},
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
+        },
+        "pet-armadillo": {
+            "name": "Armadillo",
+            "id": "pet-armadillo",
+            "tier": 5,
+            "baseAttack": 4,
+            "baseHealth": 8,
+            "packs": ["StandardPack"],
+            "level1Ability": {
+                "description": "Start of battle: Give ALL pets +8 health.",
+                "trigger": "StartOfBattle",
+                "triggeredBy": {"kind": "Player"},
+                "effect": {
+                    "kind": "ModifyStats",
+                    "healthAmount": 8,
+                    "target": {"kind": "All"},
+                    "untilEndOfBattle": False,
                 },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
+            },
+            "level2Ability": {
+                "description": "Start of battle: Give ALL pets +16 health.",
+                "trigger": "StartOfBattle",
+                "triggeredBy": {"kind": "Player"},
+                "effect": {
+                    "kind": "ModifyStats",
+                    "healthAmount": 16,
+                    "target": {"kind": "All"},
+                    "untilEndOfBattle": False,
                 },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
+            },
+            "level3Ability": {
+                "description": "Start of battle: Give ALL pets +24 health.",
+                "trigger": "StartOfBattle",
+                "triggeredBy": {"kind": "Player"},
+                "effect": {
+                    "kind": "ModifyStats",
+                    "healthAmount": 24,
+                    "target": {"kind": "All"},
+                    "untilEndOfBattle": False,
                 },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-            ],
+            },
         },
         "pet-beaver": {
             "name": "Beaver",
@@ -250,172 +157,38 @@ data = {
             "baseHealth": 2,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Sell: Give two random friends +1 health",
+                "description": "Sell: Give two random friends +1 attack.",
                 "trigger": "Sell",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "healthAmount": 1,
+                    "attackAmount": 1,
                     "target": {"kind": "RandomFriend", "n": 2},
                     "untilEndOfBattle": False,
                 },
             },
             "level2Ability": {
-                "description": "Sell: Give two random friends +2 health",
+                "description": "Sell: Give two random friends +2 attack.",
                 "trigger": "Sell",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "healthAmount": 2,
+                    "attackAmount": 2,
                     "target": {"kind": "RandomFriend", "n": 2},
                     "untilEndOfBattle": False,
                 },
             },
             "level3Ability": {
-                "description": "Sell: Give two random friends +3 health",
+                "description": "Sell: Give two random friends +3 attack.",
                 "trigger": "Sell",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "healthAmount": 3,
+                    "attackAmount": 3,
                     "target": {"kind": "RandomFriend", "n": 2},
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-            ],
         },
         "pet-beetle": {
             "name": "Beetle",
@@ -462,74 +235,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {"ExpansionPack1": 0.2976680384087793},
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {"ExpansionPack1": 0.2976680384087793},
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-            ],
         },
         "pet-bluebird": {
             "name": "Bluebird",
@@ -576,74 +281,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {"ExpansionPack1": 0.2976680384087793},
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {"ExpansionPack1": 0.2976680384087793},
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-            ],
         },
         "pet-cricket": {
             "name": "Cricket",
@@ -655,10 +292,10 @@ data = {
             },
             "tier": 1,
             "baseAttack": 1,
-            "baseHealth": 2,
+            "baseHealth": 3,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Faint: Summon a 1/1 Cricket",
+                "description": "Faint: Summon one 1/1 Cricket.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -670,7 +307,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Faint: Summon a 2/2 Cricket",
+                "description": "Faint: Summon one 2/2 Cricket.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -682,7 +319,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Faint: Summon a 3/3 Cricket",
+                "description": "Faint: Summon one 3/3 Cricket.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -693,140 +330,6 @@ data = {
                     "team": "Friendly",
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-            ],
         },
         "pet-duck": {
             "name": "Duck",
@@ -838,10 +341,10 @@ data = {
             },
             "tier": 1,
             "baseAttack": 2,
-            "baseHealth": 3,
+            "baseHealth": 2,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Sell: Give shop animals +1 Health",
+                "description": "Sell: Give shop pets +1 health.",
                 "trigger": "Sell",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -852,7 +355,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Sell: Give shop animals +2 Health",
+                "description": "Sell: Give shop pets +2 health.",
                 "trigger": "Sell",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -863,7 +366,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Sell: Give shop animals +3 Health",
+                "description": "Sell: Give shop pets +3 health.",
                 "trigger": "Sell",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -873,74 +376,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {"StandardPack": 0.2976680384087793},
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {"StandardPack": 0.2976680384087793},
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-            ],
         },
         "pet-fish": {
             "name": "Fish",
@@ -953,166 +388,32 @@ data = {
             },
             "tier": 1,
             "baseAttack": 2,
-            "baseHealth": 2,
+            "baseHealth": 3,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Level-up: Give all friends +1/+1",
+                "description": "Level-up: Give two friends +1 attack and +1 health.",
                 "trigger": "LevelUp",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "target": {"kind": "EachFriend"},
+                    "target": {"kind": "RandomFriend", "n": 2},
                     "attackAmount": 1,
                     "healthAmount": 1,
                     "untilEndOfBattle": False,
                 },
             },
             "level2Ability": {
-                "description": "Level-up: Give all friends +2/+2",
+                "description": "Level-up: Give two friends +2 attack and +2 health.",
                 "trigger": "LevelUp",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "target": {"kind": "EachFriend"},
+                    "target": {"kind": "RandomFriend", "n": 2},
                     "attackAmount": 2,
                     "healthAmount": 2,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-            ],
         },
         "pet-horse": {
             "name": "Horse",
@@ -1127,7 +428,7 @@ data = {
             "baseHealth": 1,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Friend summoned: Give it +1 Attack until end of battle",
+                "description": "Friend summoned: Give it +1 attack until next turn.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -1138,7 +439,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Friend summoned: Give it +2 Attack until end of battle",
+                "description": "Friend summoned: Give it +2 attack until next turn.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -1149,7 +450,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Friend summoned: Give it +3 Attack until end of battle",
+                "description": "Friend summoned: Give it +3 attack until next turn.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -1159,74 +460,6 @@ data = {
                     "untilEndOfBattle": True,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {"StandardPack": 0.2976680384087793},
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {"StandardPack": 0.2976680384087793},
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-            ],
         },
         "pet-ladybug": {
             "name": "Ladybug",
@@ -1276,74 +509,6 @@ data = {
                     "untilEndOfBattle": True,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {"ExpansionPack1": 0.2976680384087793},
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {"ExpansionPack1": 0.2976680384087793},
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-            ],
         },
         "pet-mosquito": {
             "name": "Mosquito",
@@ -1358,7 +523,7 @@ data = {
             "baseHealth": 2,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Start of battle: Deal 1 damage to a random enemy",
+                "description": "Start of battle: Deal 1 damage to one random enemy.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -1368,7 +533,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Start of battle: Deal 2 damage to a random enemy",
+                "description": "Start of battle: Deal 1 damage to two random enemies.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -1378,7 +543,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Start of battle: Deal 3 damage to a random enemy",
+                "description": "Start of battle: Deal 1 damage to three random enemies.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -1387,140 +552,6 @@ data = {
                     "amount": 1,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-            ],
         },
         "pet-otter": {
             "name": "Otter",
@@ -1532,112 +563,41 @@ data = {
             },
             "tier": 1,
             "baseAttack": 1,
-            "baseHealth": 2,
+            "baseHealth": 4,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Buy: Give one random friend +1/+1",
+                "description": "Buy: Give one random friend +1 health.",
                 "trigger": "Buy",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "RandomFriend", "n": 1},
-                    "attackAmount": 1,
                     "healthAmount": 1,
                     "untilEndOfBattle": False,
                 },
             },
             "level2Ability": {
-                "description": "Buy: Give two random friend +1/+1",
+                "description": "Buy: Give two random friends +1 health.",
                 "trigger": "Buy",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "RandomFriend", "n": 2},
-                    "attackAmount": 1,
                     "healthAmount": 1,
                     "untilEndOfBattle": False,
                 },
             },
             "level3Ability": {
-                "description": "Buy: Give three random friend +1/+1",
+                "description": "Buy: Give three random friends +1 health.",
                 "trigger": "Buy",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "RandomFriend", "n": 3},
-                    "attackAmount": 1,
                     "healthAmount": 1,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {"StandardPack": 0.2976680384087793},
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {"StandardPack": 0.2976680384087793},
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-            ],
         },
         "pet-pig": {
             "name": "Pig",
@@ -1652,157 +612,69 @@ data = {
             "baseHealth": 1,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Sell: Gain an extra 1 gold",
+                "description": "Sell: Gain +1 gold.",
                 "trigger": "Sell",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {"kind": "GainGold", "amount": 1},
             },
             "level2Ability": {
-                "description": "Sell: Gain an extra 2 gold",
+                "description": "Sell: Gain +2 gold.",
                 "trigger": "Sell",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {"kind": "GainGold", "amount": 2},
             },
             "level3Ability": {
-                "description": "Sell: Gain an extra 3 gold",
+                "description": "Sell: Gain +3 gold.",
                 "trigger": "Sell",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {"kind": "GainGold", "amount": 3},
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
+        },
+        "pet-pigeon": {
+            "name": "Pigeon",
+            "id": "pet-pigeon",
+            "image": {
+                "source": "noto-emoji",
+                "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
+                "unicodeCodePoint": "🕊️",
+            },
+            "tier": 1,
+            "baseAttack": 3,
+            "baseHealth": 1,
+            "packs": ["StandardPack"],
+            "level1Ability": {
+                "description": "Sell: Stock one free Bread Crumbs.",
+                "trigger": "Sell",
+                "triggeredBy": {"kind": "Self"},
+                "effect": {
+                    "kind": "StockShopFood",
+                    "shop": "Food",
+                    "food": "food-bread-crumbs",
+                    "amount": 1,
                 },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {
-                        "StandardPack": 0.2976680384087793,
-                        "ExpansionPack1": 0.2976680384087793,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
+            },
+            "level2Ability": {
+                "description": "Sell: Stock two free Bread Crumbs.",
+                "trigger": "Sell",
+                "triggeredBy": {"kind": "Self"},
+                "effect": {
+                    "kind": "StockShopFood",
+                    "shop": "Food",
+                    "food": "food-bread-crumbs",
+                    "amount": 2,
                 },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
+            },
+            "level3Ability": {
+                "description": "Sell: Stock three free Bread Crumbs.",
+                "trigger": "Sell",
+                "triggeredBy": {"kind": "Self"},
+                "effect": {
+                    "kind": "StockShopFood",
+                    "shop": "Food",
+                    "food": "food-bread-crumbs",
+                    "amount": 3,
                 },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-            ],
+            },
         },
         "pet-sloth": {
             "name": "Sloth",
@@ -1860,72 +732,6 @@ data = {
                     "to": {"kind": "NonWeakEnemy", "n": 3},
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-1",
-                    "perSlot": {"ExpansionPack1": 0.1},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-2",
-                    "perSlot": {"ExpansionPack1": 0.1},
-                },
-            ],
         },
         "pet-crab": {
             "name": "Crab",
@@ -1936,11 +742,24 @@ data = {
                 "unicodeCodePoint": "🦀",
             },
             "tier": 2,
-            "baseAttack": 3,
+            "baseAttack": 4,
             "baseHealth": 1,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Start of battle: copy 50% of health from most healthy friend",
+                "description": "Start of battle: Gain health equal to 25% of the most healthy friend.",
+                "trigger": "StartOfBattle",
+                "triggeredBy": {"kind": "Player"},
+                "effect": {
+                    "kind": "TransferStats",
+                    "copyAttack": False,
+                    "copyHealth": True,
+                    "from": {"kind": "HighestHealthFriend"},
+                    "to": {"kind": "Self"},
+                    "percentage": 25,
+                },
+            },
+            "level2Ability": {
+                "description": "Start of battle: Gain health equal to 50% of the most healthy friend.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -1952,21 +771,8 @@ data = {
                     "percentage": 50,
                 },
             },
-            "level2Ability": {
-                "description": "Start of battle: copy 100% of health from most healthy friend",
-                "trigger": "StartOfBattle",
-                "triggeredBy": {"kind": "Player"},
-                "effect": {
-                    "kind": "TransferStats",
-                    "copyAttack": False,
-                    "copyHealth": True,
-                    "from": {"kind": "HighestHealthFriend"},
-                    "to": {"kind": "Self"},
-                    "percentage": 100,
-                },
-            },
             "level3Ability": {
-                "description": "Start of battle: copy 150% of health from most healthy friend",
+                "description": "Start of battle: Gain health equal to 75% of the most healthy friend.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -1975,67 +781,9 @@ data = {
                     "copyHealth": True,
                     "from": {"kind": "HighestHealthFriend"},
                     "to": {"kind": "Self"},
-                    "percentage": 150,
+                    "percentage": 75,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {"kind": "levelup", "turn": "turn-1", "perSlot": {"StandardPack": 0.1}},
-                {"kind": "levelup", "turn": "turn-2", "perSlot": {"StandardPack": 0.1}},
-            ],
         },
         "pet-dodo": {
             "name": "Dodo",
@@ -2045,12 +793,12 @@ data = {
                 "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
                 "unicodeCodePoint": "🦤",
             },
-            "tier": 2,
-            "baseAttack": 2,
-            "baseHealth": 3,
+            "tier": 3,
+            "baseAttack": 4,
+            "baseHealth": 2,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Start of battle: Give 50% Attack to friend ahead.",
+                "description": "Start of battle: Give 50% of attack to the nearest friend ahead.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -2063,7 +811,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Start of battle: Give 100% Attack to friend ahead.",
+                "description": "Start of battle: Give 100% of attack to the nearest friend ahead.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -2076,7 +824,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Start of battle: Give 150% Attack to friend ahead.",
+                "description": "Start of battle: Give 150% of attack to the nearest friend ahead.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -2088,64 +836,6 @@ data = {
                     "percentage": 150,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {"kind": "levelup", "turn": "turn-1", "perSlot": {"StandardPack": 0.1}},
-                {"kind": "levelup", "turn": "turn-2", "perSlot": {"StandardPack": 0.1}},
-            ],
         },
         "pet-dog": {
             "name": "Dog",
@@ -2157,32 +847,10 @@ data = {
             },
             "tier": 3,
             "baseAttack": 3,
-            "baseHealth": 3,
+            "baseHealth": 2,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Friend summoned: Gain +1 Attack or +1 Health.",
-                "trigger": "Summoned",
-                "triggeredBy": {"kind": "EachFriend"},
-                "effect": {
-                    "kind": "OneOf",
-                    "effects": [
-                        {
-                            "kind": "ModifyStats",
-                            "untilEndOfBattle": False,
-                            "target": {"kind": "Self"},
-                            "attackAmount": 1,
-                        },
-                        {
-                            "kind": "ModifyStats",
-                            "untilEndOfBattle": False,
-                            "target": {"kind": "Self"},
-                            "healthAmount": 1,
-                        },
-                    ],
-                },
-            },
-            "level2Ability": {
-                "description": "Friend summoned: Gain +2 Attack or +2 Health.",
+                "description": "Friend summoned: Gain +2 attack and +1 health until next turn.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -2198,13 +866,13 @@ data = {
                             "kind": "ModifyStats",
                             "untilEndOfBattle": False,
                             "target": {"kind": "Self"},
-                            "healthAmount": 2,
+                            "healthAmount": 1,
                         },
                     ],
                 },
             },
-            "level3Ability": {
-                "description": "Friend summoned: Gain +3 Attack or +3 Health.",
+            "level2Ability": {
+                "description": "Friend summoned: Gain +4 attack and +2 health until next turn.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -2214,7 +882,29 @@ data = {
                             "kind": "ModifyStats",
                             "untilEndOfBattle": False,
                             "target": {"kind": "Self"},
-                            "attackAmount": 3,
+                            "attackAmount": 4,
+                        },
+                        {
+                            "kind": "ModifyStats",
+                            "untilEndOfBattle": False,
+                            "target": {"kind": "Self"},
+                            "healthAmount": 2,
+                        },
+                    ],
+                },
+            },
+            "level3Ability": {
+                "description": "Friend summoned: Gain +6 attack and +3 health until next turn.",
+                "trigger": "Summoned",
+                "triggeredBy": {"kind": "EachFriend"},
+                "effect": {
+                    "kind": "OneOf",
+                    "effects": [
+                        {
+                            "kind": "ModifyStats",
+                            "untilEndOfBattle": False,
+                            "target": {"kind": "Self"},
+                            "attackAmount": 6,
                         },
                         {
                             "kind": "ModifyStats",
@@ -2225,108 +915,6 @@ data = {
                     ],
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-dromedary": {
             "name": "Dromedary",
@@ -2376,72 +964,6 @@ data = {
                     "healthAmount": 3,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-1",
-                    "perSlot": {"ExpansionPack1": 0.1},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-2",
-                    "perSlot": {"ExpansionPack1": 0.1},
-                },
-            ],
         },
         "pet-elephant": {
             "name": "Elephant",
@@ -2451,13 +973,13 @@ data = {
                 "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
                 "unicodeCodePoint": "🐘",
             },
-            "tier": 2,
+            "tier": 3,
             "baseAttack": 3,
-            "baseHealth": 5,
+            "baseHealth": 7,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Before Attack: Deal 1 damage to 1 friends behind.",
-                "trigger": "BeforeAttack",
+                "description": "After attack: Deal 1 damage to the nearest friend behind.",
+                "trigger": "AfterAttack",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "DealDamage",
@@ -2466,83 +988,50 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Before Attack: Deal 1 damage to 2 friends behind.",
-                "trigger": "BeforeAttack",
+                "description": "After attack: Deal 1 damage to the nearest friend behind. Triggers 2 times.",
+                "trigger": "AfterAttack",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
-                    "kind": "DealDamage",
-                    "target": {"kind": "FriendBehind", "n": 2},
-                    "amount": 1,
+                    "kind": "AllOf",
+                    "effects": [
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "FriendBehind", "n": 1},
+                            "amount": 1,
+                        },
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "FriendBehind", "n": 1},
+                            "amount": 1,
+                        },
+                    ],
                 },
             },
             "level3Ability": {
-                "description": "Before Attack: Deal 1 damage to 3 friends behind.",
-                "trigger": "BeforeAttack",
+                "description": "After attack: Deal 1 damage to the nearest friend behind. Triggers 3 times.",
+                "trigger": "AfterAttack",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
-                    "kind": "DealDamage",
-                    "target": {"kind": "FriendBehind", "n": 3},
-                    "amount": 1,
+                    "kind": "AllOf",
+                    "effects": [
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "FriendBehind", "n": 1},
+                            "amount": 1,
+                        },
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "FriendBehind", "n": 1},
+                            "amount": 1,
+                        },
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "FriendBehind", "n": 1},
+                            "amount": 1,
+                        },
+                    ],
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"StandardPack": 0.14973028138212574},
-                    "perSlot": {"StandardPack": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {"kind": "levelup", "turn": "turn-1", "perSlot": {"StandardPack": 0.1}},
-                {"kind": "levelup", "turn": "turn-2", "perSlot": {"StandardPack": 0.1}},
-            ],
         },
         "pet-flamingo": {
             "name": "Flamingo",
@@ -2553,11 +1042,11 @@ data = {
                 "unicodeCodePoint": "🦩",
             },
             "tier": 2,
-            "baseAttack": 4,
+            "baseAttack": 3,
             "baseHealth": 2,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Faint: Give the two friends behind +1/+1.",
+                "description": "Faint: Give the two nearest friends behind +1 attack and +1 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -2569,7 +1058,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Faint: Give the two friends behind +2/+2.",
+                "description": "Faint: Give the two nearest friends behind +2 attack and +2 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -2581,7 +1070,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Faint: Give the two friends behind +3/+3.",
+                "description": "Faint: Give the two nearest friends behind +3 attack and +3 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -2592,126 +1081,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-1",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-2",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-            ],
         },
         "pet-hedgehog": {
             "name": "Hedgehog",
@@ -2722,11 +1091,11 @@ data = {
                 "unicodeCodePoint": "🦔",
             },
             "tier": 2,
-            "baseAttack": 3,
+            "baseAttack": 4,
             "baseHealth": 2,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Faint: Deal 2 damage to all.",
+                "description": "Faint: Deal 2 damage to ALL pets.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -2736,7 +1105,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Faint: Deal 4 damage to all.",
+                "description": "Faint: Deal 4 damage to ALL pets.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -2746,7 +1115,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Faint: Deal 6 damage to all.",
+                "description": "Faint: Deal 6 damage to ALL pets.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -2755,126 +1124,6 @@ data = {
                     "amount": 6,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-1",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-2",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-            ],
         },
         "pet-peacock": {
             "name": "Peacock",
@@ -2889,158 +1138,38 @@ data = {
             "baseHealth": 5,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Hurt: Gain 4 attack.",
+                "description": "Hurt: Gain +3 attack.",
                 "trigger": "Hurt",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "Self"},
-                    "attackAmount": 4,
+                    "attackAmount": 3,
                     "untilEndOfBattle": False,
                 },
             },
             "level2Ability": {
-                "description": "Hurt: Gain 8 attack.",
+                "description": "Hurt: Gain +6 attack.",
                 "trigger": "Hurt",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "Self"},
-                    "attackAmount": 8,
+                    "attackAmount": 6,
                     "untilEndOfBattle": False,
                 },
             },
             "level3Ability": {
-                "description": "Hurt: Gain 12 attack.",
+                "description": "Hurt: Gain +9 attack.",
                 "trigger": "Hurt",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "Self"},
-                    "attackAmount": 12,
+                    "attackAmount": 9,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-1",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-2",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-            ],
         },
         "pet-rat": {
             "name": "Rat",
@@ -3051,159 +1180,42 @@ data = {
                 "unicodeCodePoint": "🐀",
             },
             "tier": 2,
-            "baseAttack": 4,
-            "baseHealth": 5,
+            "baseAttack": 3,
+            "baseHealth": 6,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Faint: summon one 1/1 Dirty Rat for the opponent that betrays him.",
+                "description": "Faint: Summon one 1/1 Dirty Rat up front for the opponent.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "SummonPet",
                     "pet": "pet-dirty-rat",
                     "team": "Enemy",
+                    "amount": 1,
                 },
             },
             "level2Ability": {
-                "description": "Faint: summon one 1/1 Dirty Rat for the opponent that betrays him.",
+                "description": "Faint: Summon two 1/1 Dirty Rats up front for the opponent.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "SummonPet",
                     "pet": "pet-dirty-rat",
                     "team": "Enemy",
+                    "amount": 2,
                 },
             },
             "level3Ability": {
-                "description": "Faint: summon one 1/1 Dirty Rat for the opponent that betrays him.",
+                "description": "Faint: Summon three 1/1 Dirty Rats up front for the opponent.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "SummonPet",
                     "pet": "pet-dirty-rat",
                     "team": "Enemy",
+                    "amount": 3,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-1",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-2",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-            ],
         },
         "pet-shrimp": {
             "name": "Shrimp",
@@ -3216,7 +1228,7 @@ data = {
             "tier": 2,
             "baseAttack": 2,
             "baseHealth": 3,
-            "packs": ["StandardPack", "ExpansionPack1"],
+            "packs": ["ExpansionPack1"],
             "level1Ability": {
                 "description": "Friend sold: Give a random friend +1 Health.",
                 "trigger": "Sell",
@@ -3250,126 +1262,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-1",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-2",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-            ],
         },
         "pet-spider": {
             "name": "Spider",
@@ -3384,7 +1276,7 @@ data = {
             "baseHealth": 2,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Faint: Summon a level 1 tier 3 animal as a 2/2",
+                "description": "Faint: Summon one tier 3 pet as a 2/2 level 1.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -3396,149 +1288,29 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Faint: Summon a level 2 tier 3 animal as a 2/2",
+                "description": "Faint: Summon one tier 3 pet as a 4/4 level 2.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "SummonRandomPet",
                     "tier": 3,
-                    "baseAttack": 2,
-                    "baseHealth": 2,
+                    "baseAttack": 4,
+                    "baseHealth": 4,
                     "level": 2,
                 },
             },
             "level3Ability": {
-                "description": "Faint: Summon a level 3 tier 3 animal as a 2/2",
+                "description": "Faint: Summon one tier 3 pet as a 6/6 level 3.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "SummonRandomPet",
                     "tier": 3,
-                    "baseAttack": 2,
-                    "baseHealth": 2,
+                    "baseAttack": 6,
+                    "baseHealth": 6,
                     "level": 3,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-1",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-2",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-            ],
         },
         "pet-swan": {
             "name": "Swan",
@@ -3550,7 +1322,7 @@ data = {
             },
             "tier": 2,
             "baseAttack": 1,
-            "baseHealth": 3,
+            "baseHealth": 2,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
                 "description": "Start of turn: Gain 1 gold.",
@@ -3570,126 +1342,6 @@ data = {
                 "triggeredBy": {"kind": "Player"},
                 "effect": {"kind": "GainGold", "amount": 3},
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.14973028138212574,
-                        "ExpansionPack1": 0.14973028138212574,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.05263157894736842,
-                        "ExpansionPack1": 0.05263157894736842,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-1",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-2",
-                    "perSlot": {"StandardPack": 0.1, "ExpansionPack1": 0.1},
-                },
-            ],
         },
         "pet-tabby-cat": {
             "name": "Tabby Cat",
@@ -3736,72 +1388,6 @@ data = {
                     "untilEndOfBattle": True,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {"ExpansionPack1": 0.14973028138212574},
-                    "perSlot": {"ExpansionPack1": 0.05263157894736842},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-1",
-                    "perSlot": {"ExpansionPack1": 0.1},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-2",
-                    "perSlot": {"ExpansionPack1": 0.1},
-                },
-            ],
         },
         "pet-badger": {
             "name": "Badger",
@@ -3812,11 +1398,11 @@ data = {
                 "unicodeCodePoint": "🦡",
             },
             "tier": 3,
-            "baseAttack": 5,
+            "baseAttack": 6,
             "baseHealth": 3,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Faint: Deal Attack damage to adjacent animals",
+                "description": "Faint: Deal 50% attack damage to adjacent pets.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -3826,7 +1412,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Faint: Deal Attack damage to adjacent animals",
+                "description": "Faint: Deal 100% attack damage to adjacent pets.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -3836,7 +1422,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Faint: Deal Attack damage to adjacent animals",
+                "description": "Faint: Deal 150% attack damage to adjacent pets.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -3845,60 +1431,6 @@ data = {
                     "amount": {"attackDamagePercent": 150},
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-            ],
         },
         "pet-blowfish": {
             "name": "Blowfish",
@@ -3908,32 +1440,22 @@ data = {
                 "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
                 "unicodeCodePoint": "🐡",
             },
-            "tier": 3,
+            "tier": 4,
             "baseAttack": 3,
-            "baseHealth": 5,
+            "baseHealth": 6,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Hurt: Deal 2 damage to a random enemy.",
+                "description": "Hurt: Deal 3 damage to one random enemy.",
                 "trigger": "Hurt",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "DealDamage",
                     "target": {"kind": "RandomEnemy", "n": 1},
-                    "amount": 2,
+                    "amount": 3,
                 },
             },
             "level2Ability": {
-                "description": "Hurt: Deal 4 damage to a random enemy.",
-                "trigger": "Hurt",
-                "triggeredBy": {"kind": "Self"},
-                "effect": {
-                    "kind": "DealDamage",
-                    "target": {"kind": "RandomEnemy", "n": 1},
-                    "amount": 4,
-                },
-            },
-            "level3Ability": {
-                "description": "Hurt: Deal 6 damage to a random enemy.",
+                "description": "Hurt: Deal 6 damage to one random enemy.",
                 "trigger": "Hurt",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -3942,108 +1464,16 @@ data = {
                     "amount": 6,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
+            "level3Ability": {
+                "description": "Hurt: Deal 9 damage to one random enemy.",
+                "trigger": "Hurt",
+                "triggeredBy": {"kind": "Self"},
+                "effect": {
+                    "kind": "DealDamage",
+                    "target": {"kind": "RandomEnemy", "n": 1},
+                    "amount": 9,
                 },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
+            },
         },
         "pet-caterpillar": {
             "name": "Caterpillar",
@@ -4087,60 +1517,6 @@ data = {
                     "target": {"kind": "Self"},
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-            ],
         },
         "pet-camel": {
             "name": "Camel",
@@ -4151,99 +1527,45 @@ data = {
                 "unicodeCodePoint": "🐫",
             },
             "tier": 3,
-            "baseAttack": 2,
-            "baseHealth": 6,
+            "baseAttack": 3,
+            "baseHealth": 3,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Hurt: Give friend behind +2/+2",
+                "description": "Hurt: Give the nearest friend behind +1 attack and +2 health.",
+                "trigger": "Hurt",
+                "triggeredBy": {"kind": "Self"},
+                "effect": {
+                    "kind": "ModifyStats",
+                    "target": {"kind": "FriendBehind", "n": 1},
+                    "attackAmount": 1,
+                    "healthAmount": 2,
+                    "untilEndOfBattle": False,
+                },
+            },
+            "level2Ability": {
+                "description": "Hurt: Give the nearest friend behind +2 attack and +4 health.",
                 "trigger": "Hurt",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "FriendBehind", "n": 1},
                     "attackAmount": 2,
-                    "healthAmount": 2,
-                    "untilEndOfBattle": False,
-                },
-            },
-            "level2Ability": {
-                "description": "Hurt: Give friend behind +4/+4",
-                "trigger": "Hurt",
-                "triggeredBy": {"kind": "Self"},
-                "effect": {
-                    "kind": "ModifyStats",
-                    "target": {"kind": "FriendBehind", "n": 1},
-                    "attackAmount": 4,
                     "healthAmount": 4,
                     "untilEndOfBattle": False,
                 },
             },
             "level3Ability": {
-                "description": "Hurt: Give friend behind +6/+6",
+                "description": "Hurt: Give the nearest friend behind +3 attack and +6 health.",
                 "trigger": "Hurt",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "FriendBehind", "n": 1},
-                    "attackAmount": 6,
+                    "attackAmount": 3,
                     "healthAmount": 6,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-            ],
         },
         "pet-hatching-chick": {
             "name": "Hatching Chick",
@@ -4291,60 +1613,6 @@ data = {
                     "amount": 1,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-            ],
         },
         "pet-giraffe": {
             "name": "Giraffe",
@@ -4355,12 +1623,12 @@ data = {
                 "unicodeCodePoint": "🦒",
             },
             "tier": 3,
-            "baseAttack": 2,
-            "baseHealth": 4,
+            "baseAttack": 1,
+            "baseHealth": 2,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "End turn: Give friend ahead +1/+1",
-                "trigger": "EndOfTurn",
+                "description": "Start of turn: Give the nearest friend ahead +1 attack and +1 health.",
+                "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
@@ -4371,8 +1639,8 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "End turn: Give 2 friends ahead +1/+1",
-                "trigger": "EndOfTurn",
+                "description": "Start of turn: Give the nearest two friends ahead +1 attack and +1 health.",
+                "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
@@ -4383,8 +1651,8 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "End turn: Give 3 friends ahead +1/+1",
-                "trigger": "EndOfTurn",
+                "description": "Start of turn: Give the nearest three friends ahead +1 attack and +1 health.",
+                "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
@@ -4394,60 +1662,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-            ],
         },
         "pet-kangaroo": {
             "name": "Kangaroo",
@@ -4457,12 +1671,24 @@ data = {
                 "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
                 "unicodeCodePoint": "🦘",
             },
-            "tier": 3,
-            "baseAttack": 1,
+            "tier": 2,
+            "baseAttack": 2,
             "baseHealth": 2,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Friend ahead attacks: Gain +2/+2",
+                "description": "Friend ahead attacks: Gain +1 attack and +1 health.",
+                "trigger": "AfterAttack",
+                "triggeredBy": {"kind": "FriendAhead", "n": 1},
+                "effect": {
+                    "kind": "ModifyStats",
+                    "target": {"kind": "Self"},
+                    "attackAmount": 1,
+                    "healthAmount": 1,
+                    "untilEndOfBattle": False,
+                },
+            },
+            "level2Ability": {
+                "description": "Friend ahead attacks: Gain +2 attack and +2 health.",
                 "trigger": "AfterAttack",
                 "triggeredBy": {"kind": "FriendAhead", "n": 1},
                 "effect": {
@@ -4473,84 +1699,18 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "level2Ability": {
-                "description": "Friend ahead attacks: Gain +4/+4",
-                "trigger": "AfterAttack",
-                "triggeredBy": {"kind": "FriendAhead", "n": 1},
-                "effect": {
-                    "kind": "ModifyStats",
-                    "target": {"kind": "Self"},
-                    "attackAmount": 4,
-                    "healthAmount": 4,
-                    "untilEndOfBattle": False,
-                },
-            },
             "level3Ability": {
-                "description": "Friend ahead attacks: Gain +6/+6",
+                "description": "Friend ahead attacks: Gain +3 attack and +3 health.",
                 "trigger": "AfterAttack",
                 "triggeredBy": {"kind": "FriendAhead", "n": 1},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "Self"},
-                    "attackAmount": 6,
-                    "healthAmount": 6,
+                    "attackAmount": 3,
+                    "healthAmount": 3,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-            ],
         },
         "pet-owl": {
             "name": "Owl",
@@ -4600,60 +1760,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-            ],
         },
         "pet-ox": {
             "name": "Ox",
@@ -4668,9 +1774,10 @@ data = {
             "baseHealth": 3,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Friend ahead attacks: Gain Melon Armor and +1 attack",
+                "description": "Friend ahead faints: Gain Melon perk and +1 attack. Works 1 time per turn.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "FriendAhead", "n": 1},
+                "maxTriggers": 1,
                 "effect": {
                     "kind": "AllOf",
                     "effects": [
@@ -4689,9 +1796,10 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Friend ahead attacks: Gain Melon Armor and +2 attack",
+                "description": "Friend ahead faints: Gain Melon perk and +1 attack. Works 2 times per turn.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "FriendAhead", "n": 1},
+                "maxTriggers": 2,
                 "effect": {
                     "kind": "AllOf",
                     "effects": [
@@ -4703,16 +1811,17 @@ data = {
                         {
                             "kind": "ModifyStats",
                             "target": {"kind": "Self"},
-                            "attackAmount": 2,
+                            "attackAmount": 1,
                             "untilEndOfBattle": False,
                         },
                     ],
                 },
             },
             "level3Ability": {
-                "description": "Friend ahead attacks: Gain Melon Armor and +3 attack",
+                "description": "Friend ahead faints: Gain Melon perk and +1 attack. Works 3 times per turn.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "FriendAhead", "n": 1},
+                "maxTriggers": 3,
                 "effect": {
                     "kind": "AllOf",
                     "effects": [
@@ -4724,66 +1833,12 @@ data = {
                         {
                             "kind": "ModifyStats",
                             "target": {"kind": "Self"},
-                            "attackAmount": 3,
+                            "attackAmount": 1,
                             "untilEndOfBattle": False,
                         },
                     ],
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"StandardPack": 0.12681358024691358},
-                    "perSlot": {"StandardPack": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-            ],
         },
         "pet-puppy": {
             "name": "Puppy",
@@ -4833,60 +1888,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-            ],
         },
         "pet-rabbit": {
             "name": "Rabbit",
@@ -4901,9 +1902,10 @@ data = {
             "baseHealth": 2,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Pet eats shop food: Give it +1 Health",
+                "description": "Friendly ate food: Give them +1 health. Works 3 times per turn.",
                 "trigger": "EatsShopFood",
                 "triggeredBy": {"kind": "EachFriend"},
+                "maxTriggers": 3,
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "TriggeringEntity"},
@@ -4912,9 +1914,10 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Pet eats shop food: Give it +2 Health",
+                "description": "Friendly ate food: Give them +2 health. Works 3 times per turn.",
                 "trigger": "EatsShopFood",
                 "triggeredBy": {"kind": "EachFriend"},
+                "maxTriggers": 3,
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "TriggeringEntity"},
@@ -4923,9 +1926,10 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Pet eats shop food: Give it +3 Health",
+                "description": "Friendly ate food: Give them +3 health. Works 3 times per turn.",
                 "trigger": "EatsShopFood",
                 "triggeredBy": {"kind": "EachFriend"},
+                "maxTriggers": 3,
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "TriggeringEntity"},
@@ -4933,108 +1937,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-sheep": {
             "name": "Sheep",
@@ -5058,6 +1960,7 @@ data = {
                     "withAttack": 2,
                     "withHealth": 2,
                     "team": "Friendly",
+                    "amount": 2,
                 },
             },
             "level2Ability": {
@@ -5070,6 +1973,7 @@ data = {
                     "withAttack": 4,
                     "withHealth": 4,
                     "team": "Friendly",
+                    "amount": 2,
                 },
             },
             "level3Ability": {
@@ -5082,110 +1986,9 @@ data = {
                     "withAttack": 6,
                     "withHealth": 6,
                     "team": "Friendly",
+                    "amount": 2,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-snail": {
             "name": "Snail",
@@ -5195,148 +1998,43 @@ data = {
                 "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
                 "unicodeCodePoint": "🐌",
             },
-            "tier": 3,
+            "tier": 2,
             "baseAttack": 2,
             "baseHealth": 2,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Buy: If you lost last battle, give all friends +2/+1",
-                "trigger": "BuyAfterLoss",
+                "description": "End Turn: If you lost last battle, give the three nearest friends ahead +1 attack.",
+                "trigger": "EndOfTurnAfterLoss",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "target": {"kind": "EachFriend"},
+                    "target": {"kind": "FriendAhead", "n": 3},
                     "attackAmount": 1,
-                    "healthAmount": 1,
                     "untilEndOfBattle": False,
                 },
             },
             "level2Ability": {
-                "description": "Buy: If you lost last battle, give all friends +4/+2",
-                "trigger": "BuyAfterLoss",
+                "description": "End Turn: If you lost last battle, give the three nearest friends ahead +1 attack.",
+                "trigger": "EndOfTurnAfterLoss",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "target": {"kind": "EachFriend"},
-                    "attackAmount": 2,
-                    "healthAmount": 2,
+                    "target": {"kind": "FriendAhead", "n": 3},
+                    "attackAmount": 1,
                     "untilEndOfBattle": False,
                 },
             },
             "level3Ability": {
-                "description": "Buy: If you lost last battle, give all friends +6/+3",
-                "trigger": "BuyAfterLoss",
+                "description": "End Turn: If you lost last battle, give the three nearest friends ahead +1 attack.",
+                "trigger": "EndOfTurnAfterLoss",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "target": {"kind": "EachFriend"},
-                    "attackAmount": 3,
-                    "healthAmount": 3,
+                    "target": {"kind": "FriendAhead", "n": 3},
+                    "attackAmount": 1,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-tropical-fish": {
             "name": "Tropical Fish",
@@ -5383,60 +2081,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {"ExpansionPack1": 0.12681358024691358},
-                    "perSlot": {"ExpansionPack1": 0.03333333333333333},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-            ],
         },
         "pet-turtle": {
             "name": "Turtle",
@@ -5446,12 +2090,12 @@ data = {
                 "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
                 "unicodeCodePoint": "🐢",
             },
-            "tier": 3,
-            "baseAttack": 1,
-            "baseHealth": 2,
+            "tier": 4,
+            "baseAttack": 2,
+            "baseHealth": 5,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Faint: Give friend behind Melon Armor",
+                "description": "Faint: Give Melon perk to the nearest friend behind.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -5461,7 +2105,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Faint: Give 2 friends behind Melon Armor",
+                "description": "Faint: Give Melon perk to the two nearest friends behind.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -5471,7 +2115,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Faint: Give 3 friends behind Melon Armor",
+                "description": "Faint: Give Melon perk to the three nearest friends behind.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -5480,108 +2124,6 @@ data = {
                     "to": {"kind": "FriendBehind", "n": 3},
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.12681358024691358,
-                        "ExpansionPack1": 0.12681358024691358,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.03333333333333333,
-                        "ExpansionPack1": 0.03333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-3",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-4",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-whale": {
             "name": "Whale",
@@ -5593,10 +2135,10 @@ data = {
             },
             "tier": 4,
             "baseAttack": 3,
-            "baseHealth": 8,
+            "baseHealth": 7,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Start of battle: Swallow friend ahead and release it as a level 1 after fainting.",
+                "description": "Start of battle: Swallow the nearest friend ahead and release it at level 1 on faint.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -5605,7 +2147,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Start of battle: Swallow friend ahead and release it as a level 2 after fainting.",
+                "description": "Start of battle: Swallow the nearest friend ahead and release it at level 2 on faint.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -5614,7 +2156,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Start of battle: Swallow friend ahead and release it as a level 3 after fainting.",
+                "description": "Start of battle: Swallow the nearest friend ahead and release it at level 3 on faint.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -5622,48 +2164,6 @@ data = {
                     "target": {"kind": "FriendAhead", "n": 1},
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-            ],
         },
         "pet-bison": {
             "name": "Bison",
@@ -5678,119 +2178,41 @@ data = {
             "baseHealth": 4,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "End turn: Gain +2/+2 if there is at least one Lvl. 3 friend.",
+                "description": "End turn: If this has a level 3 friend, gain +1 attack and +2 health.",
+                "trigger": "EndOfTurnWithLvl3Friend",
+                "triggeredBy": {"kind": "Player"},
+                "effect": {
+                    "kind": "ModifyStats",
+                    "target": {"kind": "Self"},
+                    "attackAmount": 1,
+                    "healthAmount": 2,
+                    "untilEndOfBattle": False,
+                },
+            },
+            "level2Ability": {
+                "description": "End turn: If this has a level 3 friend, gain +2 attack and +4 health.",
                 "trigger": "EndOfTurnWithLvl3Friend",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "Self"},
                     "attackAmount": 2,
-                    "healthAmount": 2,
-                    "untilEndOfBattle": False,
-                },
-            },
-            "level2Ability": {
-                "description": "End turn: Gain +4/+4 if there is at least one Lvl. 3 friend.",
-                "trigger": "EndOfTurnWithLvl3Friend",
-                "triggeredBy": {"kind": "Player"},
-                "effect": {
-                    "kind": "ModifyStats",
-                    "target": {"kind": "Self"},
-                    "attackAmount": 4,
                     "healthAmount": 4,
                     "untilEndOfBattle": False,
                 },
             },
             "level3Ability": {
-                "description": "End turn: Gain +6/+6 if there is at least one Lvl. 3 friend.",
+                "description": "End turn: If this has a level 3 friend, gain +3 attack and +6 health.",
                 "trigger": "EndOfTurnWithLvl3Friend",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "Self"},
-                    "attackAmount": 6,
+                    "attackAmount": 3,
                     "healthAmount": 6,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-buffalo": {
             "name": "Buffalo",
@@ -5840,48 +2262,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-            ],
         },
         "pet-deer": {
             "name": "Deer",
@@ -5892,123 +2272,45 @@ data = {
                 "unicodeCodePoint": "🦌",
             },
             "tier": 4,
-            "baseAttack": 1,
-            "baseHealth": 1,
+            "baseAttack": 2,
+            "baseHealth": 2,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Faint: Summon a 5/5 Bus with Splash Attack",
+                "description": "Faint: Summon one 5/3 Bus with Chili.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "SummonPet",
                     "pet": "pet-bus",
                     "withAttack": 5,
-                    "withHealth": 5,
+                    "withHealth": 3,
                     "team": "Friendly",
                 },
             },
             "level2Ability": {
-                "description": "Faint: Summon a 10/10 Bus with Splash Attack",
+                "description": "Faint: Summon one 10/6 Bus with Chili.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "SummonPet",
                     "pet": "pet-bus",
                     "withAttack": 10,
-                    "withHealth": 10,
+                    "withHealth": 6,
                     "team": "Friendly",
                 },
             },
             "level3Ability": {
-                "description": "Faint: Summon a 15/15 Bus with Splash Attack",
+                "description": "Faint: Summon one 15/9 Bus with Chili.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "SummonPet",
                     "pet": "pet-bus",
                     "withAttack": 15,
-                    "withHealth": 15,
+                    "withHealth": 9,
                     "team": "Friendly",
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-dolphin": {
             "name": "Dolphin",
@@ -6018,118 +2320,65 @@ data = {
                 "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
                 "unicodeCodePoint": "🐬",
             },
-            "tier": 4,
+            "tier": 3,
             "baseAttack": 4,
-            "baseHealth": 6,
+            "baseHealth": 3,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Start of battle: Deal 5 damage to the lowest health enemy",
+                "description": "Start of battle: Deal 4 damage to the lowest health enemy.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "DealDamage",
                     "target": {"kind": "LowestHealthEnemy"},
-                    "amount": 5,
+                    "amount": 4,
                 },
             },
             "level2Ability": {
-                "description": "Start of battle: Deal 10 damage to the lowest health enemy",
+                "description": "Start of battle: Deal 4 damage to the lowest health enemy. Triggers 2 times.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
-                    "kind": "DealDamage",
-                    "target": {"kind": "LowestHealthEnemy"},
-                    "amount": 10,
+                    "kind": "AllOf",
+                    "effects": [
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "LowestHealthEnemy"},
+                            "amount": 4,
+                        },
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "LowestHealthEnemy"},
+                            "amount": 4,
+                        },
+                    ],
                 },
             },
             "level3Ability": {
-                "description": "Start of battle: Deal 15 damage to the lowest health enemy",
+                "description": "Start of battle: Deal 4 damage to the lowest health enemy. Triggers 3 times.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
-                    "kind": "DealDamage",
-                    "target": {"kind": "LowestHealthEnemy"},
-                    "amount": 15,
+                    "kind": "AllOf",
+                    "effects": [
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "LowestHealthEnemy"},
+                            "amount": 4,
+                        },
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "LowestHealthEnemy"},
+                            "amount": 4,
+                        },
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "LowestHealthEnemy"},
+                            "amount": 4,
+                        },
+                    ],
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-hippo": {
             "name": "Hippo",
@@ -6141,12 +2390,13 @@ data = {
             },
             "tier": 4,
             "baseAttack": 4,
-            "baseHealth": 7,
+            "baseHealth": 6,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Knock out: Gain +3/+3.",
+                "description": "Knock out: Gain +3 attack and +3 health. Works 3 times per battle.",
                 "trigger": "KnockOut",
                 "triggeredBy": {"kind": "Self"},
+                "maxTriggers": 3,
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "Self"},
@@ -6156,9 +2406,10 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Knock out: Gain +6/+6.",
+                "description": "Knock out: Gain +6 attack and +6 health. Works 3 times per battle.",
                 "trigger": "KnockOut",
                 "triggeredBy": {"kind": "Self"},
+                "maxTriggers": 3,
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "Self"},
@@ -6168,9 +2419,10 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Knock out: Gain +9/+9.",
+                "description": "Knock out: Gain +9 attack and +9 health. Works 3 times per battle.",
                 "trigger": "KnockOut",
                 "triggeredBy": {"kind": "Self"},
+                "maxTriggers": 3,
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "Self"},
@@ -6179,48 +2431,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-            ],
         },
         "pet-llama": {
             "name": "Llama",
@@ -6270,48 +2480,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-            ],
         },
         "pet-lobster": {
             "name": "Lobster",
@@ -6361,48 +2529,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-            ],
         },
         "pet-monkey": {
             "name": "Monkey",
@@ -6417,71 +2543,41 @@ data = {
             "baseHealth": 2,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "End turn: Give right-most friend +2/+3",
+                "description": "End turn: Give front-most friendly pet +2 attack and +2 health.",
                 "trigger": "EndOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "RightMostFriend"},
                     "attackAmount": 2,
-                    "healthAmount": 3,
+                    "healthAmount": 2,
                     "untilEndOfBattle": False,
                 },
             },
             "level2Ability": {
-                "description": "End turn: Give right-most friend +4/+6",
+                "description": "End turn: Give front-most friendly pet +4 attack and +4 health.",
                 "trigger": "EndOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "RightMostFriend"},
                     "attackAmount": 4,
-                    "healthAmount": 6,
+                    "healthAmount": 4,
                     "untilEndOfBattle": False,
                 },
             },
             "level3Ability": {
-                "description": "End turn: Give right-most friend +6/+9",
+                "description": "End turn: Give front-most friendly pet +6 attack and +6 health.",
                 "trigger": "EndOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "RightMostFriend"},
                     "attackAmount": 6,
-                    "healthAmount": 9,
+                    "healthAmount": 6,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"StandardPack": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"StandardPack": 0.125},
-                },
-            ],
         },
         "pet-penguin": {
             "name": "Penguin",
@@ -6492,87 +2588,45 @@ data = {
                 "unicodeCodePoint": "🐧",
             },
             "tier": 4,
-            "baseAttack": 1,
-            "baseHealth": 2,
+            "baseAttack": 2,
+            "baseHealth": 3,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "End turn: Give other Lvl. 2 and 3 friends +1/+1",
-                "trigger": "EndOfTurn",
+                "description": "Start of turn: Give two level 2 or higher friends +1 attack and +1 health.",
+                "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "target": {"kind": "Level2And3Friends"},
+                    "target": {"kind": "Level2And3Friends", "n": 2},
                     "attackAmount": 1,
                     "healthAmount": 1,
                     "untilEndOfBattle": False,
                 },
             },
             "level2Ability": {
-                "description": "End turn: Give other Lvl. 2 and 3 friends +2/+2",
-                "trigger": "EndOfTurn",
+                "description": "Start of turn: Give two level 2 or higher friends +2 attack and +2 health.",
+                "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "target": {"kind": "Level2And3Friends"},
+                    "target": {"kind": "Level2And3Friends", "n": 2},
                     "attackAmount": 2,
                     "healthAmount": 2,
                     "untilEndOfBattle": False,
                 },
             },
             "level3Ability": {
-                "description": "End turn: Give other Lvl. 2 and 3 friends +3/+3",
-                "trigger": "EndOfTurn",
+                "description": "Start of turn: Give two level 2 or higher friends +3 attack and +3 health.",
+                "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "target": {"kind": "Level2And3Friends"},
+                    "target": {"kind": "Level2And3Friends", "n": 2},
                     "attackAmount": 3,
                     "healthAmount": 3,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-            ],
         },
         "pet-poodle": {
             "name": "Poodle",
@@ -6622,36 +2676,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"ExpansionPack1": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"ExpansionPack1": 0.125},
-                },
-            ],
         },
         "pet-rooster": {
             "name": "Rooster",
@@ -6661,106 +2685,43 @@ data = {
                 "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
                 "unicodeCodePoint": "🐓",
             },
-            "tier": 4,
-            "baseAttack": 5,
-            "baseHealth": 3,
+            "tier": 5,
+            "baseAttack": 6,
+            "baseHealth": 5,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Faint: Summon a Chick with 1 health and half the Attack of this.",
+                "description": "Faint: Summon one Chick with 1 health and 50% attack of this.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
-                "effect": {"kind": "SummonPet", "pet": "pet-chick", "team": "Friendly"},
+                "effect": {
+                    "kind": "SummonPet",
+                    "pet": "pet-chick",
+                    "team": "Friendly",
+                    "amount": 1,
+                },
             },
             "level2Ability": {
-                "description": "Faint: Summon 2 Chicks with 1 health and half the Attack of this.",
+                "description": "Faint: Summon two Chicks with 1 health and 50% attack of this.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
-                "effect": {"kind": "SummonPet", "pet": "pet-chick", "team": "Friendly"},
+                "effect": {
+                    "kind": "SummonPet",
+                    "pet": "pet-chick",
+                    "team": "Friendly",
+                    "amount": 2,
+                },
             },
             "level3Ability": {
-                "description": "Faint: Summon 3 Chicks with 1 health and half the Attack of this.",
+                "description": "Faint: Summon three Chicks with 1 health and 50% attack of this.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
-                "effect": {"kind": "SummonPet", "pet": "pet-chick", "team": "Friendly"},
+                "effect": {
+                    "kind": "SummonPet",
+                    "pet": "pet-chick",
+                    "team": "Friendly",
+                    "amount": 3,
+                },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-skunk": {
             "name": "Skunk",
@@ -6775,7 +2736,7 @@ data = {
             "baseHealth": 5,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Start of battle: Reduce the highest Health enemy by 33%.",
+                "description": "Start of battle: Remove 33% health from the highest health enemy.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -6785,7 +2746,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Start of battle: Reduce the highest Health enemy by 66%.",
+                "description": "Start of battle: Remove 66% health from the highest health enemy.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -6795,93 +2756,15 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Start of battle: Reduce the highest Health enemy by 100%.",
+                "description": "Start of battle: Remove 99% health from the highest health enemy.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
                     "kind": "ReduceHealth",
                     "target": {"kind": "HighestHealthEnemy"},
-                    "percentage": 100,
+                    "percentage": 99,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-squirrel": {
             "name": "Squirrel",
@@ -6892,105 +2775,27 @@ data = {
                 "unicodeCodePoint": "🐿",
             },
             "tier": 4,
-            "baseAttack": 2,
+            "baseAttack": 3,
             "baseHealth": 5,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Start of turn: Discount shop food by 1 gold",
+                "description": "Start of turn: Discount all shop food by 1 gold.",
                 "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {"kind": "DiscountFood", "amount": 1},
             },
             "level2Ability": {
-                "description": "Start of turn: Discount shop food by 2 gold",
+                "description": "Start of turn: Discount all shop food by 2 gold.",
                 "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {"kind": "DiscountFood", "amount": 2},
             },
             "level3Ability": {
-                "description": "Start of turn: Discount shop food by 3 gold",
+                "description": "Start of turn: Discount all shop food by 3 gold.",
                 "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {"kind": "DiscountFood", "amount": 3},
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-worm": {
             "name": "Worm",
@@ -7000,124 +2805,52 @@ data = {
                 "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
                 "unicodeCodePoint": "🪱",
             },
-            "tier": 4,
-            "baseAttack": 3,
-            "baseHealth": 3,
+            "tier": 2,
+            "baseAttack": 1,
+            "baseHealth": 4,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Eats shop food: Gain +1/+1",
-                "trigger": "EatsShopFood",
+                "description": "Start of turn: Stock one 2-gold Apple.",
+                "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
-                    "kind": "ModifyStats",
-                    "attackAmount": 1,
-                    "healthAmount": 1,
-                    "target": {"kind": "Self"},
-                    "untilEndOfBattle": False,
+                    "kind": "StockShopFood",
+                    "shop": "Food",
+                    "food": "food-apple",
+                    "amount": 1,
+                    "withAttack": 1,
+                    "withHealth": 1,
+                    "withCost": 2,
                 },
             },
             "level2Ability": {
-                "description": "Eats shop food: Gain +2/+2",
-                "trigger": "EatsShopFood",
+                "description": "Start of turn: Stock one 2-gold Better Apple.",
+                "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
-                    "kind": "ModifyStats",
-                    "attackAmount": 2,
-                    "healthAmount": 2,
-                    "target": {"kind": "Self"},
-                    "untilEndOfBattle": False,
+                    "kind": "StockShopFood",
+                    "shop": "Food",
+                    "food": "food-apple",
+                    "amount": 1,
+                    "withAttack": 2,
+                    "withHealth": 2,
+                    "withCost": 2,
                 },
             },
             "level3Ability": {
-                "description": "Eats shop food: Gain +3/+3",
-                "trigger": "EatsShopFood",
+                "description": "Start of turn: Stock one 2-gold Best Apple.",
+                "trigger": "StartOfTurn",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
-                    "kind": "ModifyStats",
-                    "attackAmount": 3,
-                    "healthAmount": 3,
-                    "target": {"kind": "Self"},
-                    "untilEndOfBattle": False,
+                    "kind": "StockShopFood",
+                    "shop": "Food",
+                    "food": "food-apple",
+                    "amount": 1,
+                    "withAttack": 3,
+                    "withHealth": 3,
+                    "withCost": 2,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.09404935520024527,
-                        "ExpansionPack1": 0.09404935520024527,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.024390243902439025,
-                        "ExpansionPack1": 0.024390243902439025,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {
-                        "StandardPack": 0.09090909090909091,
-                        "ExpansionPack1": 0.09090909090909091,
-                    },
-                },
-            ],
         },
         "pet-chicken": {
             "name": "Chicken",
@@ -7167,36 +2900,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"ExpansionPack1": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"ExpansionPack1": 0.125},
-                },
-            ],
         },
         "pet-cow": {
             "name": "Cow",
@@ -7211,71 +2914,44 @@ data = {
             "baseHealth": 6,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Buy: Replace food shop with 2 free milk that gives +1/+2.",
+                "description": "Buy: Replace shop food with two free Milk.",
                 "trigger": "Buy",
                 "triggeredBy": {"kind": "Self"},
-                "effect": {"kind": "RefillShops", "shop": "Food", "food": "food-milk"},
+                "effect": {
+                    "kind": "StockShopFood",
+                    "shop": "Food",
+                    "food": "food-milk",
+                    "amount": 2,
+                    "withAttack": 1,
+                    "withHealth": 2,
+                },
             },
             "level2Ability": {
-                "description": "Buy: Replace food shop with 2 free milk that gives +2/+4.",
+                "description": "Buy: Replace shop food with two free Better Milk.",
                 "trigger": "Buy",
                 "triggeredBy": {"kind": "Self"},
-                "effect": {"kind": "RefillShops", "shop": "Food", "food": "food-milk"},
+                "effect": {
+                    "kind": "StockShopFood",
+                    "shop": "Food",
+                    "food": "food-milk",
+                    "amount": 2,
+                    "withAttack": 2,
+                    "withHealth": 4,
+                },
             },
             "level3Ability": {
-                "description": "Buy: Replace food shop with 2 free milk that gives +3/+6.",
+                "description": "Buy: Replace shop food with two free Best Milk.",
                 "trigger": "Buy",
                 "triggeredBy": {"kind": "Self"},
-                "effect": {"kind": "RefillShops", "shop": "Food", "food": "food-milk"},
+                "effect": {
+                    "kind": "StockShopFood",
+                    "shop": "Food",
+                    "food": "food-milk",
+                    "amount": 2,
+                    "withAttack": 3,
+                    "withHealth": 6,
+                },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"StandardPack": 0.125, "ExpansionPack1": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"StandardPack": 0.125, "ExpansionPack1": 0.125},
-                },
-            ],
         },
         "pet-crocodile": {
             "name": "Crocodile",
@@ -7300,55 +2976,50 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Start of battle: Deal 16 damage to the last enemy",
+                "description": "Start of battle: Deal 8 damage to the last enemy. Triggers 2 times.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
-                    "kind": "DealDamage",
-                    "target": {"kind": "LastEnemy"},
-                    "amount": 16,
+                    "kind": "AllOf",
+                    "effects": [
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "LastEnemy"},
+                            "amount": 8,
+                        },
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "LastEnemy"},
+                            "amount": 8,
+                        },
+                    ],
                 },
             },
             "level3Ability": {
-                "description": "Start of battle: Deal 24 damage to the last enemy",
+                "description": "Start of battle: Deal 8 damage to the last enemy. Triggers 3 times.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
-                    "kind": "DealDamage",
-                    "target": {"kind": "LastEnemy"},
-                    "amount": 24,
+                    "kind": "AllOf",
+                    "effects": [
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "LastEnemy"},
+                            "amount": 8,
+                        },
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "LastEnemy"},
+                            "amount": 8,
+                        },
+                        {
+                            "kind": "DealDamage",
+                            "target": {"kind": "LastEnemy"},
+                            "amount": 8,
+                        },
+                    ],
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"StandardPack": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"StandardPack": 0.125},
-                },
-            ],
         },
         "pet-eagle": {
             "name": "Eagle",
@@ -7395,36 +3066,6 @@ data = {
                     "statsModifier": 3,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"ExpansionPack1": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"ExpansionPack1": 0.125},
-                },
-            ],
         },
         "pet-goat": {
             "name": "Goat",
@@ -7459,36 +3100,6 @@ data = {
                 "effect": {"kind": "GainGold", "amount": 3},
                 "maxTriggers": 2,
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"ExpansionPack1": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"ExpansionPack1": 0.125},
-                },
-            ],
         },
         "pet-microbe": {
             "name": "Microbe",
@@ -7532,48 +3143,6 @@ data = {
                     "to": {"kind": "All"},
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"ExpansionPack1": 0.09404935520024527},
-                    "perSlot": {"ExpansionPack1": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"ExpansionPack1": 0.09796001985292535},
-                    "perSlot": {"ExpansionPack1": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {"ExpansionPack1": 0.09090909090909091},
-                },
-            ],
         },
         "pet-parrot": {
             "name": "Parrot",
@@ -7585,10 +3154,10 @@ data = {
             },
             "tier": 4,
             "baseAttack": 4,
-            "baseHealth": 3,
+            "baseHealth": 2,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "End Turn: Copy ability from pet ahead as lvl. 1 until end of battle.",
+                "description": "End turn: Copy ability from the nearest pet ahead as level 1 until next turn.",
                 "trigger": "EndOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -7599,7 +3168,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "End Turn: Copy ability from pet ahead as lvl. 2 until end of battle.",
+                "description": "End turn: Copy ability from the nearest pet ahead as level 2 until next turn.",
                 "trigger": "EndOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -7610,7 +3179,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "End Turn: Copy ability from pet ahead as lvl. 3 until end of battle.",
+                "description": "End turn: Copy ability from the nearest pet ahead as level 3 until next turn.",
                 "trigger": "EndOfTurn",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -7620,48 +3189,6 @@ data = {
                     "level": 3,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {"StandardPack": 0.09404935520024527},
-                    "perSlot": {"StandardPack": 0.024390243902439025},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-5",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-6",
-                    "perSlot": {"StandardPack": 0.09090909090909091},
-                },
-            ],
         },
         "pet-rhino": {
             "name": "Rhino",
@@ -7672,11 +3199,11 @@ data = {
                 "unicodeCodePoint": "🦏",
             },
             "tier": 5,
-            "baseAttack": 5,
-            "baseHealth": 8,
+            "baseAttack": 6,
+            "baseHealth": 7,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Knock out: Deal 4 damage to the first enemy.",
+                "description": "Knock out: Deal 4 damage to the first enemy. Double against tier 1 pets.",
                 "trigger": "KnockOut",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -7686,7 +3213,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Knock out: Deal 8 damage to the first enemy.",
+                "description": "Knock out: Deal 8 damage to the first enemy. Double against tier 1 pets.",
                 "trigger": "KnockOut",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -7696,7 +3223,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Knock out: Deal 12 damage to the first enemy.",
+                "description": "Knock out: Deal 12 damage to the first enemy. Double against tier 1 pets.",
                 "trigger": "KnockOut",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -7705,54 +3232,6 @@ data = {
                     "amount": 12,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"StandardPack": 0.125, "ExpansionPack1": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"StandardPack": 0.125, "ExpansionPack1": 0.125},
-                },
-            ],
         },
         "pet-scorpion": {
             "name": "Scorpion",
@@ -7767,54 +3246,6 @@ data = {
             "baseHealth": 1,
             "packs": ["StandardPack", "ExpansionPack1"],
             "status": "status-poison-attack",
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"StandardPack": 0.125, "ExpansionPack1": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"StandardPack": 0.125, "ExpansionPack1": 0.125},
-                },
-            ],
         },
         "pet-seal": {
             "name": "Seal",
@@ -7829,89 +3260,38 @@ data = {
             "baseHealth": 8,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Eats shop food: Give 2 random friends +1/+1.",
+                "description": "Eats food: Give three random friends +1 attack.",
                 "trigger": "EatsShopFood",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "target": {"kind": "RandomFriend", "n": 2},
+                    "target": {"kind": "RandomFriend", "n": 3},
                     "attackAmount": 1,
-                    "healthAmount": 1,
                     "untilEndOfBattle": False,
                 },
             },
             "level2Ability": {
-                "description": "Eats shop food: Give 2 random friends +2/+2.",
+                "description": "Eats food: Give three random friends +2 attack.",
                 "trigger": "EatsShopFood",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "target": {"kind": "RandomFriend", "n": 2},
+                    "target": {"kind": "RandomFriend", "n": 3},
                     "attackAmount": 2,
-                    "healthAmount": 2,
                     "untilEndOfBattle": False,
                 },
             },
             "level3Ability": {
-                "description": "Eats shop food: Give 2 random friends +3/+3.",
+                "description": "Eats food: Give three random friends +3 attack.",
                 "trigger": "EatsShopFood",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
-                    "target": {"kind": "RandomFriend", "n": 2},
+                    "target": {"kind": "RandomFriend", "n": 3},
                     "attackAmount": 3,
-                    "healthAmount": 3,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.09796001985292535,
-                        "ExpansionPack1": 0.09796001985292535,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.02040816326530612,
-                        "ExpansionPack1": 0.02040816326530612,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"StandardPack": 0.125, "ExpansionPack1": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"StandardPack": 0.125, "ExpansionPack1": 0.125},
-                },
-            ],
         },
         "pet-shark": {
             "name": "Shark",
@@ -7922,11 +3302,11 @@ data = {
                 "unicodeCodePoint": "🦈",
             },
             "tier": 5,
-            "baseAttack": 4,
-            "baseHealth": 4,
+            "baseAttack": 2,
+            "baseHealth": 2,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Friend faints: Gain +2/+2.",
+                "description": "Friend faints: Gain +2 attack and +2 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -7938,7 +3318,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Friend faints: Gain +4/+4.",
+                "description": "Friend faints: Gain +4 attack and +4 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -7950,7 +3330,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Friend faints: Gain +6/+6.",
+                "description": "Friend faints: Gain +6 attack and +6 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
@@ -7961,36 +3341,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"StandardPack": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"StandardPack": 0.125},
-                },
-            ],
         },
         "pet-turkey": {
             "name": "Turkey",
@@ -8005,71 +3355,41 @@ data = {
             "baseHealth": 4,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Friend summoned: Give it +3/+3.",
+                "description": "Friend summoned: Give it +3 attack and +1 health.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "TriggeringEntity"},
                     "attackAmount": 3,
-                    "healthAmount": 3,
+                    "healthAmount": 1,
                     "untilEndOfBattle": False,
                 },
             },
             "level2Ability": {
-                "description": "Friend summoned: Give it +6/+6.",
+                "description": "Friend summoned: Give it +6 attack and +2 health.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "TriggeringEntity"},
                     "attackAmount": 6,
-                    "healthAmount": 6,
+                    "healthAmount": 2,
                     "untilEndOfBattle": False,
                 },
             },
             "level3Ability": {
-                "description": "Friend summoned: Give it +9/+9.",
+                "description": "Friend summoned: Give it +9 attack and +3 health.",
                 "trigger": "Summoned",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "TriggeringEntity"},
                     "attackAmount": 9,
-                    "healthAmount": 9,
+                    "healthAmount": 3,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {"StandardPack": 0.09796001985292535},
-                    "perSlot": {"StandardPack": 0.02040816326530612},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-7",
-                    "perSlot": {"StandardPack": 0.125},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-8",
-                    "perSlot": {"StandardPack": 0.125},
-                },
-            ],
         },
         "pet-cat": {
             "name": "Cat",
@@ -8084,46 +3404,26 @@ data = {
             "baseHealth": 5,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Food with Health and Attack effects are doubled.",
+                "description": "Shop food gives two times attack and health. Works 2 times per turn.",
                 "trigger": "PurchaseFood",
                 "triggeredBy": {"kind": "Self"},
+                "maxTriggers": 2,
                 "effect": {"kind": "FoodMultiplier", "amount": 2},
             },
             "level2Ability": {
-                "description": "Food with Health and Attack effects are tripled.",
+                "description": "Shop food gives three times attack and health. Works 2 times per turn.",
                 "trigger": "PurchaseFood",
                 "triggeredBy": {"kind": "Self"},
+                "maxTriggers": 2,
                 "effect": {"kind": "FoodMultiplier", "amount": 3},
             },
             "level3Ability": {
-                "description": "Food with Health and Attack effects are quadrupled.",
+                "description": "Shop food gives four times attack and health. Works 2 times per turn.",
                 "trigger": "PurchaseFood",
                 "triggeredBy": {"kind": "Self"},
+                "maxTriggers": 2,
                 "effect": {"kind": "FoodMultiplier", "amount": 4},
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-            ],
         },
         "pet-boar": {
             "name": "Boar",
@@ -8138,79 +3438,41 @@ data = {
             "baseHealth": 6,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Before attack: Gain +2/+2.",
-                "trigger": "BeforeAttack",
-                "triggeredBy": {"kind": "Self"},
-                "effect": {
-                    "kind": "ModifyStats",
-                    "target": {"kind": "Self"},
-                    "attackAmount": 2,
-                    "healthAmount": 2,
-                    "untilEndOfBattle": False,
-                },
-            },
-            "level2Ability": {
-                "description": "Before attack: Gain +4/+4.",
+                "description": "Before attack: Gain +4 attack and +2 health.",
                 "trigger": "BeforeAttack",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "Self"},
                     "attackAmount": 4,
-                    "healthAmount": 4,
+                    "healthAmount": 2,
                     "untilEndOfBattle": False,
                 },
             },
-            "level3Ability": {
-                "description": "Before attack: Gain +6/+6.",
+            "level2Ability": {
+                "description": "Before attack: Gain +8 attack and +4 health.",
                 "trigger": "BeforeAttack",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "Self"},
-                    "attackAmount": 6,
+                    "attackAmount": 8,
+                    "healthAmount": 4,
+                    "untilEndOfBattle": False,
+                },
+            },
+            "level3Ability": {
+                "description": "Before attack: Gain +12 attack and +6 health.",
+                "trigger": "BeforeAttack",
+                "triggeredBy": {"kind": "Self"},
+                "effect": {
+                    "kind": "ModifyStats",
+                    "target": {"kind": "Self"},
+                    "attackAmount": 12,
                     "healthAmount": 6,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-            ],
         },
         "pet-dragon": {
             "name": "Dragon",
@@ -8221,13 +3483,14 @@ data = {
                 "unicodeCodePoint": "🐉",
             },
             "tier": 6,
-            "baseAttack": 6,
+            "baseAttack": 3,
             "baseHealth": 8,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Buy tier 1 animal: Give all friends +1/+1.",
+                "description": "Tier 1 friend bought: Give friends +1 attack and +1 health. Works 4 times per turn.",
                 "trigger": "BuyTier1Animal",
                 "triggeredBy": {"kind": "Player"},
+                "maxTriggers": 4,
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "EachFriend"},
@@ -8237,9 +3500,10 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Buy tier 1 animal: Give all friends +2/+2.",
+                "description": "Tier 1 friend bought: Give friends +2 attack and +2 health. Works 4 times per turn.",
                 "trigger": "BuyTier1Animal",
                 "triggeredBy": {"kind": "Player"},
+                "maxTriggers": 4,
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "EachFriend"},
@@ -8249,9 +3513,10 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Buy tier 1 animal: Give all friends +3/+3.",
+                "description": "Tier 1 friend bought: Give friends +3 attack and +3 health. Works 4 times per turn.",
                 "trigger": "BuyTier1Animal",
                 "triggeredBy": {"kind": "Player"},
+                "maxTriggers": 4,
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "EachFriend"},
@@ -8260,44 +3525,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-            ],
         },
         "pet-fly": {
             "name": "Fly",
@@ -8308,71 +3535,48 @@ data = {
                 "unicodeCodePoint": "🪰",
             },
             "tier": 6,
-            "baseAttack": 5,
-            "baseHealth": 5,
+            "baseAttack": 4,
+            "baseHealth": 4,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Friend faints: Summon a 5/5 fly in its place (Max 3 times)",
+                "description": "Friend faints: Summon one 4/4 fly in its place. Works 3 times per turn.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
                     "kind": "SummonPet",
                     "pet": "pet-zombie-fly",
-                    "withAttack": 5,
-                    "withHealth": 5,
+                    "withAttack": 4,
+                    "withHealth": 4,
                     "team": "Friendly",
                 },
                 "maxTriggers": 3,
             },
             "level2Ability": {
-                "description": "Friend faints: Summon a 10/10 fly in its place (Max 3 times)",
+                "description": "Friend faints: Summon one 8/8 fly in its place. Works 3 times per turn.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
                     "kind": "SummonPet",
                     "pet": "pet-zombie-fly",
-                    "withAttack": 10,
-                    "withHealth": 10,
+                    "withAttack": 8,
+                    "withHealth": 8,
                     "team": "Friendly",
                 },
                 "maxTriggers": 3,
             },
             "level3Ability": {
-                "description": "Friend faints: Summon a 15/15 fly in its place (Max 3 times)",
+                "description": "Friend faints: Summon one 12/12 fly in its place. Works 3 times per turn.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "EachFriend"},
                 "effect": {
                     "kind": "SummonPet",
                     "pet": "pet-zombie-fly",
-                    "withAttack": 15,
-                    "withHealth": 15,
+                    "withAttack": 12,
+                    "withHealth": 12,
                     "team": "Friendly",
                 },
                 "maxTriggers": 3,
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-            ],
         },
         "pet-gorilla": {
             "name": "Gorilla",
@@ -8383,11 +3587,11 @@ data = {
                 "unicodeCodePoint": "🦍",
             },
             "tier": 6,
-            "baseAttack": 6,
-            "baseHealth": 9,
+            "baseAttack": 7,
+            "baseHealth": 10,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Hurt: Gain Coconut Shield. Works 1 time per turn.",
+                "description": "Hurt: Gain Coconut perk. Works 1 time per turn.",
                 "trigger": "Hurt",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -8398,7 +3602,7 @@ data = {
                 "maxTriggers": 1,
             },
             "level2Ability": {
-                "description": "Hurt: Gain Coconut Shield. Works 2 times per turn.",
+                "description": "Hurt: Gain Coconut perk. Works 2 times per turn.",
                 "trigger": "Hurt",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -8409,7 +3613,7 @@ data = {
                 "maxTriggers": 2,
             },
             "level3Ability": {
-                "description": "Hurt: Gain Coconut Shield. Works 3 times per turn.",
+                "description": "Hurt: Gain Coconut perk. Works 3 times per turn.",
                 "trigger": "Hurt",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -8419,44 +3623,6 @@ data = {
                 },
                 "maxTriggers": 3,
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-            ],
         },
         "pet-leopard": {
             "name": "Leopard",
@@ -8472,7 +3638,7 @@ data = {
             "baseHealth": 4,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Start of battle: Deal 50% Attack damage to a random enemy.",
+                "description": "Start of battle: Deal 50% attack damage to one random enemy.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -8482,7 +3648,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Start of battle: Deal 50% Attack damage to 2 random enemies.",
+                "description": "Start of battle: Deal 50% attack damage to two random enemies.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -8492,7 +3658,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Start of battle: Deal 50% Attack damage to 3 random enemies.",
+                "description": "Start of battle: Deal 50% attack damage to three random enemies.",
                 "trigger": "StartOfBattle",
                 "triggeredBy": {"kind": "Player"},
                 "effect": {
@@ -8501,44 +3667,6 @@ data = {
                     "amount": {"attackDamagePercent": 50},
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-            ],
         },
         "pet-mammoth": {
             "name": "Mammoth",
@@ -8549,11 +3677,11 @@ data = {
                 "unicodeCodePoint": "🦣",
             },
             "tier": 6,
-            "baseAttack": 3,
-            "baseHealth": 10,
+            "baseAttack": 4,
+            "baseHealth": 12,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
-                "description": "Faint: Give all friends +2/+2",
+                "description": "Faint: Give friends +2 attack and +2 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -8565,7 +3693,7 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Faint: Give all friends +4/+4",
+                "description": "Faint: Give friends +4 attack and +4 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -8577,7 +3705,7 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Faint: Give all friends +6/+6",
+                "description": "Faint: Give friends +6 attack and +6 health.",
                 "trigger": "Faint",
                 "triggeredBy": {"kind": "Self"},
                 "effect": {
@@ -8588,44 +3716,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-            ],
         },
         "pet-octopus": {
             "name": "Octopus",
@@ -8679,29 +3769,6 @@ data = {
                     "amount": 5,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-            ],
         },
         "pet-sauropod": {
             "name": "Sauropod",
@@ -8736,29 +3803,6 @@ data = {
                 "effect": {"kind": "GainGold", "amount": 1},
                 "maxTriggers": 3,
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-            ],
         },
         "pet-snake": {
             "name": "Snake",
@@ -8769,13 +3813,14 @@ data = {
                 "unicodeCodePoint": "🐍",
             },
             "tier": 6,
-            "baseAttack": 6,
-            "baseHealth": 6,
+            "baseAttack": 8,
+            "baseHealth": 3,
             "packs": ["StandardPack"],
             "level1Ability": {
-                "description": "Friend ahead attacks: Deal 5 damage to a random enemy.",
+                "description": "Friend ahead attacks: Deal 5 damage to one random enemy. Works 5 times per battle.",
                 "trigger": "AfterAttack",
                 "triggeredBy": {"kind": "FriendAhead", "n": 1},
+                "maxTriggers": 5,
                 "effect": {
                     "kind": "DealDamage",
                     "target": {"kind": "RandomEnemy", "n": 1},
@@ -8783,9 +3828,10 @@ data = {
                 },
             },
             "level2Ability": {
-                "description": "Friend ahead attacks: Deal 10 damage to a random enemy.",
+                "description": "Friend ahead attacks: Deal 10 damage to one random enemy. Works 5 times per battle.",
                 "trigger": "AfterAttack",
                 "triggeredBy": {"kind": "FriendAhead", "n": 1},
+                "maxTriggers": 5,
                 "effect": {
                     "kind": "DealDamage",
                     "target": {"kind": "RandomEnemy", "n": 1},
@@ -8793,38 +3839,16 @@ data = {
                 },
             },
             "level3Ability": {
-                "description": "Friend ahead attacks: Deal 15 damage to a random enemy.",
+                "description": "Friend ahead attacks: Deal 15 damage to one random enemy. Works 5 times per battle.",
                 "trigger": "AfterAttack",
                 "triggeredBy": {"kind": "FriendAhead", "n": 1},
+                "maxTriggers": 5,
                 "effect": {
                     "kind": "DealDamage",
                     "target": {"kind": "RandomEnemy", "n": 1},
                     "amount": 15,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"StandardPack": 0.08328505725105906},
-                    "perSlot": {"StandardPack": 0.017241379310344827},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {"StandardPack": 0.1111111111111111},
-                },
-            ],
         },
         "pet-tiger": {
             "name": "Tiger",
@@ -8835,8 +3859,8 @@ data = {
                 "unicodeCodePoint": "🐅",
             },
             "tier": 6,
-            "baseAttack": 4,
-            "baseHealth": 3,
+            "baseAttack": 6,
+            "baseHealth": 4,
             "packs": ["StandardPack", "ExpansionPack1"],
             "level1Ability": {
                 "description": "The friend ahead repeats their ability in battle as if they were level 1.",
@@ -8868,44 +3892,6 @@ data = {
                     "level": 3,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.08328505725105906,
-                        "ExpansionPack1": 0.08328505725105906,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.017241379310344827,
-                        "ExpansionPack1": 0.017241379310344827,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-            ],
         },
         "pet-tyrannosaurus": {
             "name": "Tyrannosaurus",
@@ -8955,29 +3941,49 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {"ExpansionPack1": 0.08328505725105906},
-                    "perSlot": {"ExpansionPack1": 0.017241379310344827},
+        },
+        "pet-wolverine": {
+            "name": "Wolverine",
+            "id": "pet-wolverine",
+            "image": {
+                "source": "noto-emoji",
+                "commit": "e022fd6573782431ac9a65b520376b57511c31cd",
+                "unicodeCodePoint": "🐺",
+            },
+            "tier": 6,
+            "baseAttack": 5,
+            "baseHealth": 7,
+            "packs": ["StandardPack"],
+            "level1Ability": {
+                "description": "Four friends hurt: Remove 3 health from all enemies.",
+                "trigger": "FriendHurt",
+                "triggeredBy": {"kind": "EachFriend", "n": 4, "excludeSelf": True},
+                "effect": {
+                    "kind": "ReduceHealth",
+                    "target": {"kind": "EachEnemy"},
+                    "amount": 3,
                 },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-9",
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
+            },
+            "level2Ability": {
+                "description": "Four friends hurt: Remove 6 health from all enemies.",
+                "trigger": "FriendHurt",
+                "triggeredBy": {"kind": "EachFriend", "n": 4, "excludeSelf": True},
+                "effect": {
+                    "kind": "ReduceHealth",
+                    "target": {"kind": "EachEnemy"},
+                    "amount": 6,
                 },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-10",
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
+            },
+            "level3Ability": {
+                "description": "Four friends hurt: Remove 9 health from all enemies.",
+                "trigger": "FriendHurt",
+                "triggeredBy": {"kind": "EachFriend", "n": 4, "excludeSelf": True},
+                "effect": {
+                    "kind": "ReduceHealth",
+                    "target": {"kind": "EachEnemy"},
+                    "amount": 9,
                 },
-                {
-                    "kind": "levelup",
-                    "turn": "turn-11",
-                    "perSlot": {"ExpansionPack1": 0.1111111111111111},
-                },
-            ],
+            },
         },
         "pet-zombie-cricket": {
             "name": "Zombie Cricket",
@@ -9121,119 +4127,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {"StandardPack": 0.5, "ExpansionPack1": 0.5},
-                    "perSlot": {"StandardPack": 0.5, "ExpansionPack1": 0.5},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {"StandardPack": 0.5, "ExpansionPack1": 0.5},
-                    "perSlot": {"StandardPack": 0.5, "ExpansionPack1": 0.5},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.3599999999999999,
-                        "ExpansionPack1": 0.3599999999999999,
-                    },
-                    "perSlot": {"StandardPack": 0.2, "ExpansionPack1": 0.2},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.3599999999999999,
-                        "ExpansionPack1": 0.3599999999999999,
-                    },
-                    "perSlot": {"StandardPack": 0.2, "ExpansionPack1": 0.2},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
         },
         "food-honey": {
             "name": "Honey",
@@ -9255,119 +4148,6 @@ data = {
                     "status": "status-honey-bee",
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-1",
-                    "perShop": {"StandardPack": 0.5, "ExpansionPack1": 0.5},
-                    "perSlot": {"StandardPack": 0.5, "ExpansionPack1": 0.5},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-2",
-                    "perShop": {"StandardPack": 0.5, "ExpansionPack1": 0.5},
-                    "perSlot": {"StandardPack": 0.5, "ExpansionPack1": 0.5},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.3599999999999999,
-                        "ExpansionPack1": 0.3599999999999999,
-                    },
-                    "perSlot": {"StandardPack": 0.2, "ExpansionPack1": 0.2},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.3599999999999999,
-                        "ExpansionPack1": 0.3599999999999999,
-                    },
-                    "perSlot": {"StandardPack": 0.2, "ExpansionPack1": 0.2},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
         },
         "food-cupcake": {
             "name": "Cupcake",
@@ -9391,107 +4171,6 @@ data = {
                     "untilEndOfBattle": True,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.3599999999999999,
-                        "ExpansionPack1": 0.3599999999999999,
-                    },
-                    "perSlot": {"StandardPack": 0.2, "ExpansionPack1": 0.2},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.3599999999999999,
-                        "ExpansionPack1": 0.3599999999999999,
-                    },
-                    "perSlot": {"StandardPack": 0.2, "ExpansionPack1": 0.2},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
         },
         "food-meat-bone": {
             "name": "Meat Bone",
@@ -9513,107 +4192,6 @@ data = {
                     "status": "status-bone-attack",
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.3599999999999999,
-                        "ExpansionPack1": 0.3599999999999999,
-                    },
-                    "perSlot": {"StandardPack": 0.2, "ExpansionPack1": 0.2},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.3599999999999999,
-                        "ExpansionPack1": 0.3599999999999999,
-                    },
-                    "perSlot": {"StandardPack": 0.2, "ExpansionPack1": 0.2},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
         },
         "food-sleeping-pill": {
             "name": "Sleeping Pill",
@@ -9634,107 +4212,6 @@ data = {
                 "trigger": "Buy",
                 "effect": {"kind": "Faint", "target": {"kind": "PurchaseTarget"}},
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-3",
-                    "perShop": {
-                        "StandardPack": 0.3599999999999999,
-                        "ExpansionPack1": 0.3599999999999999,
-                    },
-                    "perSlot": {"StandardPack": 0.2, "ExpansionPack1": 0.2},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-4",
-                    "perShop": {
-                        "StandardPack": 0.3599999999999999,
-                        "ExpansionPack1": 0.3599999999999999,
-                    },
-                    "perSlot": {"StandardPack": 0.2, "ExpansionPack1": 0.2},
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
         },
         "food-garlic": {
             "name": "Garlic",
@@ -9756,89 +4233,6 @@ data = {
                     "status": "status-garlic-armor",
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
         },
         "food-salad-bowl": {
             "name": "Salad Bowl",
@@ -9862,89 +4256,28 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-5",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
+        },
+        "food-cake": {
+            "name": "Cake",
+            "id": "food-cake",
+            "image": {
+                "source": "twemoji",
+                "commit": "793a6a93f303c08877dd6eb589b2fabb3d1c45ee",
+                "unicodeCodePoint": "🎂",
+            },
+            "tier": 3,
+            "packs": ["StandardPack"],
+            "cost": 3,
+            "ability": {
+                "description": "Give an animal Cake.",
+                "triggeredBy": {"kind": "Self"},
+                "trigger": "Buy",
+                "effect": {
+                    "kind": "ApplyStatus",
+                    "to": {"kind": "PurchaseTarget"},
+                    "status": "status-cake",
                 },
-                {
-                    "kind": "shop",
-                    "turn": "turn-6",
-                    "perShop": {
-                        "StandardPack": 0.26530612244897966,
-                        "ExpansionPack1": 0.26530612244897966,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.14285714285714285,
-                        "ExpansionPack1": 0.14285714285714285,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
+            },
         },
         "food-canned-food": {
             "name": "Canned Food",
@@ -9957,76 +4290,17 @@ data = {
             "tier": 4,
             "packs": ["StandardPack", "ExpansionPack1"],
             "ability": {
-                "description": "Give all current and future shop animals +2/+1.",
+                "description": "Give all current and future shop pets +1/+1.",
                 "triggeredBy": {"kind": "Self"},
                 "trigger": "Buy",
                 "effect": {
                     "kind": "ModifyStats",
                     "target": {"kind": "EachShopAnimal", "includingFuture": True},
-                    "attackAmount": 2,
+                    "attackAmount": 1,
                     "healthAmount": 1,
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
         },
         "food-pear": {
             "name": "Pear",
@@ -10050,65 +4324,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-7",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-8",
-                    "perShop": {
-                        "StandardPack": 0.2098765432098766,
-                        "ExpansionPack1": 0.2098765432098766,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.1111111111111111,
-                        "ExpansionPack1": 0.1111111111111111,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
         },
         "food-chili": {
             "name": "Chili",
@@ -10130,41 +4345,6 @@ data = {
                     "status": "status-splash-attack",
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
         },
         "food-chocolate": {
             "name": "Chocolate",
@@ -10186,41 +4366,6 @@ data = {
                     "amount": 1,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
         },
         "food-sushi": {
             "name": "Sushi",
@@ -10244,41 +4389,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-9",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-10",
-                    "perShop": {
-                        "StandardPack": 0.15972222222222232,
-                        "ExpansionPack1": 0.15972222222222232,
-                    },
-                    "perSlot": {
-                        "StandardPack": 0.08333333333333333,
-                        "ExpansionPack1": 0.08333333333333333,
-                    },
-                },
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                },
-            ],
         },
         "food-melon": {
             "name": "Melon",
@@ -10300,17 +4410,6 @@ data = {
                     "status": "status-melon-armor",
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                }
-            ],
         },
         "food-mushroom": {
             "name": "Mushroom",
@@ -10332,17 +4431,6 @@ data = {
                     "status": "status-extra-life",
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                }
-            ],
         },
         "food-pizza": {
             "name": "Pizza",
@@ -10366,17 +4454,6 @@ data = {
                     "untilEndOfBattle": False,
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                }
-            ],
         },
         "food-steak": {
             "name": "Steak",
@@ -10398,17 +4475,6 @@ data = {
                     "status": "status-steak-attack",
                 },
             },
-            "probabilities": [
-                {
-                    "kind": "shop",
-                    "turn": "turn-11",
-                    "perShop": {
-                        "StandardPack": 0.12109375,
-                        "ExpansionPack1": 0.12109375,
-                    },
-                    "perSlot": {"StandardPack": 0.0625, "ExpansionPack1": 0.0625},
-                }
-            ],
         },
         "food-milk": {
             "name": "Milk",
@@ -10431,6 +4497,31 @@ data = {
                     "target": {"kind": "PurchaseTarget"},
                     "attackAmount": 1,
                     "healthAmount": 2,
+                    "untilEndOfBattle": False,
+                },
+            },
+        },
+        "food-bread-crumbs": {
+            "name": "Bread Crumbs",
+            "id": "food-bread-crumbs",
+            "notes": "This is free!",
+            "image": {
+                "source": "twemoji",
+                "commit": "793a6a93f303c08877dd6eb589b2fabb3d1c45ee",
+                "unicodeCodePoint": "🍞",
+            },
+            "tier": "Summoned",
+            "packs": ["StandardPack"],
+            "cost": 0,
+            "ability": {
+                "description": "Give an animal +1 attack.",
+                "triggeredBy": {"kind": "Self"},
+                "trigger": "Buy",
+                "effect": {
+                    "kind": "ModifyStats",
+                    "target": {"kind": "PurchaseTarget"},
+                    "attackAmount": 1,
+                    "healthAmount": 0,
                     "untilEndOfBattle": False,
                 },
             },
@@ -10499,14 +4590,29 @@ data = {
                 "unicodeCodePoint": "🍖",
             },
             "ability": {
-                "description": "Attack for 5 more damage.",
+                "description": "Attack for 3 more damage.",
                 "triggeredBy": {"kind": "Self"},
                 "trigger": "WhenAttacking",
                 "effect": {
                     "kind": "ModifyDamage",
-                    "damageModifier": 5,
+                    "damageModifier": 3,
                     "appliesOnce": False,
                 },
+            },
+        },
+        "status-cake": {
+            "name": "Cake",
+            "id": "status-cake",
+            "image": {
+                "source": "twemoji",
+                "commit": "793a6a93f303c08877dd6eb589b2fabb3d1c45ee",
+                "unicodeCodePoint": "🎂",
+            },
+            "ability": {
+                "description": "End turn: Increase sell value by 1 gold.",
+                "triggeredBy": {"kind": "Self"},
+                "trigger": "EndOfTurn",
+                "effect": {"kind": "ModifySellValue", "target": {"kind": "Self"}, "amount": 1},
             },
         },
         "status-garlic-armor": {
@@ -10641,7 +4747,7 @@ data = {
             "name": "Turn 3",
             "id": "turn-3",
             "index": 3,
-            "foodShopSlots": 2,
+            "foodShopSlots": 1,
             "animalShopSlots": 3,
             "livesLost": 2,
             "tiersAvailable": 2,
@@ -10651,7 +4757,7 @@ data = {
             "name": "Turn 4",
             "id": "turn-4",
             "index": 4,
-            "foodShopSlots": 2,
+            "foodShopSlots": 1,
             "animalShopSlots": 3,
             "livesLost": 2,
             "tiersAvailable": 2,
@@ -10787,5 +4893,10 @@ for temp_pet, value in data["foods"].items():
     temp_all_fields = get_fields(value)
     add_dummy_fields(temp_all_fields, dummy_foods)
 data["foods"]["food-none"] = dummy_foods
+
+### Generate probabilities at run time
+from sapai.probabilities import generate_probabilities
+
+generate_probabilities(data)
 
 # %%

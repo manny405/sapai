@@ -20,7 +20,7 @@ def html_table(
     header_font_attr = header_font_attr or [("COLOR", "#000000")]
     cell_font_attr = cell_font_attr or []
     column_align = column_align or ["RIGHT", "LEFT"]
-    cell_bg_colors = cell_bg_colors or [[]]
+    cell_bg_colors = [] if cell_bg_colors is None else cell_bg_colors
 
     table_attr_str = ""
     for attr, value in table_attr:
@@ -166,7 +166,7 @@ def graph_battle(f, file_name="", verbose=False):
                     "CENTER",
                     "CENTER",
                 ],
-                cell_bg_colors=[[]],
+                cell_bg_colors=[],
             )
             g.node(
                 str(node_idx), style="rounded,invisible", shape="box", label=temp_table
@@ -283,7 +283,7 @@ def graph_battle(f, file_name="", verbose=False):
                 cell_font_attr=[],
                 cell_border=0,
                 column_align=["CENTER", "CENTER", "CENTER", "CENTER", "CENTER"],
-                cell_bg_colors=[[]],
+                cell_bg_colors=[],
             )
             g.node(
                 str(node_idx), style="rounded,invisible", shape="box", label=temp_table

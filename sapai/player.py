@@ -217,6 +217,10 @@ class Player:
         ### Make all updates
         self.gold -= cost
         self.shop.buy(food)
+        if food.name == "food-canned-food":
+            ### Canned food boosts future shop pets once per purchase
+            self.shop.shop_attack += food.attack
+            self.shop.shop_health += food.health
         for pet in targets:
             levelup = pet.eat(food)
             ### Check for levelup triggers if appropriate
@@ -341,8 +345,8 @@ class Player:
         if self.team.check_friend(pet):
             self.team.remove(pet)
 
-        ### Add default gold
-        self.gold += 1
+        ### Add sell gold, including any sell value buffs.
+        self.gold += pet.sell_value
 
         return (pet,)
 
@@ -406,12 +410,22 @@ class Player:
     @staticmethod
     def combine_pet_stats(pet_to_keep, pet_to_be_merged):
         """Pet 1 is the pet that is kept"""
-        c_attack = max(pet_to_keep._attack, pet_to_be_merged._attack) + 1
+        if pet_to_keep.level == 3 or pet_to_be_merged.level == 3:
+            raise Exception("Attempted to combine with level 3 pet")
+
+        exp_value_by_level = {1: 1, 2: 3}
+        keep_exp_value = exp_value_by_level[pet_to_keep.level] + pet_to_keep.experience
+        consumed_exp_value = exp_value_by_level[pet_to_be_merged.level] + pet_to_be_merged.experience
+
+        ### Stat bonus uses the lower XP-value between keep/consumed pets.
+        stat_bonus = min(keep_exp_value, consumed_exp_value)
+
+        c_attack = max(pet_to_keep._attack, pet_to_be_merged._attack) + stat_bonus
         c_until_end_of_battle_attack = max(
             pet_to_keep._until_end_of_battle_attack_buff,
             pet_to_be_merged._until_end_of_battle_attack_buff,
         )
-        c_health = max(pet_to_keep._health, pet_to_be_merged._health) + 1
+        c_health = max(pet_to_keep._health, pet_to_be_merged._health) + stat_bonus
         c_until_end_of_battle_health = max(
             pet_to_keep._until_end_of_battle_health_buff,
             pet_to_be_merged._until_end_of_battle_health_buff,
@@ -423,7 +437,7 @@ class Player:
         pet_to_keep._until_end_of_battle_attack_buff = c_until_end_of_battle_attack
         pet_to_keep._until_end_of_battle_health_buff = c_until_end_of_battle_health
         pet_to_keep.status = cstatus
-        levelup = pet_to_keep.gain_experience()
+        levelup = pet_to_keep.gain_experience(amount=consumed_exp_value)
 
         # Check for levelup triggers if appropriate
         if levelup:
@@ -455,6 +469,8 @@ class Player:
             raise Exception(
                 f"Attempted combine for pets {team_pet.name} and {shop_pet.name}"
             )
+        if team_pet.level == 3 or shop_pet.level == 3:
+            raise Exception("Attempted to combine with level 3 pet")
 
         shop_idx = self.shop.index(shop_pet)
         shop_slot = self.shop.slots[shop_idx]
@@ -499,9 +515,12 @@ class Player:
 
         if pet1.name != pet2.name:
             raise Exception(f"Attempted combine for pets {pet1.name} and {pet2.name}")
+        if pet1.level == 3 or pet2.level == 3:
+            raise Exception("Attempted to combine with level 3 pet")
 
+        skip_levelup_reward = pet1.level == 2 and pet2.level == 2
         levelup = Player.combine_pet_stats(pet1, pet2)
-        if levelup:
+        if levelup and not skip_levelup_reward:
             self.shop.levelup()
 
         ### Remove pet2 from team

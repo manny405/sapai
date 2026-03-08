@@ -19,7 +19,7 @@ def apply_coconut_shield(value):
 
 def apply_bone_attack(value):
     if value > 0:
-        return value + 4
+        return value + 3
     else:
         return 0
 
@@ -60,6 +60,7 @@ def apply_extra_life(pet, team):
 apply_null_dict = {
     "none": apply_,
     "status-bone-attack": apply_,
+    "status-cake": apply_,
     "status-coconut-shield": apply_,
     "status-extra-life": apply_,
     "status-garlic-armor": apply_,
@@ -74,6 +75,7 @@ apply_null_dict = {
 apply_damage_dict = {
     "none": apply_,
     "status-bone-attack": apply_,
+    "status-cake": apply_,
     "status-coconut-shield": apply_coconut_shield,
     "status-extra-life": apply_,
     "status-garlic-armor": apply_garlic_armor,
@@ -88,6 +90,7 @@ apply_damage_dict = {
 apply_attack_dict = {
     "none": apply_,
     "status-bone-attack": apply_bone_attack,
+    "status-cake": apply_,
     "status-coconut-shield": apply_,
     "status-extra-life": apply_,
     "status-garlic-armor": apply_,
@@ -102,6 +105,7 @@ apply_attack_dict = {
 apply_faint_dict = {
     "none": apply_,
     "status-bone-attack": apply_,
+    "status-cake": apply_,
     "status-coconut-shield": apply_,
     "status-extra-life": apply_extra_life,
     "status-garlic-armor": apply_,

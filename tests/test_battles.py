@@ -145,8 +145,8 @@ class TestBattles(unittest.TestCase):
 
         test_battle = Battle(team1, team2)
         result = test_battle.battle()
-        self.assertEqual(test_battle.t0.empty, [0, 1, 2, 3, 4])
-        self.assertEqual(test_battle.t1[0].health, 1)
+        self.assertEqual(test_battle.t0.empty, [1, 2, 3, 4])
+        self.assertEqual(test_battle.t1.empty, [0, 1, 2, 3, 4])
 
     def test_horse_with_bee_in_battle(self):
         cricket = Pet("cricket")
@@ -185,17 +185,17 @@ class TestBattles(unittest.TestCase):
         )  # they attack eachother, then keep using hurt_triggers until one of them dies, should never reach a 2nd attack phase
 
     def test_elephant_blowfish(self):
-        # blowfish snipes first fish in 'before-attack' phase of elephant, leaving elephant without a target to attack normally
-        # then snipes second fish in next turn's 'before attack'
+        # Blowfish triggers on both the splash hurt and the lethal elephant
+        # ability, so the second and third fish are sniped before both teams faint
         state = np.random.RandomState(seed=1).get_state()
 
         e1 = Pet("elephant")
         e1._attack = 1
-        e1._health = 5
+        e1._health = 6
 
         b1 = Pet("blowfish", seed_state=state)
         b1._attack = 1
-        b1._health = 5
+        b1._health = 6
 
         f1 = Pet("fish")
         f1._attack = 50
@@ -207,9 +207,194 @@ class TestBattles(unittest.TestCase):
         f2._health = 1
         f2.status = "status-splash-attack"
 
-        b = Battle(Team([e1, b1]), Team([f1, f2]))
+        f3 = Pet("fish")
+        f3._attack = 50
+        f3._health = 1
+        f3.status = "status-splash-attack"
+
+        b = Battle(Team([e1, b1]), Team([f1, f2, f3]))
         r = b.battle()
-        self.assertEqual(r, 0)
+        self.assertEqual(r, 2)
+
+    def test_wolverine_triggers_once_at_four_friendly_hurts(self):
+        elephant = Pet("elephant")
+        elephant.level = 2
+        elephant._attack = 50
+        elephant._health = 50
+
+        hurt_friend_1 = Pet("fish")
+        hurt_friend_1._health = 20
+        hurt_friend_2 = Pet("fish")
+        hurt_friend_2._health = 20
+        wolverine = Pet("wolverine")
+
+        enemy = Pet("pig")
+        enemy._attack = 1
+        enemy._health = 1
+        enemy.status = "status-splash-attack"
+
+        battle = Battle(
+            Team([elephant, hurt_friend_1, hurt_friend_2, wolverine]),
+            Team([enemy]),
+        )
+        battle.battle()
+
+        reduce_health_events = 0
+        for phase in battle.battle_history.values():
+            if type(phase) != dict:
+                continue
+            for phase_entries in phase.values():
+                for entry in phase_entries:
+                    if type(entry) != tuple:
+                        continue
+                    if entry[0] != "ReduceHealth":
+                        continue
+                    if "pet-wolverine" in entry[2]:
+                        reduce_health_events += 1
+
+        self.assertEqual(reduce_health_events, 1)
+
+    def test_wolverine_triggers_twice_at_eight_friendly_hurts(self):
+        elephant = Pet("elephant")
+        elephant.level = 2
+        elephant._attack = 1
+        elephant._health = 20
+
+        hurt_friend_1 = Pet("fish")
+        hurt_friend_1._health = 20
+        hurt_friend_2 = Pet("fish")
+        hurt_friend_2._health = 20
+        wolverine = Pet("wolverine")
+
+        enemy = Pet("pig")
+        enemy._attack = 1
+        enemy._health = 5
+        enemy.status = "status-splash-attack"
+
+        battle = Battle(
+            Team([elephant, hurt_friend_1, hurt_friend_2, wolverine]),
+            Team([enemy]),
+        )
+        battle.battle()
+
+        reduce_health_events = 0
+        for phase in battle.battle_history.values():
+            if type(phase) != dict:
+                continue
+            for phase_entries in phase.values():
+                for entry in phase_entries:
+                    if type(entry) != tuple:
+                        continue
+                    if entry[0] != "ReduceHealth":
+                        continue
+                    if "pet-wolverine" in entry[2]:
+                        reduce_health_events += 1
+
+        self.assertEqual(reduce_health_events, 2)
+
+    def test_two_wolverines_on_team_both_trigger(self):
+        fish = Pet("fish")
+        fish._health = 1
+        w1 = Pet("wolverine")
+        w2 = Pet("wolverine")
+        w1._friend_hurt_counter = 3
+        w2._friend_hurt_counter = 3
+
+        enemy = Pet("pig")
+        enemy._attack = 1
+        enemy._health = 1
+
+        b = Battle(Team([fish, w1, w2]), Team([enemy]))
+        b.battle()
+
+        reduce_health_events = 0
+        for phase in b.battle_history.values():
+            if type(phase) != dict:
+                continue
+            for phase_entries in phase.values():
+                for entry in phase_entries:
+                    if type(entry) != tuple:
+                        continue
+                    if entry[0] != "ReduceHealth":
+                        continue
+                    if "pet-wolverine" in entry[2]:
+                        reduce_health_events += 1
+
+        self.assertEqual(reduce_health_events, 2)
+        wolverines = [slot.pet for slot in b.t0 if slot.pet.name == "pet-wolverine"]
+        self.assertEqual(len(wolverines), 2)
+        self.assertEqual(wolverines[0]._friend_hurt_counter, 0)
+        self.assertEqual(wolverines[1]._friend_hurt_counter, 0)
+
+    def test_tiger_behind_wolverine_repeats_reduce_health(self):
+        fish = Pet("fish")
+        fish._health = 50
+        wolverine = Pet("wolverine")
+        wolverine._friend_hurt_counter = 3
+        tiger = Pet("tiger")
+
+        enemy = Pet("pig")
+        enemy._attack = 1
+        enemy._health = 10
+
+        b = Battle(Team([fish, wolverine, tiger]), Team([enemy]))
+        b.battle()
+
+        phase_entries = b.battle_history["attack 0"]["phase_hurt_and_faint_aa"]
+        reduce_entries = [
+            entry
+            for entry in phase_entries
+            if isinstance(entry, tuple)
+            and entry[0] == "ReduceHealth"
+            and "pet-wolverine" in entry[2]
+        ]
+
+        self.assertEqual(len(reduce_entries), 2)
+
+    def test_wolverine_counts_lethal_hurt_with_competing_faint_chains(self):
+        t0 = Team([Pet("hedgehog"), Pet("wolverine"), Pet("fish"), Pet("fish")])
+        t1 = Team([Pet("hedgehog"), Pet("cricket"), Pet("fish")])
+
+        ### Deterministic priority for simultaneous front-line faint events
+        t0[0].pet._attack = 5
+        t1[0].pet._attack = 4
+
+        ### Set Wolverine at threshold edge so next friendly hurt should trigger
+        t0[1].pet._friend_hurt_counter = 3
+
+        b = Battle(t0, t1)
+        b.battle()
+
+        phase_entries = b.battle_history["attack 0"]["phase_hurt_and_faint_aa"]
+        reduce_entries = [
+            entry
+            for entry in phase_entries
+            if isinstance(entry, tuple)
+            and entry[0] == "ReduceHealth"
+            and "pet-wolverine" in entry[2]
+        ]
+        hedgehog_faint_entries = [
+            entry
+            for entry in phase_entries
+            if isinstance(entry, tuple)
+            and entry[0] == "DealDamage"
+            and "pet-hedgehog" in entry[2]
+        ]
+
+        ### Both teams' faint abilities should still execute in this chain
+        self.assertEqual(len(hedgehog_faint_entries), 2)
+        self.assertEqual(len(reduce_entries), 2)
+
+        reduce_targets = reduce_entries[0][3]
+        self.assertTrue(any("pet-cricket" in target for target in reduce_targets))
+        self.assertTrue(any("pet-fish" in target for target in reduce_targets))
+        self.assertFalse(any("pet-zombie-cricket" in target for target in reduce_targets))
+        self.assertFalse(any("pet-hedgehog" in target for target in reduce_targets))
+
+        self.assertEqual(b.t0[0].pet._friend_hurt_counter, 0)
+
+        ### Lethal-hurt counting occurs before faint-ability chain resolution
+        self.assertLess(phase_entries.index(reduce_entries[0]), phase_entries.index(hedgehog_faint_entries[0]))
 
     def test_hedgehog_blowfish_camel_hurt_team(self):
         # standard hedgehog blowfish camel teams facing off against eachother
@@ -248,8 +433,8 @@ class TestBattles(unittest.TestCase):
         hh4 = Pet("hedgehog")
 
         b = Battle(Team([hh1, hh2, c1, bf1]), Team([hh3, hh4, c2, bf2]))
-        r = b.battle()
-        self.assertEqual(r, 2)
+
+        self.assertEqual(b.battle(), 2)
 
     def test_hedgehog_vs_honey(self):
         hh1 = Pet("hedgehog")
@@ -337,7 +522,7 @@ class TestBattles(unittest.TestCase):
         # badger with less attack can kill zombie-cricket
         b1 = Pet("badger")
         c1 = Pet("cricket")
-        c1._attack = 6
+        c1._attack = 7
         b = Battle(Team([b1]), Team([c1]))
         r = b.battle()
         self.assertEqual(r, 2)
@@ -372,7 +557,7 @@ class TestBattles(unittest.TestCase):
         hb1 = Pet("badger")
         hb1.status = "status-honey-bee"
         c1 = Pet("cricket")
-        c1._attack = 6
+        c1._attack = 7
         b = Battle(Team([hb1]), Team([c1]))
         r = b.battle()
         self.assertEqual(r, 0)
@@ -398,6 +583,28 @@ class TestBattles(unittest.TestCase):
 
         ### Implement later with others
         pass
+
+    def test_steak_not_consumed_when_hit_by_splash(self):
+        splash_attacker = Pet("fish")
+        splash_attacker.status = "status-splash-attack"
+        splash_attacker._attack = 1
+        splash_attacker._health = 1
+
+        front_enemy = Pet("ant")
+        front_enemy._attack = 50
+        front_enemy._health = 50
+
+        back_enemy = Pet("pig")
+        back_enemy.status = "status-steak-attack"
+        back_enemy._health = 50
+
+        battle = Battle(Team([splash_attacker]), Team([front_enemy, back_enemy]))
+        battle.battle()
+
+        # Back enemy was splashed but never attacked, so steak should remain.
+        self.assertEqual(battle.t1[1].pet.status, "status-steak-attack")
+        # Chili splash should deal exactly 5 damage to the second enemy.
+        self.assertEqual(battle.t1[1].pet.health, 45)
 
 
 # %%
