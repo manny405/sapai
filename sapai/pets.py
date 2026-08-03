@@ -753,9 +753,7 @@ class Pet:
         if type(trigger).__name__ != "Team":
             raise Exception("Trigger must be a Team")
 
-        ### Cannot call if health is less than zero because fainted
-        if self._health <= 0:
-            return activated, targets, possible
+        ### Knock Out abilities keep chaining after fainting -- don't bail out here.
 
         if "maxTriggers" in self.ability:
             if self.ability_counter >= self.ability["maxTriggers"]:
@@ -764,7 +762,11 @@ class Pet:
                 self.ability_counter += 1
 
         func = get_effect_function(self)
-        pet_idx = self.team.get_idx(self)
+        ### self may have fainted mid-chain; pet_idx is just bookkeeping here.
+        if self.team is not None and self.team.check_friend(self):
+            pet_idx = self.team.get_idx(self)
+        else:
+            pet_idx = None
         targets, possible = tiger_func(
             func, False, self, [0, pet_idx], [self.team, trigger], trigger
         )
@@ -858,8 +860,8 @@ class Pet:
 def tiger_func(func, te_fainted, *args):
     ### Check behind for tiger
     apet = args[0]
-    if apet.team is None:
-        ### Just run function
+    if apet.team is None or not apet.team.check_friend(apet):
+        ### No team, or fainted mid-chain and removed from it -- skip tiger check.
         targets, possible = func(*args)
         return targets, possible
 
