@@ -1100,6 +1100,9 @@ def TransferStats(apet, apet_idx, teams, te=None, te_idx=None, fixed_targets=Non
             temp_from = get_target(apet, apet_idx, teams, te=te, get_from=True)
             ### Randomness not needed as outcome will be the same for all pets
             ###   that have this ability
+            if len(temp_from[0]) == 0:
+                ### No friend to copy from (e.g. Crab alone) -- no-op.
+                continue
             temp_from = temp_from[0][0]
             if copy_attack:
                 apet._attack = int(temp_from.attack * percentage)

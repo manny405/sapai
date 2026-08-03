@@ -735,7 +735,11 @@ def battle_phase_knockout(battle_obj, phase, teams, pet_priority, phase_dict):
             fteam, oteam = get_teams([team_idx, 0], teams)
             current_length = 0
             while True:
-                pet_idx = fteam.index(apet)
+                ### pet_idx is just for logging; None if apet already fainted.
+                if fteam.check_friend(apet):
+                    pet_idx = fteam.index(apet)
+                else:
+                    pet_idx = None
                 activated, targets, possible = apet.knockout_trigger(oteam)
                 append_phase_list(
                     phase_list, apet, team_idx, pet_idx, activated, targets, possible
